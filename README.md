@@ -1,7 +1,7 @@
 mc2skos
 ---
 
-Python script for converting Script to convert
+Python script for converting
 [MARC 21 Classification](http://www.loc.gov/marc/classification/)
 records (serialized as MARCXML) to
 [SKOS](http://www.w3.org/2004/02/skos/) concepts.
@@ -9,7 +9,8 @@ records (serialized as MARCXML) to
 Developed to support the
 project *[Felles terminologi for klassifikasjon med Dewey](http://www.ub.uio.no/om/prosjekter/deweymapping/index.html)*,
 it has only been tested with Dewey Decimal Classification (DDC) records.
-Issues and suggestions for generalization and improvements are welcome!
+[Issues](https://github.com/scriptotek/mc2skos/issues) and
+suggestions for generalizations and improvements are welcome!
 
 Usage:
 
