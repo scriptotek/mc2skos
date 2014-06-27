@@ -1,5 +1,5 @@
 mc2skos
-=======
+---
 
 Python script for converting Script to convert
 [MARC 21 Classification](http://www.loc.gov/marc/classification/)
