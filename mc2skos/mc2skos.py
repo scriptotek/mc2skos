@@ -22,7 +22,11 @@ nm = g.namespace_manager
 nm.bind('dct', 'http://purl.org/dc/terms/')
 nm.bind('skos', SKOS)
 
-class_ns = Namespace('http://dewey.info/class/')
+classification_schemes = {
+    'ddc': {
+        '23no': {'ns': Namespace('http://dewey.info/class/'), 'el': '{class_no}/e23/'}
+    }
+}
 
 counts = {}
 
@@ -30,8 +34,10 @@ counts = {}
 def store_record(rec):
     # Add record data to graph
 
+    scheme = classification_schemes[rec['scheme']][rec['edition']]
+
     # Appended / is necessary for dewey.info URLs to be dereferable
-    uri = class_ns['%s/' % rec['class_no']]
+    uri = scheme['ns'][scheme['el'].format(class_no=rec['class_no'])]
 
     existing = [x for x in g.triples((uri, None, None))]
     if len(existing) != 0:
@@ -61,7 +67,7 @@ def store_record(rec):
     if 'parent' in rec:
         parent = rec['parent']
         if parent != rec['class_no']:
-            g.add((uri, SKOS.broader, class_ns[parent]))
+            g.add((uri, SKOS.broader, scheme['ns'][scheme['el'].format(class_no=parent)]))
 
     # Add scope notes
     for scope_note in rec['scope_notes']:
@@ -106,6 +112,19 @@ def process_record(rec, parent_table):
         return
 
     out = {}
+
+    # 084: Classification Scheme and Edition
+    r = rec.xpath('mx:datafield[@tag="084"]', namespaces=rec.nsmap)
+    if not r:
+        return 'missing 084 field'
+    f084 = r[0]
+    scheme = [x for x in f084.xpath('mx:subfield[@code="a"]/text()', namespaces=rec.nsmap)]
+    edt = [x for x in f084.xpath('mx:subfield[@code="c"]/text()', namespaces=rec.nsmap)]
+    if len(scheme) != 1 or len(edt) != 1:
+        # print 'Warning: Ignore records with multiple classification numbers', class_no
+        return 'classification scheme or edition missing'
+    out['scheme'] = scheme[0]
+    out['edition'] = edt[0]
 
     # 153: Classification number
     r = rec.xpath('mx:datafield[@tag="153"]', namespaces=rec.nsmap)
@@ -261,16 +280,11 @@ def main():
     parser = argparse.ArgumentParser(description='Triple counter')
     parser.add_argument('infile', nargs=1, help='Input XML file')
     parser.add_argument('outfile', nargs=1, help='Output RDF file')
-    parser.add_argument('--namespace', nargs=1,
-                        help='Namespace for the classification schema. Default: http://dewey.info/class/',
-                        default='http://dewey.info/class/')
 
     args = parser.parse_args()
-    print 'Using namespace: %s' % (args.namespace)
 
     in_file = args.infile[0]    # '../data/webdewey/500klassen.xml'
     out_file = args.outfile[0]  # '../data/webdewey/500klassen.rdf'
-    class_ns = Namespace(args.namespace)
 
     nsmap = {'mx': 'http://www.loc.gov/MARC21/slim'}
 
