@@ -277,14 +277,18 @@ def get_parent(node):
 
 def main():
 
-    parser = argparse.ArgumentParser(description='Triple counter')
+    parser = argparse.ArgumentParser(description='Convert MARC21 Classification to SKOS/RDF')
     parser.add_argument('infile', nargs=1, help='Input XML file')
     parser.add_argument('outfile', nargs=1, help='Output RDF file')
+    parser.add_argument('-o', '--outformat', dest='outformat', nargs='?',
+                        help='Output serialization format. Any format supported by rdflib. Default: turtle',
+                        default='turtle')
 
     args = parser.parse_args()
 
-    in_file = args.infile[0]    # '../data/webdewey/500klassen.xml'
-    out_file = args.outfile[0]  # '../data/webdewey/500klassen.rdf'
+    in_file = args.infile[0]
+    out_file = args.outfile[0]
+    out_format = args.outformat
 
     nsmap = {'mx': 'http://www.loc.gov/MARC21/slim'}
 
@@ -314,5 +318,5 @@ def main():
     for k, v in counts.items():
         print ' - %s: %d' % (k, v)
 
-    g.serialize(out_file, format='xml')  # Alternative: pretty-xml
+    g.serialize(out_file, format=out_format)
     print "Wrote RDF: %s" % (out_file)
