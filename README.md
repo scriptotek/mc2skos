@@ -12,10 +12,22 @@ it has only been tested with Dewey Decimal Classification (DDC) records.
 [Issues](https://github.com/scriptotek/mc2skos/issues) and
 suggestions for generalizations and improvements are welcome!
 
-Usage:
+### Installation:
+
+Using [Pip](http://pip.readthedocs.org/en/latest/installing.html):
+```
+pip install git+git://github.com/scriptotek/mc2skos.git
+```
+
+* Requires Python 2.6 or 2.7. Not tested with 3.x.
+* If lxml fails to install on Windows, try the windows installer
+from [from PyPI](https://pypi.python.org/pypi/lxml/3.4.0).
+* Make sure the Python scripts folder has been added to your PATH.
+
+### Usage:
 
 ```bash
-$ python mc2skos.py infile.xml outfile.rdf
+$ mc2skos infile.xml outfile.rdf
 ```
 
 Only a small part of the MARC21 Classification

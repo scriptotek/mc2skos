@@ -10,7 +10,6 @@
 #   $ python mc2skos.py infile.xml outfile.rdf
 #
 
-from odict import odict
 import sys
 from lxml import etree
 import argparse
@@ -256,49 +255,50 @@ def get_parent(node):
     # node = doc.xpath('//mx:datafield[@tag="153"][count(./mx:subfield[@code="a"]) = 1 and ./mx:subfield[@code="a"] = "%s" and ./mx:subfield[@code="c"] = "%s"]' % (par1, par2),
     #                  namespaces={'mx': 'http://www.loc.gov/MARC21/slim'})
 
-# ----- Main
 
-parser = argparse.ArgumentParser(description='Triple counter')
-parser.add_argument('infile', nargs=1, help='Input XML file')
-parser.add_argument('outfile', nargs=1, help='Output RDF file')
-parser.add_argument('--namespace', nargs=1,
-                    help='Namespace for the classification schema. Default: http://dewey.info/class/',
-                    default='http://dewey.info/class/')
+def main():
 
-args = parser.parse_args()
-print 'Using namespace: %s' % (args.namespace)
+    parser = argparse.ArgumentParser(description='Triple counter')
+    parser.add_argument('infile', nargs=1, help='Input XML file')
+    parser.add_argument('outfile', nargs=1, help='Output RDF file')
+    parser.add_argument('--namespace', nargs=1,
+                        help='Namespace for the classification schema. Default: http://dewey.info/class/',
+                        default='http://dewey.info/class/')
 
-in_file = args.infile[0]    # '../data/webdewey/500klassen.xml'
-out_file = args.outfile[0]  # '../data/webdewey/500klassen.rdf'
-class_ns = Namespace(args.namespace)
+    args = parser.parse_args()
+    print 'Using namespace: %s' % (args.namespace)
 
-nsmap = {'mx': 'http://www.loc.gov/MARC21/slim'}
+    in_file = args.infile[0]    # '../data/webdewey/500klassen.xml'
+    out_file = args.outfile[0]  # '../data/webdewey/500klassen.rdf'
+    class_ns = Namespace(args.namespace)
 
-print "Parsing: %s" % (in_file)
-try:
-    doc = etree.parse(in_file)
-except etree.XMLSyntaxError:
-    type, message, traceback = sys.exc_info()
-    print "XML parsing failed"
+    nsmap = {'mx': 'http://www.loc.gov/MARC21/slim'}
 
-print "Building parent lookup table"
-parent_table = {}
-for field in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
-    res = get_parent(field)
-    if res:
-        parent_table[res[0]] = res[1]
+    print "Parsing: %s" % (in_file)
+    try:
+        doc = etree.parse(in_file)
+    except etree.XMLSyntaxError:
+        type, message, traceback = sys.exc_info()
+        print "XML parsing failed"
 
-print "Traversing records"
-for record in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
-    res = process_record(record, parent_table)
-    if res is not None:
-        if res not in counts:
-            counts[res] = 0
-        counts[res] += 1
+    print "Building parent lookup table"
+    parent_table = {}
+    for field in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
+        res = get_parent(field)
+        if res:
+            parent_table[res[0]] = res[1]
 
-print "Found:"
-for k, v in counts.items():
-    print ' - %s: %d' % (k, v)
+    print "Traversing records"
+    for record in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
+        res = process_record(record, parent_table)
+        if res is not None:
+            if res not in counts:
+                counts[res] = 0
+            counts[res] += 1
 
-g.serialize(out_file, format='xml')  # Alternative: pretty-xml
-print "Wrote RDF: %s" % (out_file)
+    print "Found:"
+    for k, v in counts.items():
+        print ' - %s: %d' % (k, v)
+
+    g.serialize(out_file, format='xml')  # Alternative: pretty-xml
+    print "Wrote RDF: %s" % (out_file)
