@@ -104,22 +104,22 @@ def stringify(nodes):
     return note
 
 
-def process_record(rec, parent_table):
+def process_record(rec, parent_table, nsmap):
     # Parse a single MARC21 classification record
 
-    leader = rec.xpath('mx:leader', namespaces=rec.nsmap)[0].text
+    leader = rec.xpath('mx:leader', namespaces=nsmap)[0].text
     if leader[6] != 'w':  # w: classification, z: authority
         return
 
     out = {}
 
     # 084: Classification Scheme and Edition
-    r = rec.xpath('mx:datafield[@tag="084"]', namespaces=rec.nsmap)
+    r = rec.xpath('mx:datafield[@tag="084"]', namespaces=nsmap)
     if not r:
         return 'missing 084 field'
     f084 = r[0]
-    scheme = [x for x in f084.xpath('mx:subfield[@code="a"]/text()', namespaces=rec.nsmap)]
-    edt = [x for x in f084.xpath('mx:subfield[@code="c"]/text()', namespaces=rec.nsmap)]
+    scheme = [x for x in f084.xpath('mx:subfield[@code="a"]/text()', namespaces=nsmap)]
+    edt = [x for x in f084.xpath('mx:subfield[@code="c"]/text()', namespaces=nsmap)]
     if len(scheme) != 1 or len(edt) != 1:
         # print 'Warning: Ignore records with multiple classification numbers', class_no
         return 'classification scheme or edition missing'
@@ -127,33 +127,33 @@ def process_record(rec, parent_table):
     out['edition'] = edt[0]
 
     # 153: Classification number
-    r = rec.xpath('mx:datafield[@tag="153"]', namespaces=rec.nsmap)
+    r = rec.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
     if not r:
         return 'missing 153 field'
     f153 = r[0]
 
     # $a - Classification number--single number or beginning number of span (R)
-    class_no = [x for x in f153.xpath('mx:subfield[@code="a"]/text()', namespaces=rec.nsmap)]
+    class_no = [x for x in f153.xpath('mx:subfield[@code="a"]/text()', namespaces=nsmap)]
     if len(class_no) != 1:
         # print 'Warning: Ignore records with multiple classification numbers', class_no
         return 'numbers with colon'
     out['class_no'] = class_no[0]
 
     # $c - Classification number--ending number of span (R)
-    endnumber = [x for x in f153.xpath('mx:subfield[@code="c"]/text()[1]', namespaces=rec.nsmap)]
+    endnumber = [x for x in f153.xpath('mx:subfield[@code="c"]/text()[1]', namespaces=nsmap)]
     if len(endnumber) != 0:
         # This record representes a span. We skip such records
         # print 'Skipping span: ', class_no, endnumber
         return 'classification number span'
 
     # $e - Parent
-    parent = [x for x in f153.xpath('mx:subfield[@code="e"]/text()[1]', namespaces=rec.nsmap)]
+    parent = [x for x in f153.xpath('mx:subfield[@code="e"]/text()[1]', namespaces=nsmap)]
     if len(parent) == 0:
         return 'no parent'
 
     # $j - Caption (NR)
     try:
-        out['caption'] = f153.xpath('mx:subfield[@code="j"]/text()[1]', namespaces=rec.nsmap)[0]
+        out['caption'] = f153.xpath('mx:subfield[@code="j"]/text()[1]', namespaces=nsmap)[0]
     except IndexError:
         pass  # Build number without caption
         # print etree.tounicode(f153, pretty_print=True)
@@ -179,8 +179,8 @@ def process_record(rec, parent_table):
     # </mx:datafield>
     #
     out['notes'] = []
-    for entry in rec.xpath('mx:datafield[@tag="253"]', namespaces=rec.nsmap):
-        note = stringify(entry.xpath('mx:subfield', namespaces=rec.nsmap))
+    for entry in rec.xpath('mx:datafield[@tag="253"]', namespaces=nsmap):
+        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
         out['notes'].append(note)
 
     # 680 : Scope note
@@ -198,8 +198,8 @@ def process_record(rec, parent_table):
     # </mx:datafield>
     #
     out['scope_notes'] = []
-    for entry in rec.xpath('mx:datafield[@tag="680"]', namespaces=rec.nsmap):
-        note = stringify(entry.xpath('mx:subfield', namespaces=rec.nsmap))
+    for entry in rec.xpath('mx:datafield[@tag="680"]', namespaces=nsmap):
+        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
         out['scope_notes'].append(note)
 
     # 685 : History note
@@ -212,17 +212,17 @@ def process_record(rec, parent_table):
     #  </mx:datafield>
     #
     out['history_notes'] = []
-    for entry in rec.xpath('mx:datafield[@tag="685"]', namespaces=rec.nsmap):
-        note = stringify(entry.xpath('mx:subfield', namespaces=rec.nsmap))
+    for entry in rec.xpath('mx:datafield[@tag="685"]', namespaces=nsmap):
+        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
         out['history_notes'].append(note)
 
     # 750 : Index term
     # String order: $a : $x : $v : $y : $z
     out['index_terms'] = []
-    for entry in rec.xpath('mx:datafield[@tag="750"]', namespaces=rec.nsmap):
+    for entry in rec.xpath('mx:datafield[@tag="750"]', namespaces=nsmap):
         term = []
         for x in ['a', 'x', 'y', 'z']:
-            term.extend(entry.xpath('mx:subfield[@code="%s"]/text()' % (x), namespaces=rec.nsmap))
+            term.extend(entry.xpath('mx:subfield[@code="%s"]/text()' % (x), namespaces=nsmap))
         term = ' : '.join(term)
 
         if term == '':
@@ -234,37 +234,37 @@ def process_record(rec, parent_table):
     return 'valid'
 
 
-def get_parent(node):
+def get_parent(node, nsmap):
 
-    node = node.xpath('mx:datafield[@tag="153"]', namespaces=node.nsmap)
+    node = node.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
 
     if len(node) != 1:
         return
 
     node = node[0]
 
-    class_no1 = node.xpath('mx:subfield[@code="a"]/text()[1]', namespaces=node.nsmap)
+    class_no1 = node.xpath('mx:subfield[@code="a"]/text()[1]', namespaces=nsmap)
     if len(class_no1) == 0:
         return
     class_no1 = class_no1[0]
 
-    class_no2 = node.xpath('mx:subfield[@code="c"]/text()[1]', namespaces=node.nsmap)
+    class_no2 = node.xpath('mx:subfield[@code="c"]/text()[1]', namespaces=nsmap)
     if len(class_no2) == 0:
         class_no = class_no1
     else:
         class_no = '%s-%s' % (class_no1, class_no2[0])
 
-    ch = node.xpath('mx:subfield[@code="a"]', namespaces=node.nsmap)
+    ch = node.xpath('mx:subfield[@code="a"]', namespaces=nsmap)
     if len(ch) != 1:
         # print etree.tounicode(node)
         return  # ignore add table notation
 
-    par1 = node.xpath('mx:subfield[@code="e"]/text()[1]', namespaces=node.nsmap)
+    par1 = node.xpath('mx:subfield[@code="e"]/text()[1]', namespaces=nsmap)
     if len(par1) == 0:
         return
     par1 = par1[0]
 
-    par2 = node.xpath('mx:subfield[@code="f"]/text()[1]', namespaces=node.nsmap)
+    par2 = node.xpath('mx:subfield[@code="f"]/text()[1]', namespaces=nsmap)
     if len(par2) == 0:
         return [class_no, par1]
 
@@ -302,13 +302,13 @@ def main():
     print "Building parent lookup table"
     parent_table = {}
     for field in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
-        res = get_parent(field)
+        res = get_parent(field, nsmap)
         if res:
             parent_table[res[0]] = res[1]
 
     print "Traversing records"
     for record in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
-        res = process_record(record, parent_table)
+        res = process_record(record, parent_table, nsmap)
         if res is not None:
             if res not in counts:
                 counts[res] = 0
