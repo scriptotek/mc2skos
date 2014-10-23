@@ -86,7 +86,7 @@ def stringify(nodes):
     note = ''
     for subfield in nodes:
         c = subfield.get('code')
-        if c == 'i' or c == 't' or c == 'a':
+        if c == 'i' or c == 't' or c == 'a' or c == 'c':
             children = subfield.getchildren()
 
             # because this can happen...
@@ -102,9 +102,10 @@ def stringify(nodes):
 
             if c == 'c':
                 note += '-'
-            note += txt
-            if c == 'i' or c == 't':
+            elif len(note) != 0 and txt[0] != ',':
                 note += ' '
+            note += txt
+
     return note
 
 
