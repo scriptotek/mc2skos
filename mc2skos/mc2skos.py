@@ -54,30 +54,30 @@ def store_record(rec):
     # of skos:semanticRelation.
     # g.add((uri, RDF.type, SKOS.Concept))
 
-    # Add caption as prefLabel
+    # Add caption as skos:prefLabel
     if 'caption' in rec:
         g.add((uri, SKOS.prefLabel, Literal(rec['caption'], lang='nb')))
 
-    # Add index terms as altLabels
+    # Add index terms as skos:altLabel
     for index_term in rec['index_terms']:
         if 'caption' not in rec or index_term != rec['caption']:
             g.add((uri, SKOS.altLabel, Literal(index_term, lang='nb')))
 
-    # Add hierarchy
     # Add classification number as skos:notation
     if 'class_no' in rec:
         g.add((uri, SKOS.notation, Literal(rec['class_no'])))
 
+    # Add hierarchy as skos:broader
     if 'parent' in rec:
         parent = rec['parent']
         if parent != rec['class_no']:
             g.add((uri, SKOS.broader, scheme['ns'][scheme['el'].format(class_no=parent)]))
 
-    # Add scope notes
+    # Add scope notes as skos:scopeNote
     for scope_note in rec['scope_notes']:
         g.add((uri, SKOS.scopeNote, Literal(scope_note, lang='nb')))
 
-    # Add notes
+    # Add notes as skos:editorialNote
     for note in rec['notes']:
         g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
@@ -115,7 +115,7 @@ def process_record(rec, parent_table, nsmap):
     if leader[6] != 'w':  # w: classification, z: authority
         return
 
-    out = {}
+    out = {'notes': [], 'scope_notes': [], 'history_notes': [], 'index_terms': []}
 
     # 084: Classification Scheme and Edition
     r = rec.xpath('mx:datafield[@tag="084"]', namespaces=nsmap)
@@ -182,7 +182,6 @@ def process_record(rec, parent_table, nsmap):
     #   <mx:subfield code="9">ess=nce</mx:subfield>
     # </mx:datafield>
     #
-    out['notes'] = []
     for entry in rec.xpath('mx:datafield[@tag="253"]', namespaces=nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
         out['notes'].append(note)
@@ -201,7 +200,6 @@ def process_record(rec, parent_table, nsmap):
     #   <mx:subfield code="9">ess=nch</mx:subfield>
     # </mx:datafield>
     #
-    out['scope_notes'] = []
     for entry in rec.xpath('mx:datafield[@tag="680"]', namespaces=nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
         out['scope_notes'].append(note)
@@ -215,14 +213,12 @@ def process_record(rec, parent_table, nsmap):
     #    <mx:subfield code="9">ess=nrl</mx:subfield>
     #  </mx:datafield>
     #
-    out['history_notes'] = []
     for entry in rec.xpath('mx:datafield[@tag="685"]', namespaces=nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
         out['history_notes'].append(note)
 
     # 750 : Index term
     # String order: $a : $x : $v : $y : $z
-    out['index_terms'] = []
     for entry in rec.xpath('mx:datafield[@tag="750"]', namespaces=nsmap):
         term = []
         for x in ['a', 'x', 'y', 'z']:
