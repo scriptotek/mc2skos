@@ -64,6 +64,10 @@ def store_record(rec):
             g.add((uri, SKOS.altLabel, Literal(index_term, lang='nb')))
 
     # Add hierarchy
+    # Add classification number as skos:notation
+    if 'class_no' in rec:
+        g.add((uri, SKOS.notation, Literal(rec['class_no'])))
+
     if 'parent' in rec:
         parent = rec['parent']
         if parent != rec['class_no']:
