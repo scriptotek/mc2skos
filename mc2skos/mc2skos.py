@@ -186,6 +186,19 @@ def process_record(rec, parent_table, nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
         out['notes'].append(note)
 
+    # 353 : Complex See Also Reference (R)
+    # Example:
+    # <mx:datafield tag="353" ind1=" " ind2=" ">
+    #   <mx:subfield code="i">Se også</mx:subfield>
+    #   <mx:subfield code="a">900</mx:subfield>
+    #   <mx:subfield code="i">for en</mx:subfield>
+    #   <mx:subfield code="t">bred beskrivelse av situasjon og vilkår for intellektuell virksomhet</mx:subfield>
+    #   <mx:subfield code="9">ess=nsa</mx:subfield>
+    # </mx:datafield>
+    for entry in rec.xpath('mx:datafield[@tag="353"]', namespaces=nsmap):
+        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
+        out['notes'].append(note)
+
     # 680 : Scope note
     # Example:
     # <mx:datafield tag="680" ind1="1" ind2=" ">

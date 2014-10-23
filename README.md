@@ -43,6 +43,7 @@ to skos:altLabel.
     680    → skos:scopeNote
     685    → skos:historyNote
     253    → skos:editorialNote
+    353    → skos:editorialNote
 
 Note on classification number spans:
 
