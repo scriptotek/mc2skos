@@ -52,6 +52,30 @@ class TestStringify(unittest.TestCase):
         """)
         assert stringify(elem) == u'Klassifiser andre bestemte internasjonale språk med språket i 420-490, f.eks. latin som et diplomatspråk, swahili som et lingua franca'
 
+    def testComplexNote(self):
+        elem = etree.fromstring(u"""
+            <datafield tag="680" ind1="0" ind2=" " xmlns="http://www.loc.gov/MARC21/slim">
+                <subfield code="i">Inkluderer:</subfield>
+                <subfield code="t">Case-studier</subfield>
+                <subfield code="i">[tidligere</subfield>
+                <subfield code="x">001.432</subfield>
+                <subfield code="i">];</subfield>
+                <subfield code="t">utvalgsteknikker</subfield>
+                <subfield code="i">;</subfield>
+                <subfield code="t">rundspørringer</subfield>
+                <subfield code="i">,</subfield>
+                <subfield code="t">spørreskjemaer</subfield>
+                <subfield code="i">,</subfield>
+                <subfield code="t">feltarbeid</subfield>
+                <subfield code="i">,</subfield>
+                <subfield code="t">deltakende observasjon</subfield>
+                <subfield code="i">,</subfield>
+                <subfield code="t">intervjuer</subfield>
+                <subfield code="9">ess=nin</subfield>
+            </datafield>
+        """)
+        assert stringify(elem) == u'Inkluderer: Case-studier [tidligere 001.432]; utvalgsteknikker; rundspørringer, spørreskjemaer, feltarbeid, deltakende observasjon, intervjuer'
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -11,6 +11,7 @@
 #
 
 import sys
+import re
 from lxml import etree
 import argparse
 from rdflib.namespace import RDF, RDFS, SKOS, Namespace
@@ -86,7 +87,7 @@ def stringify(nodes):
     note = ''
     for subfield in nodes:
         c = subfield.get('code')
-        if c == 'i' or c == 't' or c == 'a' or c == 'c':
+        if c in ['a', 'c', 'i', 't', 'x']:
             children = subfield.getchildren()
 
             # because this can happen...
@@ -102,7 +103,7 @@ def stringify(nodes):
 
             if c == 'c':
                 note += '-'
-            elif len(note) != 0 and txt[0] != ',':
+            elif len(note) != 0 and not re.match(r'[.\?#@+,<>%~`!$^&\(\):;\]]', txt[0]):
                 note += ' '
             note += txt
 
