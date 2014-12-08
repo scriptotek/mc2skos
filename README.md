@@ -52,3 +52,13 @@ In general, we ignore records coding classification number spans.
 However, a record may have a number span as its parent (given
 by 153 $e and 153 $f combined). In such cases, we traverse the tree
 in reverse until we reach a record which is not a number span.
+
+Additionally, for WebDewey, the following conversion is done:
+
+	680 $9 ess=ndf Definition → `skos:definition`
+	680 $9 ess=nvn Variant name: `$t` → `wd:variantName`
+	680 $9 ess=nch Class-here: `$t` → `wd:classHere`
+	680 $9 ess=nin Including: `$t` → `wd:including`
+	680 $9 ess=nph Former heading: `$t` → `wd:formerHeading`
+	685 $9 ess=ndn Discontinued → `owl:deprecated true`
+

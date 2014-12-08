@@ -14,14 +14,17 @@ import sys
 import re
 from lxml import etree
 import argparse
-from rdflib.namespace import RDF, RDFS, SKOS, Namespace
+from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
 from rdflib import URIRef, RDFS, Literal, Graph
 
 g = Graph()
+WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 dct = Namespace('http://purl.org/dc/terms/')
 nm = g.namespace_manager
-nm.bind('dct', 'http://purl.org/dc/terms/')
+nm.bind('dct', dct)
 nm.bind('skos', SKOS)
+nm.bind('wd', WD)
+nm.bind('owl', OWL)
 
 classification_schemes = {
     'ddc': {
@@ -30,57 +33,6 @@ classification_schemes = {
 }
 
 counts = {}
-
-
-def store_record(rec):
-    # Add record data to graph
-
-    scheme = classification_schemes[rec['scheme']][rec['edition']]
-
-    # Appended / is necessary for dewey.info URLs to be dereferable
-    uri = scheme['ns'][scheme['el'].format(class_no=rec['class_no'])]
-
-    existing = [x for x in g.triples((uri, None, None))]
-    if len(existing) != 0:
-        print "ERROR: Duplicate records for %s" % (rec['class_no'])
-        print rec
-        for t in existing:
-            print t
-
-        return
-        # sys.exit(1)
-
-    # We do not need to explicitly state here that <A> and <B> are instances
-    # of skos:Concept, because such statements are entailed by the definition
-    # of skos:semanticRelation.
-    # g.add((uri, RDF.type, SKOS.Concept))
-
-    # Add caption as skos:prefLabel
-    if 'caption' in rec:
-        g.add((uri, SKOS.prefLabel, Literal(rec['caption'], lang='nb')))
-
-    # Add index terms as skos:altLabel
-    for index_term in rec['index_terms']:
-        if 'caption' not in rec or index_term != rec['caption']:
-            g.add((uri, SKOS.altLabel, Literal(index_term, lang='nb')))
-
-    # Add classification number as skos:notation
-    if 'class_no' in rec:
-        g.add((uri, SKOS.notation, Literal(rec['class_no'])))
-
-    # Add hierarchy as skos:broader
-    if 'parent' in rec:
-        parent = rec['parent']
-        if parent != rec['class_no']:
-            g.add((uri, SKOS.broader, scheme['ns'][scheme['el'].format(class_no=parent)]))
-
-    # Add scope notes as skos:scopeNote
-    for scope_note in rec['scope_notes']:
-        g.add((uri, SKOS.scopeNote, Literal(scope_note, lang='nb')))
-
-    # Add notes as skos:editorialNote
-    for note in rec['notes']:
-        g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
 
 def stringify(nodes):
@@ -110,6 +62,14 @@ def stringify(nodes):
     return note
 
 
+def get_ess(node, nsmap):
+    # Get the first WebDewey 'ess' property
+    ess = [x for x in node.xpath('mx:subfield[@code="9"]/text()[1]', namespaces=nsmap)]
+    if len(ess) == 0:
+        return ''
+    return ess[0].replace('ess=', '')
+
+
 def process_record(rec, parent_table, nsmap):
     # Parse a single MARC21 classification record
 
@@ -119,7 +79,7 @@ def process_record(rec, parent_table, nsmap):
 
     out = {'notes': [], 'scope_notes': [], 'history_notes': [], 'index_terms': []}
 
-    # 084: Classification Scheme and Edition
+    # Parse 084: Classification Scheme and Edition
     r = rec.xpath('mx:datafield[@tag="084"]', namespaces=nsmap)
     if not r:
         return 'missing 084 field'
@@ -132,7 +92,7 @@ def process_record(rec, parent_table, nsmap):
     out['scheme'] = scheme[0]
     out['edition'] = edt[0]
 
-    # 153: Classification number
+    # Parse 153: Classification number
     r = rec.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
     if not r:
         return 'missing 153 field'
@@ -174,6 +134,45 @@ def process_record(rec, parent_table, nsmap):
     else:
         print 'ERROR: Has no parent', out['class_no']
 
+    # Generate URI
+    try:
+        scheme = classification_schemes[out['scheme']][out['edition']]
+    except:
+        print "ERROR: Unknown class scheme or edition!"
+        raise
+
+    # Appended / is necessary for dewey.info URLs to be dereferable
+    uri = scheme['ns'][scheme['el'].format(class_no=out['class_no'])]
+
+    existing = [x for x in g.triples((uri, None, None))]
+    if len(existing) != 0:
+        print "ERROR: Duplicate records for %s" % (out['class_no'])
+        print out
+        for t in existing:
+            print t
+
+        return
+        # sys.exit(1)
+
+    # Strictly, we do not need to explicitly state here that <A> and <B> are instances
+    # of skos:Concept, because such statements are entailed by the definition
+    # of skos:semanticRelation.
+    g.add((uri, RDF.type, SKOS.Concept))
+
+    # Add caption as skos:prefLabel
+    if 'caption' in out:
+        g.add((uri, SKOS.prefLabel, Literal(out['caption'], lang='nb')))
+
+    # Add classification number as skos:notation
+    if 'class_no' in out:
+        g.add((uri, SKOS.notation, Literal(out['class_no'])))
+
+    # Add hierarchy as skos:broader
+    if 'parent' in out:
+        parent = out['parent']
+        if parent != out['class_no']:
+            g.add((uri, SKOS.broader, scheme['ns'][scheme['el'].format(class_no=parent)]))
+
     # 253 : Complex See Reference (R)
     # Example:
     # <mx:datafield tag="253" ind1="2" ind2=" ">
@@ -186,7 +185,7 @@ def process_record(rec, parent_table, nsmap):
     #
     for entry in rec.xpath('mx:datafield[@tag="253"]', namespaces=nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        out['notes'].append(note)
+        g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 353 : Complex See Also Reference (R)
     # Example:
@@ -199,7 +198,7 @@ def process_record(rec, parent_table, nsmap):
     # </mx:datafield>
     for entry in rec.xpath('mx:datafield[@tag="353"]', namespaces=nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        out['notes'].append(note)
+        g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 680 : Scope note
     # Example:
@@ -217,7 +216,22 @@ def process_record(rec, parent_table, nsmap):
     #
     for entry in rec.xpath('mx:datafield[@tag="680"]', namespaces=nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        out['scope_notes'].append(note)
+        g.add((uri, SKOS.scopeNote, Literal(note, lang='nb')))
+        ess = get_ess(entry, nsmap)
+        if ess == 'ndf':
+            g.add((uri, SKOS.definition, Literal(note, lang='nb')))
+        elif ess == 'nvn':
+            for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
+                g.add((uri, WD.variantName, Literal(t, lang='nb')))
+        elif ess == 'nch':
+            for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
+                g.add((uri, WD.classHere, Literal(t, lang='nb')))
+        elif ess == 'nin':
+            for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
+                g.add((uri, WD.including, Literal(t, lang='nb')))
+        elif ess == 'nph':
+            for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
+                g.add((uri, WD.formerName, Literal(t, lang='nb')))
 
     # 683 : Application Instruction Note
     # Example:
@@ -231,7 +245,7 @@ def process_record(rec, parent_table, nsmap):
     #
     for entry in rec.xpath('mx:datafield[@tag="683"]', namespaces=nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        out['notes'].append(note)
+        g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 685 : History note
     # Example:
@@ -244,7 +258,10 @@ def process_record(rec, parent_table, nsmap):
     #
     for entry in rec.xpath('mx:datafield[@tag="685"]', namespaces=nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        out['history_notes'].append(note)
+        g.add((uri, SKOS.historyNote, Literal(note, lang='nb')))
+        ess = get_ess(entry, nsmap)
+        if ess == 'ndn':
+            g.add((uri, OWL.deprecated, Literal(True)))
 
     # 750 : Index term
     # String order: $a : $x : $v : $y : $z
@@ -256,10 +273,9 @@ def process_record(rec, parent_table, nsmap):
 
         if term == '':
             return 'empty_750'
-        out['index_terms'].append(term)
+        if 'caption' not in out or term != out['caption']:
+            g.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
 
-    # Add to graph
-    store_record(out)
     return 'valid'
 
 
