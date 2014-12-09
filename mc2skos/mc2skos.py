@@ -64,10 +64,7 @@ def stringify(nodes):
 
 def get_ess(node, nsmap):
     # Get the first WebDewey 'ess' property
-    ess = [x for x in node.xpath('mx:subfield[@code="9"]/text()[1]', namespaces=nsmap)]
-    if len(ess) == 0:
-        return ''
-    return ess[0].replace('ess=', '')
+    return [x.replace('ess=', '') for x in node.xpath('mx:subfield[@code="9"]/text()[1]', namespaces=nsmap)]
 
 
 def process_record(rec, parent_table, nsmap):
@@ -218,18 +215,18 @@ def process_record(rec, parent_table, nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
         g.add((uri, SKOS.scopeNote, Literal(note, lang='nb')))
         ess = get_ess(entry, nsmap)
-        if ess == 'ndf':
+        if 'ndf' in ess:
             g.add((uri, SKOS.definition, Literal(note, lang='nb')))
-        elif ess == 'nvn':
+        elif 'nvn' in ess:
             for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
                 g.add((uri, WD.variantName, Literal(t, lang='nb')))
-        elif ess == 'nch':
+        elif 'nch' in ess:
             for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
                 g.add((uri, WD.classHere, Literal(t, lang='nb')))
-        elif ess == 'nin':
+        elif 'nin' in ess:
             for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
                 g.add((uri, WD.including, Literal(t, lang='nb')))
-        elif ess == 'nph':
+        elif 'nph' in ess:
             for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
                 g.add((uri, WD.formerName, Literal(t, lang='nb')))
 
@@ -260,7 +257,7 @@ def process_record(rec, parent_table, nsmap):
         note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
         g.add((uri, SKOS.historyNote, Literal(note, lang='nb')))
         ess = get_ess(entry, nsmap)
-        if ess == 'ndn':
+        if 'ndn' in ess:
             g.add((uri, OWL.deprecated, Literal(True)))
 
     # 750 : Index term
