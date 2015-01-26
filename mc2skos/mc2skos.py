@@ -292,6 +292,10 @@ def process_record(rec, parent_table, nsmap):
         if 'caption' not in out or term != out['caption']:
             g.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
 
+    # 765 : Synthesized Number Components
+    if len(rec.xpath('mx:datafield[@tag="253"]', namespaces=nsmap)) != 0:
+        g.add((uri, WD.synthesized, Literal(True)))
+
     return 'valid records'
 
 

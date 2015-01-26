@@ -38,15 +38,24 @@ pragmatic approach, exemplified by the mapping of
 [750](http://www.loc.gov/marc/classification/cd750.html)
 to skos:altLabel.
 
-    153 $a → skos:notation
-    153 $j → skos:prefLabel
-    153 $e → skos:broader
-    750    → skos:altLabel
-    680    → skos:scopeNote
-    685    → skos:historyNote
-    253    → skos:editorialNote
-    353    → skos:editorialNote
-    683    → skos:editorialNote
+Synthesized numbers are indicated by `wd:synthesized true`, but no attempt is
+made to express the actual components. Note that a synthesized number may not
+have a caption (and thus a `skos:prefLabel`).
+
+
+| MARC21XML                                        | RDF                                  |
+|--------------------------------------------------|--------------------------------------|
+| `153 $a` Classification number                   | `skos:notation`                      |
+| `153 $j` Caption                                 | `skos:prefLabel`                     |
+| `153 $e` Classification number hierarchy         | `skos:broader`                       |
+| `253` Complex See Reference                      | `skos:editorialNote`                 |
+| `353` Complex See Also Reference                 | `skos:editorialNote`                 |
+| `680` Scope Note                                 | `skos:scopeNote`                     |
+| `683` Application Instruction Note               | `skos:editorialNote`                 |
+| `685` History Note                               | `skos:historyNote`                   |
+| `750` Index Term-Topical                         | `skos:altLabel`                      |
+| `765` Synthesized Number Components              | `wd:synthesized true`                |
+
 
 #### Classification number spans
 
@@ -58,14 +67,14 @@ reach a record which is not a number span, marking that record as the parent.
 
 The script is supposed to work with any MARC21 classification data, but also supports the non-standard `ess` codes supplied in WebDewey data to differentiate between different types of notes.
 
-| MARC21XML                                                  | RDF                                                                                                                            |
-|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `680` having `$9 ess=ndf` Definition note                  | `skos:definition`                                                                                                              |
-| `680` having `$9 ess=nvn` Variant name note                | `wd:variantName` for each subfield `$t`                                                                                        |
-| `680` having `$9 ess=nch` Class here note                  | `wd:classHere` for each subfield `$t`                                                                                          |
-| `680` having `$9 ess=nin` Including note                   | `wd:including` for each subfield `$t`                                                                                          |
-| `680` having `$9 ess=nph` Former heading                   | `wd:formerHeading` for each subfield `$t`                                                                                      |
-| `685` having `$9 ess=ndn` Deprecation note                 | `owl:deprecated true`                                                                                                          |
+| MARC21XML                                         | RDF                                           |
+|---------------------------------------------------|-----------------------------------------------|
+| `680` having `$9 ess=ndf` Definition note         | `skos:definition`                             |
+| `680` having `$9 ess=nvn` Variant name note       | `wd:variantName` for each subfield `$t`       |
+| `680` having `$9 ess=nch` Class here note         | `wd:classHere` for each subfield `$t`         |
+| `680` having `$9 ess=nin` Including note          | `wd:including` for each subfield `$t`         |
+| `680` having `$9 ess=nph` Former heading          | `wd:formerHeading` for each subfield `$t`     |
+| `685` having `$9 ess=ndn` Deprecation note        | `owl:deprecated true`                         |
 
 **Notes that are currently not treated in any special way:**
 
