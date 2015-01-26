@@ -113,7 +113,7 @@ def process_record(rec, parent_table, nsmap):
     class_no = [x for x in f153.xpath('mx:subfield[@code="a"]/text()', namespaces=nsmap)]
 
     # $c - Classification number--ending number of span (R)
-    endnumber = [x for x in f153.xpath('mx:subfield[@code="c"]/text()[1]', namespaces=nsmap)]
+    endnumber = [x for x in f153.xpath('mx:subfield[@code="c"]/text()', namespaces=nsmap)]
     if len(endnumber) != 0:
         # This record representes a span. We skip such records
         logger.debug('Ignoring number span record: %s-%s', class_no[0], endnumber[0])
@@ -136,6 +136,11 @@ def process_record(rec, parent_table, nsmap):
         # part of the classification scheme tree.
         logger.debug('Ignoring record having $9 ess=si2: %s', class_no)
         return 'records having $9 ess=si2'
+    elif 'ess=i2' in ess:
+        # Standard subdivision info? These records miss 153 $j as well and are not
+        # part of the classification scheme tree.
+        logger.debug('Ignoring record having $9 ess=i2: %s', class_no)
+        return 'records having $9 ess=i2'
 
     # $j - Caption (NR)
     try:
@@ -146,14 +151,18 @@ def process_record(rec, parent_table, nsmap):
         # return 'missing 153 $j'
 
     # $e - Classification number hierarchy--single number or beginning number of span (R)
-    if out['class_no'] in parent_table:
-        p = parent_table[out['class_no']]
+    p = out['class_no']
+    try:
+        # print 'parent of', p, 'is', parent_table[p]
+        p = parent_table[p]
         while p.find('-') != -1:
-            # print 'parent of ', out['parent'], ' is ', parent_table[out['parent']]
+            # print 'parent of', p, 'is', parent_table[p]
             p = parent_table[p]
         out['parents'].append(p)
-    else:
-        logger.error('Records missing parent: %s', out['class_no'])
+    except KeyError:
+        logger.error('Failed to find parent for: %s', p)
+        sys.exit(1)
+        return 'records where parents could not be found'
 
     # Generate URI
     try:
@@ -299,35 +308,31 @@ def process_record(rec, parent_table, nsmap):
     return 'valid records'
 
 
+def normalize_number(node, b, e, nsmap):
+
+    class_no1 = node.xpath('mx:subfield[@code="%s"]/text()' % (b), namespaces=nsmap)
+    class_no1 = ':'.join(class_no1)
+
+    class_no2 = node.xpath('mx:subfield[@code="%s"]/text()' % (e), namespaces=nsmap)
+    if len(class_no2) == 0:
+        return class_no1
+
+    return '%s-%s' % (class_no1, class_no2[0])
+
+
 def get_parent(node, nsmap):
 
     node = node.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
+    if len(node) == 0:
+        return
+
+    class_no = normalize_number(node[0], 'a', 'c', nsmap)
+    parent = normalize_number(node[0], 'e', 'f', nsmap)
 
     if len(node) != 1:
-        return
+        logger.warning('Recod has multiple 153 fields: %s', class_no)
 
-    node = node[0]
-
-    class_no1 = node.xpath('mx:subfield[@code="a"]/text()', namespaces=nsmap)
-    class_no1 = ':'.join(class_no1)
-
-    class_no2 = node.xpath('mx:subfield[@code="c"]/text()[1]', namespaces=nsmap)
-    if len(class_no2) == 0:
-        class_no = class_no1
-    else:
-        class_no = '%s-%s' % (class_no1, class_no2[0])
-
-    par1 = node.xpath('mx:subfield[@code="e"]/text()[1]', namespaces=nsmap)
-    if len(par1) == 0:
-        return
-    par1 = par1[0]
-
-    par2 = node.xpath('mx:subfield[@code="f"]/text()[1]', namespaces=nsmap)
-    if len(par2) == 0:
-        return [class_no, par1]
-
-    par2 = par2[0]
-    return [class_no, '%s-%s' % (par1, par2)]
+    return [class_no, parent]
 
     # node = doc.xpath('//mx:datafield[@tag="153"][count(./mx:subfield[@code="a"]) = 1 and ./mx:subfield[@code="a"] = "%s" and ./mx:subfield[@code="c"] = "%s"]' % (par1, par2),
     #                  namespaces={'mx': 'http://www.loc.gov/MARC21/slim'})
