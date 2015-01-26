@@ -27,7 +27,7 @@ from [from PyPI](https://pypi.python.org/pypi/lxml/3.4.0).
 ### Usage:
 
 ```bash
-$ mc2skos infile.xml outfile.rdf
+$ mc2skos infile.xml outfile.rdf [--verbose]
 ```
 
 ### Mapping schema
