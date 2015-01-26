@@ -17,6 +17,18 @@ import argparse
 from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
 from rdflib import URIRef, RDFS, Literal, Graph
 
+import logging
+import logging.handlers
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(message)s')
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+
 g = Graph()
 WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 dct = Namespace('http://purl.org/dc/terms/')
@@ -69,73 +81,85 @@ def get_ess(node, nsmap):
 
 def process_record(rec, parent_table, nsmap):
     # Parse a single MARC21 classification record
+    class_no = ''
 
     leader = rec.xpath('mx:leader', namespaces=nsmap)[0].text
     if leader[6] != 'w':  # w: classification, z: authority
         return
 
-    out = {'notes': [], 'scope_notes': [], 'history_notes': [], 'index_terms': []}
+    out = {'notes': [], 'scope_notes': [], 'history_notes': [], 'index_terms': [], 'parents': []}
 
     # Parse 084: Classification Scheme and Edition
     r = rec.xpath('mx:datafield[@tag="084"]', namespaces=nsmap)
     if not r:
-        return 'missing 084 field'
+        return 'records missing 084 field'
+
     f084 = r[0]
     scheme = [x for x in f084.xpath('mx:subfield[@code="a"]/text()', namespaces=nsmap)]
     edt = [x for x in f084.xpath('mx:subfield[@code="c"]/text()', namespaces=nsmap)]
     if len(scheme) != 1 or len(edt) != 1:
-        # print 'Warning: Ignore records with multiple classification numbers', class_no
-        return 'classification scheme or edition missing'
+        logger.debug('Ignoring record missing scheme or edition')
+        return 'records missing classification scheme or edition'
     out['scheme'] = scheme[0]
     out['edition'] = edt[0]
 
     # Parse 153: Classification number
     r = rec.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
     if not r:
-        return 'missing 153 field'
+        return 'records missing 153 field'
     f153 = r[0]
 
     # $a - Classification number--single number or beginning number of span (R)
     class_no = [x for x in f153.xpath('mx:subfield[@code="a"]/text()', namespaces=nsmap)]
-    if len(class_no) != 1:
-        # print 'Warning: Ignore records with multiple classification numbers', class_no
-        return 'numbers with colon'
-    out['class_no'] = class_no[0]
 
     # $c - Classification number--ending number of span (R)
     endnumber = [x for x in f153.xpath('mx:subfield[@code="c"]/text()[1]', namespaces=nsmap)]
     if len(endnumber) != 0:
         # This record representes a span. We skip such records
-        # print 'Skipping span: ', class_no, endnumber
-        return 'classification number span'
+        logger.debug('Ignoring number span record: %s-%s', class_no[0], endnumber[0])
+        return 'number span records'
 
-    # $e - Parent
-    parent = [x for x in f153.xpath('mx:subfield[@code="e"]/text()[1]', namespaces=nsmap)]
-    if len(parent) == 0:
-        return 'no parent'
+    if len(class_no) > 2:
+        logger.debug('Ignoring record with > 2 parts: %s', class_no)
+        return 'records with more than one subdivision'
+    class_no = ':'.join(class_no)
+    out['class_no'] = class_no
+
+    ess = [x for x in f153.xpath('mx:subfield[@code="9"]/text()', namespaces=nsmap)]
+    if 'ess=si1' in ess:
+        # Standard subdivision info? These records miss 153 $e as well and are not
+        # part of the classification scheme tree.
+        logger.debug('Ignoring record having $9 ess=si1: %s', class_no)
+        return 'records having $9 ess=si1'
+    elif 'ess=si2' in ess:
+        # Standard subdivision info? These records miss 153 $j as well and are not
+        # part of the classification scheme tree.
+        logger.debug('Ignoring record having $9 ess=si2: %s', class_no)
+        return 'records having $9 ess=si2'
 
     # $j - Caption (NR)
     try:
         out['caption'] = f153.xpath('mx:subfield[@code="j"]/text()[1]', namespaces=nsmap)[0]
     except IndexError:
-        pass  # Build number without caption
+        pass  # Build number without caption, that's ok
         # print etree.tounicode(f153, pretty_print=True)
         # return 'missing 153 $j'
 
     # $e - Classification number hierarchy--single number or beginning number of span (R)
     if out['class_no'] in parent_table:
-        out['parent'] = parent_table[out['class_no']]
-        while out['parent'].find('-') != -1:
+        p = parent_table[out['class_no']]
+        while p.find('-') != -1:
             # print 'parent of ', out['parent'], ' is ', parent_table[out['parent']]
-            out['parent'] = parent_table[out['parent']]
+            p = parent_table[p]
+        out['parents'].append(p)
     else:
-        print 'ERROR: Has no parent', out['class_no']
+        logger.error('Records missing parent: %s', out['class_no'])
 
     # Generate URI
     try:
         scheme = classification_schemes[out['scheme']][out['edition']]
     except:
-        print "ERROR: Unknown class scheme or edition!"
+        logger.error('Unknown class scheme or edition!')
         raise
 
     # Appended / is necessary for dewey.info URLs to be dereferable
@@ -143,12 +167,8 @@ def process_record(rec, parent_table, nsmap):
 
     existing = [x for x in g.triples((uri, None, None))]
     if len(existing) != 0:
-        print "ERROR: Duplicate records for %s" % (out['class_no'])
-        print out
-        for t in existing:
-            print t
-
-        return
+        logger.warning('Duplicate records for %s', out['class_no'])
+        return 'duplicate records'
         # sys.exit(1)
 
     # Strictly, we do not need to explicitly state here that <A> and <B> are instances
@@ -165,8 +185,7 @@ def process_record(rec, parent_table, nsmap):
         g.add((uri, SKOS.notation, Literal(out['class_no'])))
 
     # Add hierarchy as skos:broader
-    if 'parent' in out:
-        parent = out['parent']
+    for parent in out['parents']:
         if parent != out['class_no']:
             g.add((uri, SKOS.broader, scheme['ns'][scheme['el'].format(class_no=parent)]))
 
@@ -269,11 +288,11 @@ def process_record(rec, parent_table, nsmap):
         term = ' : '.join(term)
 
         if term == '':
-            return 'empty_750'
+            return 'records having empty index terms'
         if 'caption' not in out or term != out['caption']:
             g.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
 
-    return 'valid'
+    return 'valid records'
 
 
 def get_parent(node, nsmap):
@@ -285,21 +304,14 @@ def get_parent(node, nsmap):
 
     node = node[0]
 
-    class_no1 = node.xpath('mx:subfield[@code="a"]/text()[1]', namespaces=nsmap)
-    if len(class_no1) == 0:
-        return
-    class_no1 = class_no1[0]
+    class_no1 = node.xpath('mx:subfield[@code="a"]/text()', namespaces=nsmap)
+    class_no1 = ':'.join(class_no1)
 
     class_no2 = node.xpath('mx:subfield[@code="c"]/text()[1]', namespaces=nsmap)
     if len(class_no2) == 0:
         class_no = class_no1
     else:
         class_no = '%s-%s' % (class_no1, class_no2[0])
-
-    ch = node.xpath('mx:subfield[@code="a"]', namespaces=nsmap)
-    if len(ch) != 1:
-        # print etree.tounicode(node)
-        return  # ignore add table notation
 
     par1 = node.xpath('mx:subfield[@code="e"]/text()[1]', namespaces=nsmap)
     if len(par1) == 0:
@@ -322,11 +334,17 @@ def main():
     parser = argparse.ArgumentParser(description='Convert MARC21 Classification to SKOS/RDF')
     parser.add_argument('infile', nargs=1, help='Input XML file')
     parser.add_argument('outfile', nargs=1, help='Output RDF file')
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='More verbose output')
     parser.add_argument('-o', '--outformat', dest='outformat', nargs='?',
                         help='Output serialization format. Any format supported by rdflib. Default: turtle',
                         default='turtle')
 
     args = parser.parse_args()
+
+    if args.verbose:
+        console_handler.setLevel(logging.DEBUG)
+    else:
+        console_handler.setLevel(logging.INFO)
 
     in_file = args.infile[0]
     out_file = args.outfile[0]
@@ -334,21 +352,21 @@ def main():
 
     nsmap = {'mx': 'http://www.loc.gov/MARC21/slim'}
 
-    print "Parsing: %s" % (in_file)
+    logger.info('Parsing: %s', in_file)
     try:
         doc = etree.parse(in_file)
     except etree.XMLSyntaxError:
         type, message, traceback = sys.exc_info()
         print "XML parsing failed"
 
-    print "Building parent lookup table"
+    logger.debug('Building parent lookup table')
     parent_table = {}
     for field in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
         res = get_parent(field, nsmap)
         if res:
             parent_table[res[0]] = res[1]
 
-    print "Traversing records"
+    logger.debug('Traversing records')
     for record in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
         res = process_record(record, parent_table, nsmap)
         if res is not None:
@@ -356,9 +374,9 @@ def main():
                 counts[res] = 0
             counts[res] += 1
 
-    print "Found:"
+    logger.info('Found:')
     for k, v in counts.items():
-        print ' - %s: %d' % (k, v)
+        logger.info(' - %d %s', v, k)
 
     g.serialize(out_file, format=out_format)
-    print "Wrote RDF: %s" % (out_file)
+    logger.info('Wrote RDF: %s', out_file)
