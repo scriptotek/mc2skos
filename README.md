@@ -30,6 +30,8 @@ from [from PyPI](https://pypi.python.org/pypi/lxml/3.4.0).
 $ mc2skos infile.xml outfile.rdf
 ```
 
+### Mapping schema
+
 Only a small part of the MARC21 Classification
 data model is converted, and the conversion follows a rather
 pragmatic approach, exemplified by the mapping of
@@ -46,19 +48,37 @@ to skos:altLabel.
     353    → skos:editorialNote
     683    → skos:editorialNote
 
-Note on classification number spans:
+#### Classification number spans
 
-In general, we ignore records coding classification number spans.
-However, a record may have a number span as its parent (given
-by 153 $e and 153 $f combined). In such cases, we traverse the tree
-in reverse until we reach a record which is not a number span.
+Records that hold classification number spans (given by 153 $e and 153 $f) are not converted.
+If a record has a number span as its parent, we traverse the tree upwards until we
+reach a record which is not a number span, marking that record as the parent.
 
-Additionally, for WebDewey, the following conversion is done:
+#### Additional handling for data from WebDewey
 
-	680 $9 ess=ndf Definition → `skos:definition`
-	680 $9 ess=nvn Variant name: `$t` → `wd:variantName`
-	680 $9 ess=nch Class-here: `$t` → `wd:classHere`
-	680 $9 ess=nin Including: `$t` → `wd:including`
-	680 $9 ess=nph Former heading: `$t` → `wd:formerHeading`
-	685 $9 ess=ndn Discontinued → `owl:deprecated true`
+The script makes use of the non-standard `ess` codes supplied in WebDewey data to differentiate between different types of notes:
 
+| MARC21XML                                                  | RDF                                                                                                                            |
+|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `680` having `$9 ess=ndf` Definition note                  | `skos:definition`                                                                                                              |
+| `680` having `$9 ess=nvn` Variant name note                | `wd:variantName` for each subfield `$t`                                                                                        |
+| `680` having `$9 ess=nch` Class here note                  | `wd:classHere` for each subfield `$t`                                                                                          |
+| `680` having `$9 ess=nin` Including note                   | `wd:including` for each subfield `$t`                                                                                          |
+| `680` having `$9 ess=nph` Former heading                   | `wd:formerHeading` for each subfield `$t`                                                                                      |
+| `685` having `$9 ess=ndn` Deprecation note                 | `owl:deprecated true`                                                                                                          |
+
+**Notes that are currently not treated in any special way:**
+
+* `253` having `$9 ess=nsx` Do-not-use.
+* `253` having `$9 ess=nce` Class-elsewhere
+* `253` having `$9 ess=ncw` Class-elsewhere-manual
+* `253` having `$9 ess=nse` See.
+* `253` having `$9 ess=nsw` See-manual.
+* `353` having `$9 ess=nsa` See-also
+* `683` having `$9 ess=nbu` Preference note
+* `683` having `$9 ess=nop` Options note
+* `683` having `$9 ess=non` Options note
+* `684` having `$9 ess=nsm` Manual note
+* `685` having `$9 ess=ndp` Discontinued partial
+* `685` having `$9 ess=nrp` Relocation
+* `689` having `$9 ess=nru` Sist brukt i...
