@@ -54,9 +54,9 @@ Records that hold classification number spans (given by 153 $e and 153 $f) are n
 If a record has a number span as its parent, we traverse the tree upwards until we
 reach a record which is not a number span, marking that record as the parent.
 
-#### Additional handling for data from WebDewey
+#### Additional processing for data from WebDewey
 
-The script makes use of the non-standard `ess` codes supplied in WebDewey data to differentiate between different types of notes:
+The script is supposed to work with any MARC21 classification data, but also supports the non-standard `ess` codes supplied in WebDewey data to differentiate between different types of notes.
 
 | MARC21XML                                                  | RDF                                                                                                                            |
 |------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
