@@ -329,6 +329,9 @@ def get_parent(node, nsmap):
     class_no = normalize_number(node[0], 'a', 'c', nsmap)
     parent = normalize_number(node[0], 'e', 'f', nsmap)
 
+    if class_no == '' or parent == '':
+        return
+
     if len(node) != 1:
         logger.warning('Recod has multiple 153 fields: %s', class_no)
 
