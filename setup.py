@@ -16,7 +16,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.md')).read()
 
 setup(name='mc2skos',
-      version='0.1.0',
+      version='0.1.1',
       description='Convert Marc21 Classification records in MARC/XML to SKOS/RDF ',
       long_description=README,
       classifiers=[
@@ -31,5 +31,5 @@ setup(name='mc2skos',
       license='MIT',
       install_requires=requirements,
       packages=['mc2skos'],
-      entry_points = {'console_scripts': ['mc2skos=mc2skos.mc2skos:main']}
+      entry_points={'console_scripts': ['mc2skos=mc2skos.mc2skos:main']}
       )
