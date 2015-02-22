@@ -247,16 +247,16 @@ def process_record(rec, parent_table, nsmap):
             g.add((uri, SKOS.definition, Literal(note, lang='nb')))
         elif 'nvn' in ess:
             for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                g.add((uri, WD.variantName, Literal(t, lang='nb')))
+                g.add((uri, WD.variantName, Literal(t.capitalize(), lang='nb')))
         elif 'nch' in ess:
             for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                g.add((uri, WD.classHere, Literal(t, lang='nb')))
+                g.add((uri, WD.classHere, Literal(t.capitalize(), lang='nb')))
         elif 'nin' in ess:
             for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                g.add((uri, WD.including, Literal(t, lang='nb')))
+                g.add((uri, WD.including, Literal(t.capitalize(), lang='nb')))
         elif 'nph' in ess:
             for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                g.add((uri, WD.formerName, Literal(t, lang='nb')))
+                g.add((uri, WD.formerName, Literal(t.capitalize(), lang='nb')))
 
     # 683 : Application Instruction Note
     # Example:
