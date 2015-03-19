@@ -15,7 +15,7 @@ import re
 from lxml import etree
 import argparse
 from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
-from rdflib import URIRef, RDFS, Literal, Graph
+from rdflib import URIRef, RDFS, Literal, Graph, BNode
 
 import logging
 import logging.handlers
@@ -302,8 +302,43 @@ def process_record(rec, parent_table, nsmap):
             g.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
 
     # 765 : Synthesized Number Components
-    if len(rec.xpath('mx:datafield[@tag="253"]', namespaces=nsmap)) != 0:
+    components = []
+    for syn in reversed(list(rec.xpath('mx:datafield[@tag="765"]', namespaces=nsmap))):
         g.add((uri, WD.synthesized, Literal(True)))
+        uval = syn.xpath('mx:subfield[@code="u"]/text()', namespaces=nsmap)
+        if len(uval) == 0:
+            logger.debug("Built number without components specified: %s", class_no)
+        table = ''
+        rootno = ''
+
+        wval = syn.xpath('mx:subfield[@code="w"]/text()', namespaces=nsmap)
+        if len(wval) != 0:
+            continue  # appears to be duplicates -- check!
+
+        for sf in syn.xpath('mx:subfield', namespaces=nsmap):
+            if sf.get('code') == 'b':    # Base number
+                if len(components) == 0:
+                    components.append(sf.text)
+            elif sf.get('code') == 'r':    # Root number
+                rootno = sf.text
+            elif sf.get('code') == 'z':    # Table identification
+                table = 'T{}--'.format(sf.text)
+            # elif sf.get('code') == 't':    # Digits added from internal subarrangement or add table
+            #     components.append(sf.text)
+            elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
+                if table != '':
+                    components.append(table + sf.text)
+                elif rootno != '':
+                    sep = '.' if len(rootno) == 3 else ''
+                    components.append(rootno + sep + sf.text)
+            # elif sf.get('code') not in ['9', 'u']:
+            #     print sf.get('code'), sf.text, class_no
+
+    for idx, value in enumerate(components):
+        compnode = BNode()
+        g.add((uri, WD.component, compnode))
+        g.add((compnode, WD['index'], Literal(idx + 1)))
+        g.add((compnode, WD.notation, Literal(value)))
 
     return 'valid records'
 
