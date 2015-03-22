@@ -119,6 +119,10 @@ def process_record(rec, parent_table, nsmap):
     parent = cp[1]
     out['class_no'] = class_no
 
+    # Not sure yet if we should include these, and how to represent them:
+    if class_no.find(':') != -1:
+        return 'records with add table notation'
+
     ess = [x for x in f153.xpath('mx:subfield[@code="9"]/text()', namespaces=nsmap)]
     if 'ess=si1' in ess:
         # Standard subdivision info? These records miss 153 $e as well and are not
@@ -339,25 +343,33 @@ def get_parent(node, nsmap):
     if len(node) == 0:
         return
 
-    parts = ['', '', '', '']
-    codes = ['a', 'c', 'e', 'f']
     table = ''
+    addtable = ''
+    current = ''
+    parent = ''
 
     for sf in node[0].xpath('mx:subfield', namespaces=nsmap):
+        code = sf.get('code')
 
-        if sf.get('code') == 'z':
+        if code == 'z':
             table = 'T{}--'.format(sf.text)
-
-        elif sf.get('code') in codes:
-            i = codes.index(sf.get('code'))
-            if parts[i] == '':
-                parts[i] = table + sf.text
-                table = ''
+        elif code == 'y':
+            if sf.text == '1':
+                addtable = ':'
             else:
-                parts[i] = '{}:{}'.format(parts[i], sf.text)
-
-    current = parts[0] if parts[1] == '' else parts[0] + '-' + parts[1]
-    parent = parts[2] if parts[3] == '' else parts[2] + '-' + parts[3]
+                addtable = ':{};'.format(sf.text)
+        elif code in ['a', 'c', 'e', 'f']:
+            val = table + addtable + sf.text
+            if code == 'a':
+                current += val
+            elif code == 'c':
+                current += '-' + val
+            elif code == 'e':
+                parent += val
+            elif code == 'f':
+                parent += '-' + val
+            table = ''
+            addtable = ''
 
     if current == '' or parent == '':
         return
