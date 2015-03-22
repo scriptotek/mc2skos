@@ -40,7 +40,10 @@ nm.bind('owl', OWL)
 
 classification_schemes = {
     'ddc': {
-        '23no': {'ns': Namespace('http://dewey.info/class/'), 'el': '{class_no}/e23/'}
+        '23no': {
+            'ns': Namespace('http://ddc23no/'),
+            'same_as': 'http://dewey.info/class/{class_no}/e23/'
+        }
     }
 }
 
@@ -168,11 +171,11 @@ def process_record(rec, parent_table, nsmap):
     try:
         scheme = classification_schemes[out['scheme']][out['edition']]
     except:
-        logger.error('Unknown class scheme or edition!')
+        logger.error('Unknown class scheme or edition (%s %s) for %s', out['scheme'], out['edition'], class_no)
         raise
 
     # Appended / is necessary for dewey.info URLs to be dereferable
-    uri = scheme['ns'][scheme['el'].format(class_no=out['class_no'])]
+    uri = scheme['ns'][out['class_no']]
 
     existing = [x for x in g.triples((uri, None, None))]
     if len(existing) != 0:
@@ -184,6 +187,7 @@ def process_record(rec, parent_table, nsmap):
     # of skos:Concept, because such statements are entailed by the definition
     # of skos:semanticRelation.
     g.add((uri, RDF.type, SKOS.Concept))
+    g.add((uri, OWL.sameAs, URIRef(scheme['same_as'].format(class_no=class_no))))
 
     # Add caption as skos:prefLabel
     if 'caption' in out:
@@ -196,7 +200,7 @@ def process_record(rec, parent_table, nsmap):
     # Add hierarchy as skos:broader
     for parent in out['parents']:
         if parent != out['class_no']:
-            g.add((uri, SKOS.broader, scheme['ns'][scheme['el'].format(class_no=parent)]))
+            g.add((uri, SKOS.broader, scheme['ns'][parent]))
 
     # 253 : Complex See Reference (R)
     # Example:
