@@ -57,11 +57,54 @@ have a caption (and thus a `skos:prefLabel`).
 | `765` Synthesized Number Components              | `wd:synthesized true`                |
 
 
-#### Classification number spans
+#### Synthesized number components
 
-Records that hold classification number spans (given by 153 $e and 153 $f) are not converted.
-If a record has a number span as its parent, we traverse the tree upwards until we
-reach a record which is not a number span, marking that record as the parent.
+In cases where the components of synthesized numbers are explicitly
+noted using 765 fields, these are related to the class itself using
+the `wd:component` property. To preserve the order of the components,
+each component becomes a blank node with increasing index (`wd.index`)
+starting on 1. Blank nodes are used since we really don't want to generate
+URIs for each component. Example:
+
+```
+<http://ddc23no/T1--0112> a skos:Concept ;
+    wd:component [ wd:class <http://ddc23no/003.2> ;
+            wd:index 2 ],
+        [ wd:class <http://ddc23no/T1--011> ;
+            wd:index 1 ] ;
+    wd:synthesized true ;
+    owl:sameAs <http://dewey.info/class/T1--0112/e23/> ;
+    skos:broader <http://ddc23no/T1--011> ;
+    skos:notation "T1--0112" .
+```
+
+To retrieve the ordered components:
+
+```sparql
+PREFIX wd: <http://data.ub.uio.no/webdewey-terms#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?class_notation ?idx ?component_notation ?component_heading
+WHERE { GRAPH <http://localhost/ddc23no> {
+    <http://ddc23no/T1--0112> skos:notation ?class_notation ;
+                              wd:component ?bnode .
+    ?bnode wd:index ?idx ;
+           wd:class ?component_uri .
+    OPTIONAL {
+        ?component_uri skos:notation ?component_notation ;
+                       skos:prefLabel ?component_heading .
+    }
+    OPTIONAL {
+        ?component_uri  skos:prefLabel ?component_heading .
+    }
+}}
+ORDER BY ?idx
+```
+
+| class_notation | idx | component_notation | component_heading           |
+|----------------|-----|--------------------|-----------------------------|
+| "T1--0112"     | 1   | "T1--011"          | "Systemer"@nb               |
+| "T1--0112"     | 2   | "003.2"            | "Prognoser og scenarier"@nb |
 
 #### Additional processing for data from WebDewey
 

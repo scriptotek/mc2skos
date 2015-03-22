@@ -309,7 +309,8 @@ def process_record(rec, parent_table, nsmap):
         for sf in syn.xpath('mx:subfield', namespaces=nsmap):
             if sf.get('code') == 'b':    # Base number
                 if len(components) == 0:
-                    components.append(sf.text)
+                    components.append(table + sf.text)
+                    table = ''
             elif sf.get('code') == 'r':    # Root number
                 rootno = sf.text
             elif sf.get('code') == 'z':    # Table identification
@@ -317,19 +318,17 @@ def process_record(rec, parent_table, nsmap):
             # elif sf.get('code') == 't':    # Digits added from internal subarrangement or add table
             #     components.append(sf.text)
             elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
-                if table != '':
-                    components.append(table + sf.text)
-                elif rootno != '':
-                    sep = '.' if len(rootno) == 3 else ''
-                    components.append(rootno + sep + sf.text)
+                sep = '.' if len(rootno) == 3 else ''
+                components.append(table + rootno + sep + sf.text)
+                table = ''
             # elif sf.get('code') not in ['9', 'u']:
             #     print sf.get('code'), sf.text, class_no
 
     for idx, value in enumerate(components):
-        compnode = BNode()
-        g.add((uri, WD.component, compnode))
-        g.add((compnode, WD['index'], Literal(idx + 1)))
-        g.add((compnode, WD.notation, Literal(value)))
+        comp_node = BNode()
+        g.add((uri, WD.component, comp_node))
+        g.add((comp_node, WD['index'], Literal(idx + 1)))
+        g.add((comp_node, WD['class'], scheme['ns'][value]))
 
     return 'valid records'
 
