@@ -41,8 +41,9 @@ nm.bind('owl', OWL)
 classification_schemes = {
     'ddc': {
         '23no': {
-            'ns': Namespace('http://ddc23no/'),
-            'same_as': 'http://dewey.info/class/{class_no}/e23/'
+            'ns': Namespace('http://data.ub.uio.no/ddc/'),
+            'same_as': 'http://dewey.info/class/{class_no}/e23/',
+            'scheme': 'http://data.ub.uio.no/ddc'  # /23no
         }
     }
 }
@@ -179,6 +180,7 @@ def process_record(rec, parent_table, nsmap):
     # of skos:semanticRelation.
     g.add((uri, RDF.type, SKOS.Concept))
     g.add((uri, OWL.sameAs, URIRef(scheme['same_as'].format(class_no=class_no))))
+    g.add((uri, SKOS.inScheme, URIRef(scheme['scheme'])))
 
     # Add caption as skos:prefLabel
     if 'caption' in out:
