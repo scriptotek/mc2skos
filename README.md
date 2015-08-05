@@ -38,10 +38,6 @@ pragmatic approach, exemplified by the mapping of
 [750](http://www.loc.gov/marc/classification/cd750.html)
 to skos:altLabel.
 
-Synthesized numbers are indicated by `wd:synthesized true`, but no attempt is
-made to express the actual components. Note that a synthesized number may not
-have a caption (and thus a `skos:prefLabel`).
-
 
 | MARC21XML                                        | RDF                                  |
 |--------------------------------------------------|--------------------------------------|
@@ -54,23 +50,25 @@ have a caption (and thus a `skos:prefLabel`).
 | `683` Application Instruction Note               | `skos:editorialNote`                 |
 | `685` History Note                               | `skos:historyNote`                   |
 | `750` Index Term-Topical                         | `skos:altLabel`                      |
-| `765` Synthesized Number Components              | `wd:synthesized true`                |
+| `765` Synthesized Number Components              | `marc21:components` (see below)      |
 
 
 #### Synthesized number components
 
 Components of synthesized numbers explicitly described in 765 fields are
-expressed using the `wd:component` property, and to preserve the order of the
+expressed using the `marc21:components` property, and to preserve the order of the
 components, we use RDF lists. Example:
 
 ```turtle
+@prefix marc21: <http://data.ub.uio.no/marc21-terms#> .
+
 <http://data.ub.uio.no/ddc/001.30973> a skos:Concept ;
-    wd:component (
+    marc21:components (
         <http://data.ub.uio.no/ddc/001.3>
         <http://data.ub.uio.no/ddc/T1--09>
         <http://data.ub.uio.no/ddc/T2--73>
     ) ;
-    wd:synthesized true ;
+    marc21:synthesized true ;
     skos:notation "001.30973" .
 
 ```
@@ -79,14 +77,14 @@ Retrieving list members *in order* is [surprisingly hard](http://answers.semanti
 Retrieving ordered pairs is the best solution I've come up with so far:
 
 ```sparql
-PREFIX wd: <http://data.ub.uio.no/webdewey-terms#>
+PREFIX marc21: <http://data.ub.uio.no/marc21-terms#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT ?c1_notation ?c1_label ?c2_notation ?c2_label
 WHERE { GRAPH <http://localhost/ddc23no> {
 
-    <http://data.ub.uio.no/ddc/001.30973> wd:component ?l .
+    <http://data.ub.uio.no/ddc/001.30973> marc21:components ?l .
         ?l rdf:rest* ?sl .
         ?sl rdf:first ?e1 .
         ?sl rdf:rest ?sln .
