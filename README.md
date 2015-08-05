@@ -60,19 +60,23 @@ have a caption (and thus a `skos:prefLabel`).
 #### Synthesized number components
 
 Components of synthesized numbers explicitly described in 765 fields are
-expressed using the `wd:component` property. To preserve the order of the
+expressed using the `wd:component` property, and to preserve the order of the
 components, we use RDF lists. Example:
 
-```
+```turtle
 <http://data.ub.uio.no/ddc/001.30973> a skos:Concept ;
-    wd:component ( <http://data.ub.uio.no/ddc/001.3> <http://data.ub.uio.no/ddc/T1--09> <http://data.ub.uio.no/ddc/T2--73> ) ;
+    wd:component (
+        <http://data.ub.uio.no/ddc/001.3>
+        <http://data.ub.uio.no/ddc/T1--09>
+        <http://data.ub.uio.no/ddc/T2--73>
+    ) ;
     wd:synthesized true ;
     skos:notation "001.30973" .
 
 ```
 
 Retrieving list members *in order* is [surprisingly hard](http://answers.semanticweb.com/questions/18056/querying-rdf-lists-collections-with-sparql) with SPARQL.
-This is what I've come up with so far:
+Retrieving ordered pairs is the best solution I've come up with so far:
 
 ```sparql
 PREFIX wd: <http://data.ub.uio.no/webdewey-terms#>
