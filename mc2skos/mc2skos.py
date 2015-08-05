@@ -17,6 +17,7 @@ from lxml import etree
 import argparse
 from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
 from rdflib import URIRef, RDFS, Literal, Graph, BNode
+from otsrdflib import OrderedTurtleSerializer
 
 import logging
 import logging.handlers
@@ -446,5 +447,10 @@ def main():
     for k, v in counts.items():
         logger.info(' - %d %s', v, k)
 
-    g.serialize(out_file, format=out_format)
+    s = OrderedTurtleSerializer(g)
+    s.sorters = {
+      'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0]),
+      'http://dewey.info/class/T([0-9])\-\-([0-9]+)': lambda x: 1000. + int(x[0]) + float('.' + x[1])
+    }
+    s.serialize(open(out_file, 'wb'))
     logger.info('Wrote RDF: %s', out_file)
