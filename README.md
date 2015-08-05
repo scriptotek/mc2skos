@@ -59,52 +59,52 @@ have a caption (and thus a `skos:prefLabel`).
 
 #### Synthesized number components
 
-In cases where the components of synthesized numbers are explicitly
-noted using 765 fields, these are related to the class itself using
-the `wd:component` property. To preserve the order of the components,
-each component becomes a blank node with increasing index (`wd.index`)
-starting on 1. Blank nodes are used since we really don't want to generate
-URIs for each component. Example:
+Components of synthesized numbers explicitly described in 765 fields are
+expressed using the `wd:component` property. To preserve the order of the
+components, we use RDF lists. Example:
 
 ```
-<http://ddc23no/T1--0112> a skos:Concept ;
-    wd:component [ wd:class <http://ddc23no/003.2> ;
-            wd:index 2 ],
-        [ wd:class <http://ddc23no/T1--011> ;
-            wd:index 1 ] ;
+<http://data.ub.uio.no/ddc/001.30973> a skos:Concept ;
+    wd:component ( <http://data.ub.uio.no/ddc/001.3> <http://data.ub.uio.no/ddc/T1--09> <http://data.ub.uio.no/ddc/T2--73> ) ;
     wd:synthesized true ;
-    owl:sameAs <http://dewey.info/class/T1--0112/e23/> ;
-    skos:broader <http://ddc23no/T1--011> ;
-    skos:notation "T1--0112" .
+    skos:notation "001.30973" .
+
 ```
 
-To retrieve the ordered components:
+Retrieving list members *in order* is [surprisingly hard](http://answers.semanticweb.com/questions/18056/querying-rdf-lists-collections-with-sparql) with SPARQL.
+This is what I've come up with so far:
 
 ```sparql
 PREFIX wd: <http://data.ub.uio.no/webdewey-terms#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-SELECT ?class_notation ?idx ?component_notation ?component_heading
+SELECT ?c1_notation ?c1_label ?c2_notation ?c2_label
 WHERE { GRAPH <http://localhost/ddc23no> {
-    <http://ddc23no/T1--0112> skos:notation ?class_notation ;
-                              wd:component ?bnode .
-    ?bnode wd:index ?idx ;
-           wd:class ?component_uri .
-    OPTIONAL {
-        ?component_uri skos:notation ?component_notation ;
-                       skos:prefLabel ?component_heading .
-    }
-    OPTIONAL {
-        ?component_uri  skos:prefLabel ?component_heading .
-    }
+
+    <http://data.ub.uio.no/ddc/001.30973> wd:component ?l .
+        ?l rdf:rest* ?sl .
+        ?sl rdf:first ?e1 .
+        ?sl rdf:rest ?sln .
+        ?sln rdf:first ?e2 .
+
+        ?e1 skos:notation ?c1_notation .
+        ?e2 skos:notation ?c2_notation .
+
+        OPTIONAL {
+            ?e1 skos:prefLabel ?c1_label .
+        }
+        OPTIONAL {
+            ?e2 skos:prefLabel ?c2_label .
+        }
 }}
-ORDER BY ?idx
 ```
 
-| class_notation | idx | component_notation | component_heading           |
-|----------------|-----|--------------------|-----------------------------|
-| "T1--0112"     | 1   | "T1--011"          | "Systemer"@nb               |
-| "T1--0112"     | 2   | "003.2"            | "Prognoser og scenarier"@nb |
+| c1_notation | c1_label                                         | c2_notation | c2_label                                         |
+|-------------|--------------------------------------------------|-------------|--------------------------------------------------|
+| "001.3"     | "Humaniora"@nb                                   | "T1--09"    | "Historie, geografisk behandling, biografier"@nb |
+| "T1--09"    | "Historie, geografisk behandling, biografier"@nb | "T2--73"    | "USA"@nb                                         |
+
 
 #### Additional processing for data from WebDewey
 
