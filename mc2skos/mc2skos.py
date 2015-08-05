@@ -331,11 +331,19 @@ def process_record(rec, nsmap):
             # elif sf.get('code') not in ['9', 'u']:
             #     print sf.get('code'), sf.text, class_no
 
-    for idx, value in enumerate(components):
-        comp_node = BNode()
-        g.add((uri, WD.component, comp_node))
-        g.add((comp_node, WD['index'], Literal(idx + 1)))
-        g.add((comp_node, WD['class'], scheme['ns'][value]))
+    if len(components) != 0:
+        component = components.pop(0)
+        b1 = BNode()
+        g.add((uri, WD.component, b1))
+        g.add((b1, RDF.first, scheme['ns'][component]))
+
+        for component in components:
+            b2 = BNode()
+            g.add((b1, RDF.rest, b2))
+            g.add((b2, RDF.first, scheme['ns'][component]))
+            b1 = b2
+
+        g.add((b1, RDF.rest, RDF.nil))
 
     return 'valid records'
 
