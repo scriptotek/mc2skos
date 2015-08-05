@@ -12,6 +12,7 @@
 
 import sys
 import re
+import time
 from lxml import etree
 import argparse
 from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
@@ -83,7 +84,7 @@ def get_ess(node, nsmap):
     return [x.replace('ess=', '') for x in node.xpath('mx:subfield[@code="9"]/text()[1]', namespaces=nsmap)]
 
 
-def process_record(rec, parent_table, nsmap):
+def process_record(rec, nsmap):
     # Parse a single MARC21 classification record
     class_no = ''
 
@@ -150,11 +151,10 @@ def process_record(rec, parent_table, nsmap):
         # return 'missing 153 $j'
 
     # $e - Classification number hierarchy--single number or beginning number of span (R)
-    try:
-        p = parent_table[class_no]
-        out['parents'].append(p)
-    except KeyError:
-        pass
+    p = get_parent(rec, nsmap)
+    if p:
+        out['parents'].append(p[1])
+    else:
         logger.error('Failed to find parent for: %s', class_no)
         # sys.exit(1)
         # return 'records where parents could not be found'
@@ -385,6 +385,23 @@ def get_parent(node, nsmap):
     #                  namespaces={'mx': 'http://www.loc.gov/MARC21/slim'})
 
 
+def get_records(in_file):
+    logger.info('Parsing: %s', in_file)
+    n = 0
+    t0 = time.time()
+    # recs = []
+    for _, record in etree.iterparse(in_file, tag='{http://www.loc.gov/MARC21/slim}record'):
+        yield record
+        # recs.append(etree.tostring(record))
+        record.clear()
+        n += 1
+        if n % 500 == 0:
+            logger.info('Read %d records (%.f recs/sec)', n, (float(n) / (time.time() - t0)))
+        # if len(recs) == 100:
+        #     yield recs
+        #     recs = []
+
+
 def main():
 
     parser = argparse.ArgumentParser(description='Convert MARC21 Classification to SKOS/RDF')
@@ -408,27 +425,22 @@ def main():
 
     nsmap = {'mx': 'http://www.loc.gov/MARC21/slim'}
 
-    logger.info('Parsing: %s', in_file)
-    try:
-        doc = etree.parse(in_file)
-    except etree.XMLSyntaxError:
-        type, message, traceback = sys.exc_info()
-        print "XML parsing failed"
-
-    logger.debug('Building parent lookup table')
-    parent_table = {}
-    for field in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
-        res = get_parent(field, nsmap)
-        if res:
-            parent_table[res[0]] = res[1]
+    # logger.info('Parsing: %s', in_file)
+    # try:
+    #     doc = etree.parse(in_file)
+    # except etree.XMLSyntaxError:
+    #     type, message, traceback = sys.exc_info()
+    #     print "XML parsing failed"
 
     logger.debug('Traversing records')
-    for record in doc.xpath('/mx:collection/mx:record', namespaces=nsmap):
-        res = process_record(record, parent_table, nsmap)
-        if res is not None:
-            if res not in counts:
-                counts[res] = 0
-            counts[res] += 1
+    n = 0
+    t0 = time.time()
+    for record in get_records(in_file):
+        res = process_record(record, nsmap)
+        # if res is not None:
+        #     if res not in counts:
+        #         counts[res] = 0
+        #     counts[res] += 1
 
     logger.info('Found:')
     for k, v in counts.items():
