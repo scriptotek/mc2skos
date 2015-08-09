@@ -49,6 +49,7 @@ to skos:altLabel.
 | `680` Scope Note                                 | `skos:scopeNote`                     |
 | `683` Application Instruction Note               | `skos:editorialNote`                 |
 | `685` History Note                               | `skos:historyNote`                   |
+| `694` ??? Note                                   | `skos:editorialNote`                 |
 | `750` Index Term-Topical                         | `skos:altLabel`                      |
 | `765` Synthesized Number Components              | `marc21:components` (see below)      |
 
@@ -120,6 +121,7 @@ The script is supposed to work with any MARC21 classification data, but also sup
 | `680` having `$9 ess=nin` Including note          | `wd:including` for each subfield `$t`         |
 | `680` having `$9 ess=nph` Former heading          | `wd:formerHeading` for each subfield `$t`     |
 | `685` having `$9 ess=ndn` Deprecation note        | `owl:deprecated true`                         |
+| `694` having `$9 ess=nml` ???                     | `SKOS.editorialNote`                          |
 
 **Notes that are currently not treated in any special way:**
 

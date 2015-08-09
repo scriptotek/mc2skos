@@ -289,6 +289,20 @@ def process_record(rec, nsmap):
         if 'ndn' in ess:
             g.add((uri, OWL.deprecated, Literal(True)))
 
+    # 694 : ??? Note : Wrong code for 684 'Auxiliary Instruction Note' ??
+    # Example:
+    #   <mx:datafield tag="694" ind2=" " ind1=" ">
+    #     <mx:subfield code="i">De fleste verker om seletøy og tilbehør klassifiseres med hester i</mx:subfield>
+    #     <mx:subfield code="a">636.10837</mx:subfield>
+    #     <mx:subfield code="9">ess=nml</mx:subfield>
+    #   </mx:datafield>
+    #
+    for entry in rec.xpath('mx:datafield[@tag="694"]', namespaces=nsmap):
+        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
+        ess = get_ess(entry, nsmap)
+        if 'nml' in ess:
+            g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+
     # 750 : Index term
     # String order: $a : $x : $v : $y : $z
     for entry in rec.xpath('mx:datafield[@tag="750"]', namespaces=nsmap):
