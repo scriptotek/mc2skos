@@ -36,6 +36,7 @@ Only a small part of the MARC21 Classification
 data model is converted, and the conversion follows a rather
 pragmatic approach, exemplified by the mapping of
 [750](http://www.loc.gov/marc/classification/cd750.html)
+and [751](http://www.loc.gov/marc/classification/cd751.html)
 to skos:altLabel.
 
 
@@ -51,6 +52,7 @@ to skos:altLabel.
 | `685` History Note                               | `skos:historyNote`                   |
 | `694` ??? Note                                   | `skos:editorialNote`                 |
 | `750` Index Term-Topical                         | `skos:altLabel`                      |
+| `751` Index Term-Geographic Name                 | `skos:altLabel`                      |
 | `765` Synthesized Number Components              | `marc21:components` (see below)      |
 
 
