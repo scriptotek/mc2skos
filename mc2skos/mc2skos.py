@@ -303,9 +303,15 @@ def process_record(rec, nsmap):
         if 'nml' in ess:
             g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
-    # 750 : Index Term - Topical / 751 : Index Term - Geographic Name
+    # 700 - Index Term - Personal Name (R)
+    # 710 - Index Term - Corporate Name (R)
+    # 711 - Index Term - Meeting Name (R)
+    # 730 - Index Term - Uniform Title (R)
+    # 748 - Index Term - Chronological (R)
+    # 750 - Index Term - Topical (R)
+    # 751 - Index Term - Geographic Name (R)
     # String order: $a : $x : $v : $y : $z
-    for entry in rec.xpath('mx:datafield[@tag="750" or @tag="751"]', namespaces=nsmap):
+    for entry in rec.xpath('mx:datafield[@tag="700" or @tag="710" or @tag="711" or @tag="730" or @tag="748" or @tag="750" or @tag="751"]', namespaces=nsmap):
         term = []
         for x in ['a', 'x', 'y', 'z']:
             term.extend(entry.xpath('mx:subfield[@code="%s"]/text()' % (x), namespaces=nsmap))

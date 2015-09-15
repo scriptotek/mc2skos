@@ -34,9 +34,7 @@ $ mc2skos infile.xml outfile.rdf [--verbose]
 
 Only a small part of the MARC21 Classification
 data model is converted, and the conversion follows a rather
-pragmatic approach, exemplified by the mapping of
-[750](http://www.loc.gov/marc/classification/cd750.html)
-and [751](http://www.loc.gov/marc/classification/cd751.html)
+pragmatic approach, exemplified by the mapping of the 7XX fields
 to skos:altLabel.
 
 
@@ -51,6 +49,11 @@ to skos:altLabel.
 | `683` Application Instruction Note               | `skos:editorialNote`                 |
 | `685` History Note                               | `skos:historyNote`                   |
 | `694` ??? Note                                   | `skos:editorialNote`                 |
+| `700` Index Term-Personal Name                   | `skos:altLabel`                      |
+| `710` Index Term-Corporate Name                  | `skos:altLabel`                      |
+| `711` Index Term-Meeting Name                    | `skos:altLabel`                      |
+| `730` Index Term-Uniform Title                   | `skos:altLabel`                      |
+| `748` Index Term-Chronological                   | `skos:altLabel`                      |
 | `750` Index Term-Topical                         | `skos:altLabel`                      |
 | `751` Index Term-Geographic Name                 | `skos:altLabel`                      |
 | `765` Synthesized Number Components              | `marc21:components` (see below)      |
