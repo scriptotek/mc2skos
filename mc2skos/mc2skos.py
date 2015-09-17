@@ -319,8 +319,7 @@ def process_record(rec, nsmap):
 
         if term == '':
             return 'records having empty index terms'
-        if 'caption' not in out or term != out['caption']:
-            g.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
+        g.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
 
     # 765 : Synthesized Number Components
     components = []
