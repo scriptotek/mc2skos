@@ -74,6 +74,9 @@ def stringify(nodes):
             else:
                 txt = subfield.text
 
+            if txt is None:
+                continue
+
             if c == 'c':
                 note += '-'
             elif len(note) != 0 and not re.match(r'[.\?#@+,<>%~`!$^&\(\):;\]]', txt[0]):
