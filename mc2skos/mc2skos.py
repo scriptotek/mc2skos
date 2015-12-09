@@ -35,24 +35,6 @@ g = Graph()
 WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
 
-dct = Namespace('http://purl.org/dc/terms/')
-nm = g.namespace_manager
-nm.bind('dct', dct)
-nm.bind('skos', SKOS)
-nm.bind('wd', WD)
-nm.bind('mads', MADS)
-nm.bind('owl', OWL)
-
-classification_schemes = {
-    'ddc': {
-        '23no': {
-            'ns': Namespace('http://data.ub.uio.no/ddc/'),
-            'same_as': 'http://dewey.info/class/{class_no}/e23/',
-            'scheme': 'http://data.ub.uio.no/ddc'  # /23no
-        }
-    }
-}
-
 counts = {}
 
 
@@ -91,7 +73,7 @@ def get_ess(node, nsmap):
     return [x.replace('ess=', '') for x in node.xpath('mx:subfield[@code="9"]/text()[1]', namespaces=nsmap)]
 
 
-def process_record(rec, nsmap, include_indexterms=False, include_notes=False, include_components=False):
+def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexterms=False, include_notes=False, include_components=False):
     # Parse a single MARC21 classification record
     class_no = ''
 
@@ -167,14 +149,7 @@ def process_record(rec, nsmap, include_indexterms=False, include_notes=False, in
         # return 'records where parents could not be found'
 
     # Generate URI
-    try:
-        scheme = classification_schemes[out['scheme']][out['edition']]
-    except:
-        logger.error('Unknown class scheme or edition (%s %s) for %s', out['scheme'], out['edition'], class_no)
-        raise
-
-    # Appended / is necessary for dewey.info URLs to be dereferable
-    uri = scheme['ns'][out['class_no']]
+    uri = namespace[out['class_no']]
 
     existing = [x for x in g.triples((uri, None, None))]
     if len(existing) != 0:
@@ -186,8 +161,10 @@ def process_record(rec, nsmap, include_indexterms=False, include_notes=False, in
     # of skos:Concept, because such statements are entailed by the definition
     # of skos:semanticRelation.
     g.add((uri, RDF.type, SKOS.Concept))
-    g.add((uri, OWL.sameAs, URIRef(scheme['same_as'].format(class_no=class_no))))
-    g.add((uri, SKOS.inScheme, URIRef(scheme['scheme'])))
+    if skos_scheme is not None:
+        g.add((uri, SKOS.inScheme, URIRef(skos_scheme)))
+    if same_as is not None:
+        g.add((uri, OWL.sameAs, URIRef(same_as.format(class_no=class_no))))
 
     # Add caption as skos:prefLabel
     if 'caption' in out:
@@ -200,7 +177,7 @@ def process_record(rec, nsmap, include_indexterms=False, include_notes=False, in
     # Add hierarchy as skos:broader
     for parent in out['parents']:
         if parent != out['class_no']:
-            g.add((uri, SKOS.broader, scheme['ns'][parent]))
+            g.add((uri, SKOS.broader, namespace[parent]))
 
     # 253 : Complex See Reference (R)
     # Example:
@@ -367,12 +344,12 @@ def process_record(rec, nsmap, include_indexterms=False, include_notes=False, in
             component = components.pop(0)
             b1 = BNode()
             g.add((uri, MADS.componentList, b1))
-            g.add((b1, RDF.first, scheme['ns'][component]))
+            g.add((b1, RDF.first, namespace[component]))
 
             for component in components:
                 b2 = BNode()
                 g.add((b1, RDF.rest, b2))
-                g.add((b2, RDF.first, scheme['ns'][component]))
+                g.add((b2, RDF.first, namespace[component]))
                 b1 = b2
 
             g.add((b1, RDF.rest, RDF.nil))
@@ -448,15 +425,33 @@ def main():
     parser = argparse.ArgumentParser(description='Convert MARC21 Classification to SKOS/RDF')
     parser.add_argument('infile', nargs=1, help='Input XML file')
     parser.add_argument('outfile', nargs=1, help='Output RDF file')
+    parser.add_argument('namespace', nargs=1, help='Namespace to build the URIs for the classes.')
+
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='More verbose output')
     parser.add_argument('-o', '--outformat', dest='outformat', nargs='?',
                         help='Output serialization format. Any format supported by rdflib. Default: turtle',
                         default='turtle')
+
+    parser.add_argument('--scheme', dest='skosScheme', help='SKOS scheme the classes should be part of.')
+    parser.add_argument('--sameas', dest='sameAs', help='Template for sameAs URIs.')
+    parser.add_argument('--prefix', dest='prefix', help='Namespace prefix.')
+
     parser.add_argument('--indexterms', dest='indexterms', action='store_true', help='Include index terms from 7XX.')
     parser.add_argument('--notes', dest='notes', action='store_true', help='Include note fields.')
     parser.add_argument('--components', dest='components', action='store_true', help='Include component information from 765.')
 
     args = parser.parse_args()
+
+    ns1 = Namespace(args.namespace[0])
+    DCT = Namespace('http://purl.org/dc/terms/')
+    nm = g.namespace_manager
+    nm.bind('dct', DCT)
+    nm.bind('skos', SKOS)
+    nm.bind('wd', WD)
+    nm.bind('mads', MADS)
+    nm.bind('owl', OWL)
+    if args.prefix:
+        nm.bind('ddc', ns1)
 
     if args.verbose:
         console_handler.setLevel(logging.DEBUG)
@@ -475,12 +470,20 @@ def main():
     # except etree.XMLSyntaxError:
     #     type, message, traceback = sys.exc_info()
     #     print "XML parsing failed"
+    options = {
+        'namespace': ns1,
+        'skos_scheme': args.skosScheme,
+        'same_as': args.sameAs,
+        'include_indexterms': args.indexterms,
+        'include_notes': args.notes,
+        'include_components': args.components
+    }
 
     logger.debug('Traversing records')
     n = 0
     t0 = time.time()
     for record in get_records(in_file):
-        res = process_record(record, nsmap, include_indexterms=args.indexterms, include_notes=args.notes, include_components=args.components)
+        res = process_record(record, nsmap, **options)
         # if res is not None:
         #     if res not in counts:
         #         counts[res] = 0

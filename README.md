@@ -24,11 +24,15 @@ pip install git+git://github.com/scriptotek/mc2skos.git
 from [from PyPI](https://pypi.python.org/pypi/lxml/3.4.0).
 * Make sure the Python scripts folder has been added to your PATH.
 
-### Usage:
+### Usage example:
 
 ```bash
-$ mc2skos infile.xml outfile.rdf [--verbose]
+mc2skos infile.xml outfile.ttl 'http://data.ub.uio.no/ddc/' \
+  --scheme 'http://data.ub.uio.no/ddc' \
+  --sameas 'http://dewey.info/class/{class_no}/e23/'
 ```
+
+Run `mc2skos -h` for options.
 
 ### Mapping schema
 
