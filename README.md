@@ -56,25 +56,24 @@ to skos:altLabel.
 | `748` Index Term-Chronological                   | `skos:altLabel`                      |
 | `750` Index Term-Topical                         | `skos:altLabel`                      |
 | `751` Index Term-Geographic Name                 | `skos:altLabel`                      |
-| `765` Synthesized Number Components              | `marc21:components` (see below)      |
+| `765` Synthesized Number Components              | `mads:componentList` (see below)     |
 
 
 #### Synthesized number components
 
 Components of synthesized numbers explicitly described in 765 fields are
-expressed using the `marc21:components` property, and to preserve the order of the
+expressed using the `mads:componentList` property, and to preserve the order of the
 components, we use RDF lists. Example:
 
 ```turtle
-@prefix marc21: <http://data.ub.uio.no/marc21-terms#> .
+@prefix mads: <http://www.loc.gov/mads/rdf/v1#> .
 
 <http://data.ub.uio.no/ddc/001.30973> a skos:Concept ;
-    marc21:components (
+    mads:componentList (
         <http://data.ub.uio.no/ddc/001.3>
         <http://data.ub.uio.no/ddc/T1--09>
         <http://data.ub.uio.no/ddc/T2--73>
     ) ;
-    marc21:synthesized true ;
     skos:notation "001.30973" .
 
 ```
@@ -83,14 +82,14 @@ Retrieving list members *in order* is [surprisingly hard](http://answers.semanti
 Retrieving ordered pairs is the best solution I've come up with so far:
 
 ```sparql
-PREFIX marc21: <http://data.ub.uio.no/marc21-terms#>
+PREFIX mads: <http://www.loc.gov/mads/rdf/v1#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT ?c1_notation ?c1_label ?c2_notation ?c2_label
 WHERE { GRAPH <http://localhost/ddc23no> {
 
-    <http://data.ub.uio.no/ddc/001.30973> marc21:components ?l .
+    <http://data.ub.uio.no/ddc/001.30973> mads:componentList ?l .
         ?l rdf:rest* ?sl .
         ?sl rdf:first ?e1 .
         ?sl rdf:rest ?sln .

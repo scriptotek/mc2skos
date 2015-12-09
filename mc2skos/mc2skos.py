@@ -33,14 +33,14 @@ logger.addHandler(console_handler)
 
 g = Graph()
 WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
-MARC21 = Namespace('http://data.ub.uio.no/marc21-terms#')
+MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
 
 dct = Namespace('http://purl.org/dc/terms/')
 nm = g.namespace_manager
 nm.bind('dct', dct)
 nm.bind('skos', SKOS)
 nm.bind('wd', WD)
-nm.bind('marc21', MARC21)
+nm.bind('mads', MADS)
 nm.bind('owl', OWL)
 
 classification_schemes = {
@@ -335,7 +335,6 @@ def process_record(rec, nsmap, include_indexterms=False, include_notes=False, in
     if include_components:
         components = []
         for syn in reversed(list(rec.xpath('mx:datafield[@tag="765"]', namespaces=nsmap))):
-            g.add((uri, MARC21.synthesized, Literal(True)))
             uval = syn.xpath('mx:subfield[@code="u"]/text()', namespaces=nsmap)
             if len(uval) == 0:
                 logger.debug("Built number without components specified: %s", class_no)
@@ -367,7 +366,7 @@ def process_record(rec, nsmap, include_indexterms=False, include_notes=False, in
         if len(components) != 0:
             component = components.pop(0)
             b1 = BNode()
-            g.add((uri, MARC21.components, b1))
+            g.add((uri, MADS.componentList, b1))
             g.add((b1, RDF.first, scheme['ns'][component]))
 
             for component in components:
