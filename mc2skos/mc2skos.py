@@ -91,7 +91,7 @@ def get_ess(node, nsmap):
     return [x.replace('ess=', '') for x in node.xpath('mx:subfield[@code="9"]/text()[1]', namespaces=nsmap)]
 
 
-def process_record(rec, nsmap):
+def process_record(rec, nsmap, include_indexterms=False, include_notes=False, include_components=False):
     # Parse a single MARC21 classification record
     class_no = ''
 
@@ -212,9 +212,10 @@ def process_record(rec, nsmap):
     #   <mx:subfield code="9">ess=nce</mx:subfield>
     # </mx:datafield>
     #
-    for entry in rec.xpath('mx:datafield[@tag="253"]', namespaces=nsmap):
-        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+    if include_notes:
+        for entry in rec.xpath('mx:datafield[@tag="253"]', namespaces=nsmap):
+            note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
+            g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 353 : Complex See Also Reference (R)
     # Example:
@@ -225,9 +226,10 @@ def process_record(rec, nsmap):
     #   <mx:subfield code="t">bred beskrivelse av situasjon og vilkår for intellektuell virksomhet</mx:subfield>
     #   <mx:subfield code="9">ess=nsa</mx:subfield>
     # </mx:datafield>
-    for entry in rec.xpath('mx:datafield[@tag="353"]', namespaces=nsmap):
-        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+    if include_notes:
+        for entry in rec.xpath('mx:datafield[@tag="353"]', namespaces=nsmap):
+            note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
+            g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 680 : Scope note
     # Example:
@@ -243,24 +245,25 @@ def process_record(rec, nsmap):
     #   <mx:subfield code="9">ess=nch</mx:subfield>
     # </mx:datafield>
     #
-    for entry in rec.xpath('mx:datafield[@tag="680"]', namespaces=nsmap):
-        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        g.add((uri, SKOS.scopeNote, Literal(note, lang='nb')))
-        ess = get_ess(entry, nsmap)
-        if 'ndf' in ess:
-            g.add((uri, SKOS.definition, Literal(note, lang='nb')))
-        elif 'nvn' in ess:
-            for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                g.add((uri, WD.variantName, Literal(t.capitalize(), lang='nb')))
-        elif 'nch' in ess:
-            for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                g.add((uri, WD.classHere, Literal(t.capitalize(), lang='nb')))
-        elif 'nin' in ess:
-            for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                g.add((uri, WD.including, Literal(t.capitalize(), lang='nb')))
-        elif 'nph' in ess:
-            for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                g.add((uri, WD.formerName, Literal(t.capitalize(), lang='nb')))
+    if include_notes:
+        for entry in rec.xpath('mx:datafield[@tag="680"]', namespaces=nsmap):
+            note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
+            g.add((uri, SKOS.scopeNote, Literal(note, lang='nb')))
+            ess = get_ess(entry, nsmap)
+            if 'ndf' in ess:
+                g.add((uri, SKOS.definition, Literal(note, lang='nb')))
+            elif 'nvn' in ess:
+                for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
+                    g.add((uri, WD.variantName, Literal(t.capitalize(), lang='nb')))
+            elif 'nch' in ess:
+                for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
+                    g.add((uri, WD.classHere, Literal(t.capitalize(), lang='nb')))
+            elif 'nin' in ess:
+                for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
+                    g.add((uri, WD.including, Literal(t.capitalize(), lang='nb')))
+            elif 'nph' in ess:
+                for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
+                    g.add((uri, WD.formerName, Literal(t.capitalize(), lang='nb')))
 
     # 683 : Application Instruction Note
     # Example:
@@ -272,9 +275,10 @@ def process_record(rec, nsmap):
     #   <mx:subfield code="9">ess=nal</mx:subfield>
     # </mx:datafield>
     #
-    for entry in rec.xpath('mx:datafield[@tag="683"]', namespaces=nsmap):
-        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+    if include_notes:
+        for entry in rec.xpath('mx:datafield[@tag="683"]', namespaces=nsmap):
+            note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
+            g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 685 : History note
     # Example:
@@ -285,12 +289,13 @@ def process_record(rec, nsmap):
     #    <mx:subfield code="9">ess=nrl</mx:subfield>
     #  </mx:datafield>
     #
-    for entry in rec.xpath('mx:datafield[@tag="685"]', namespaces=nsmap):
-        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        g.add((uri, SKOS.historyNote, Literal(note, lang='nb')))
-        ess = get_ess(entry, nsmap)
-        if 'ndn' in ess:
-            g.add((uri, OWL.deprecated, Literal(True)))
+    if include_notes:
+        for entry in rec.xpath('mx:datafield[@tag="685"]', namespaces=nsmap):
+            note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
+            g.add((uri, SKOS.historyNote, Literal(note, lang='nb')))
+            ess = get_ess(entry, nsmap)
+            if 'ndn' in ess:
+                g.add((uri, OWL.deprecated, Literal(True)))
 
     # 694 : ??? Note : Wrong code for 684 'Auxiliary Instruction Note' ??
     # Example:
@@ -300,11 +305,12 @@ def process_record(rec, nsmap):
     #     <mx:subfield code="9">ess=nml</mx:subfield>
     #   </mx:datafield>
     #
-    for entry in rec.xpath('mx:datafield[@tag="694"]', namespaces=nsmap):
-        note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-        ess = get_ess(entry, nsmap)
-        if 'nml' in ess:
-            g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+    if include_notes:
+        for entry in rec.xpath('mx:datafield[@tag="694"]', namespaces=nsmap):
+            note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
+            ess = get_ess(entry, nsmap)
+            if 'nml' in ess:
+                g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 700 - Index Term - Personal Name (R)
     # 710 - Index Term - Corporate Name (R)
@@ -314,61 +320,63 @@ def process_record(rec, nsmap):
     # 750 - Index Term - Topical (R)
     # 751 - Index Term - Geographic Name (R)
     # String order: $a : $x : $v : $y : $z
-    for entry in rec.xpath('mx:datafield[@tag="700" or @tag="710" or @tag="711" or @tag="730" or @tag="748" or @tag="750" or @tag="751"]', namespaces=nsmap):
-        term = []
-        for x in ['a', 'x', 'y', 'z']:
-            term.extend(entry.xpath('mx:subfield[@code="%s"]/text()' % (x), namespaces=nsmap))
-        term = ' : '.join(term)
+    if include_indexterms:
+        for entry in rec.xpath('mx:datafield[@tag="700" or @tag="710" or @tag="711" or @tag="730" or @tag="748" or @tag="750" or @tag="751"]', namespaces=nsmap):
+            term = []
+            for x in ['a', 'x', 'y', 'z']:
+                term.extend(entry.xpath('mx:subfield[@code="%s"]/text()' % (x), namespaces=nsmap))
+            term = ' : '.join(term)
 
-        if term == '':
-            return 'records having empty index terms'
-        g.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
+            if term == '':
+                return 'records having empty index terms'
+            g.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
 
     # 765 : Synthesized Number Components
-    components = []
-    for syn in reversed(list(rec.xpath('mx:datafield[@tag="765"]', namespaces=nsmap))):
-        g.add((uri, MARC21.synthesized, Literal(True)))
-        uval = syn.xpath('mx:subfield[@code="u"]/text()', namespaces=nsmap)
-        if len(uval) == 0:
-            logger.debug("Built number without components specified: %s", class_no)
-        table = ''
-        rootno = ''
+    if include_components:
+        components = []
+        for syn in reversed(list(rec.xpath('mx:datafield[@tag="765"]', namespaces=nsmap))):
+            g.add((uri, MARC21.synthesized, Literal(True)))
+            uval = syn.xpath('mx:subfield[@code="u"]/text()', namespaces=nsmap)
+            if len(uval) == 0:
+                logger.debug("Built number without components specified: %s", class_no)
+            table = ''
+            rootno = ''
 
-        wval = syn.xpath('mx:subfield[@code="w"]/text()', namespaces=nsmap)
-        if len(wval) != 0:
-            continue  # appears to be duplicates -- check!
+            wval = syn.xpath('mx:subfield[@code="w"]/text()', namespaces=nsmap)
+            if len(wval) != 0:
+                continue  # appears to be duplicates -- check!
 
-        for sf in syn.xpath('mx:subfield', namespaces=nsmap):
-            if sf.get('code') == 'b':    # Base number
-                if len(components) == 0:
-                    components.append(table + sf.text)
+            for sf in syn.xpath('mx:subfield', namespaces=nsmap):
+                if sf.get('code') == 'b':    # Base number
+                    if len(components) == 0:
+                        components.append(table + sf.text)
+                        table = ''
+                elif sf.get('code') == 'r':    # Root number
+                    rootno = sf.text
+                elif sf.get('code') == 'z':    # Table identification
+                    table = 'T{}--'.format(sf.text)
+                # elif sf.get('code') == 't':    # Digits added from internal subarrangement or add table
+                #     components.append(sf.text)
+                elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
+                    sep = '.' if len(rootno) == 3 else ''
+                    components.append(table + rootno + sep + sf.text)
                     table = ''
-            elif sf.get('code') == 'r':    # Root number
-                rootno = sf.text
-            elif sf.get('code') == 'z':    # Table identification
-                table = 'T{}--'.format(sf.text)
-            # elif sf.get('code') == 't':    # Digits added from internal subarrangement or add table
-            #     components.append(sf.text)
-            elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
-                sep = '.' if len(rootno) == 3 else ''
-                components.append(table + rootno + sep + sf.text)
-                table = ''
-            # elif sf.get('code') not in ['9', 'u']:
-            #     print sf.get('code'), sf.text, class_no
+                # elif sf.get('code') not in ['9', 'u']:
+                #     print sf.get('code'), sf.text, class_no
 
-    if len(components) != 0:
-        component = components.pop(0)
-        b1 = BNode()
-        g.add((uri, MARC21.components, b1))
-        g.add((b1, RDF.first, scheme['ns'][component]))
+        if len(components) != 0:
+            component = components.pop(0)
+            b1 = BNode()
+            g.add((uri, MARC21.components, b1))
+            g.add((b1, RDF.first, scheme['ns'][component]))
 
-        for component in components:
-            b2 = BNode()
-            g.add((b1, RDF.rest, b2))
-            g.add((b2, RDF.first, scheme['ns'][component]))
-            b1 = b2
+            for component in components:
+                b2 = BNode()
+                g.add((b1, RDF.rest, b2))
+                g.add((b2, RDF.first, scheme['ns'][component]))
+                b1 = b2
 
-        g.add((b1, RDF.rest, RDF.nil))
+            g.add((b1, RDF.rest, RDF.nil))
 
     return 'valid records'
 
@@ -445,6 +453,9 @@ def main():
     parser.add_argument('-o', '--outformat', dest='outformat', nargs='?',
                         help='Output serialization format. Any format supported by rdflib. Default: turtle',
                         default='turtle')
+    parser.add_argument('--indexterms', dest='indexterms', action='store_true', help='Include index terms from 7XX.')
+    parser.add_argument('--notes', dest='notes', action='store_true', help='Include note fields.')
+    parser.add_argument('--components', dest='components', action='store_true', help='Include component information from 765.')
 
     args = parser.parse_args()
 
@@ -470,7 +481,7 @@ def main():
     n = 0
     t0 = time.time()
     for record in get_records(in_file):
-        res = process_record(record, nsmap)
+        res = process_record(record, nsmap, include_indexterms=args.indexterms, include_notes=args.notes, include_components=args.components)
         # if res is not None:
         #     if res not in counts:
         #         counts[res] = 0
