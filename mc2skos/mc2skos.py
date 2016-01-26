@@ -300,7 +300,7 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     if include_indexterms:
         for entry in rec.xpath('mx:datafield[@tag="700" or @tag="710" or @tag="711" or @tag="730" or @tag="748" or @tag="750" or @tag="751"]', namespaces=nsmap):
             term = []
-            for x in ['a', 'x', 'y', 'z']:
+            for x in ['a', 'x', 'y', 'z', 'v']:
                 term.extend(entry.xpath('mx:subfield[@code="%s"]/text()' % (x), namespaces=nsmap))
             term = ' : '.join(term)
 
