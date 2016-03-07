@@ -81,7 +81,7 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     if leader[6] != 'w':  # w: classification, z: authority
         return
 
-    out = {'notes': [], 'scope_notes': [], 'history_notes': [], 'index_terms': [], 'parents': []}
+    out = {'notes': [], 'scope_notes': [], 'history_notes': [], 'index_terms': []}
 
     # Parse 084: Classification Scheme and Edition
     r = rec.xpath('mx:datafield[@tag="084"]', namespaces=nsmap)
@@ -99,15 +99,13 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
 
     # Parse 153: Classification number
     r = rec.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
-    cp = get_parent(rec, nsmap)
-    if not cp:
+    class_no = get_classno(rec, nsmap)
+    if not class_no:
         return 'records missing 153 field'
 
     f153 = rec.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)[0]
 
     # $a - Classification number--single number or beginning number of span (R)
-    class_no = cp[0]
-    parent = cp[1]
     out['class_no'] = class_no
 
     # Not sure yet if we should include these, and how to represent them:
@@ -139,15 +137,6 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
         # print etree.tounicode(f153, pretty_print=True)
         # return 'missing 153 $j'
 
-    # $e - Classification number hierarchy--single number or beginning number of span (R)
-    p = get_parent(rec, nsmap)
-    if p:
-        out['parents'].append(p[1])
-    else:
-        logger.error('Failed to find parent for: %s', class_no)
-        # sys.exit(1)
-        # return 'records where parents could not be found'
-
     # Generate URI
     uri = namespace[out['class_no']]
 
@@ -161,8 +150,20 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     # of skos:Concept, because such statements are entailed by the definition
     # of skos:semanticRelation.
     g.add((uri, RDF.type, SKOS.Concept))
-    if skos_scheme is not None:
-        g.add((uri, SKOS.inScheme, URIRef(skos_scheme)))
+
+    # $e - Classification number hierarchy--single number or beginning number of span (R)
+    parent = get_parent(rec, nsmap)
+    if parent:
+        if skos_scheme is not None:
+            g.add((uri, SKOS.inScheme, skos_scheme))
+        if parent != out['class_no']:
+            g.add((uri, SKOS.broader, namespace[parent]))
+    else:
+        logger.info('Marking %s as topConcept', class_no)
+        g.add((uri, SKOS.topConceptOf, skos_scheme))
+        # sys.exit(1)
+        # return 'records where parents could not be found'
+
     if same_as is not None:
         g.add((uri, OWL.sameAs, URIRef(same_as.format(class_no=class_no))))
 
@@ -173,11 +174,6 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     # Add classification number as skos:notation
     if 'class_no' in out:
         g.add((uri, SKOS.notation, Literal(out['class_no'])))
-
-    # Add hierarchy as skos:broader
-    for parent in out['parents']:
-        if parent != out['class_no']:
-            g.add((uri, SKOS.broader, namespace[parent]))
 
     # 253 : Complex See Reference (R)
     # Example:
@@ -357,6 +353,43 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     return 'valid records'
 
 
+def get_classno(node, nsmap):
+    node = node.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
+    if len(node) == 0:
+        return
+
+    table = ''
+    addtable = ''
+    classno = ''
+
+    for sf in node[0].xpath('mx:subfield', namespaces=nsmap):
+        code = sf.get('code')
+
+        if code == 'z':
+            table = 'T{}--'.format(sf.text)
+        elif code == 'y':
+            if sf.text == '1':
+                addtable = ':'
+            else:
+                addtable = ':{};'.format(sf.text)
+        elif code in ['a', 'c', 'e', 'f']:
+            val = table + addtable + sf.text
+            if code == 'a':
+                classno += val
+            elif code == 'c':
+                classno += '-' + val
+            table = ''
+            addtable = ''
+
+    if classno == '':
+        return
+
+    if len(node) != 1:
+        logger.warning('Record has multiple 153 fields: %s', classno)
+
+    return classno
+
+
 def get_parent(node, nsmap):
 
     node = node.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
@@ -380,24 +413,20 @@ def get_parent(node, nsmap):
                 addtable = ':{};'.format(sf.text)
         elif code in ['a', 'c', 'e', 'f']:
             val = table + addtable + sf.text
-            if code == 'a':
-                current += val
-            elif code == 'c':
-                current += '-' + val
-            elif code == 'e':
+            if code == 'e':
                 parent += val
             elif code == 'f':
                 parent += '-' + val
             table = ''
             addtable = ''
 
-    if current == '' or parent == '':
+    if parent == '':
         return
 
     if len(node) != 1:
         logger.warning('Record has multiple 153 fields: %s', current)
 
-    return [current, parent]
+    return parent
 
     # node = doc.xpath('//mx:datafield[@tag="153"][count(./mx:subfield[@code="a"]) = 1 and ./mx:subfield[@code="a"] = "%s" and ./mx:subfield[@code="c"] = "%s"]' % (par1, par2),
     #                  namespaces={'mx': 'http://www.loc.gov/MARC21/slim'})
@@ -478,6 +507,9 @@ def main():
         'include_notes': args.notes,
         'include_components': args.components
     }
+
+    if options['skos_scheme'] is not None:
+        options['skos_scheme'] = URIRef(options['skos_scheme'])
 
     logger.debug('Traversing records')
     n = 0
