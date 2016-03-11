@@ -173,7 +173,10 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
 
     # Add classification number as skos:notation
     if 'class_no' in out:
-        g.add((uri, SKOS.notation, Literal(out['class_no'])))
+        if out['class_no'].find('--') != -1:
+            g.add((uri, SKOS.notation, Literal('T' + out['class_no'])))
+        else:
+            g.add((uri, SKOS.notation, Literal(out['class_no'])))
 
     # 253 : Complex See Reference (R)
     # Example:
