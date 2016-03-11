@@ -16,7 +16,7 @@ suggestions for generalizations and improvements are welcome!
 
 Using [Pip](http://pip.readthedocs.org/en/latest/installing.html):
 ```
-pip install git+git://github.com/scriptotek/mc2skos.git
+pip install -U git+https://github.com/scriptotek/mc2skos.git
 ```
 
 * Requires Python 2.6 or 2.7. Not tested with 3.x.
