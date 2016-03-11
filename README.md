@@ -28,7 +28,7 @@ from [from PyPI](https://pypi.python.org/pypi/lxml/3.4.0).
 
 ```bash
 mc2skos infile.xml outfile.ttl 'http://data.ub.uio.no/ddc/' \
-  --scheme 'http://data.ub.uio.no/ddc' \
+  --scheme 'http://data.ub.uio.no/ddc/' \
   --sameas 'http://dewey.info/class/{class_no}/e23/'
 ```
 
