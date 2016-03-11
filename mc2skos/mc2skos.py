@@ -326,7 +326,7 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
                 elif sf.get('code') == 'r':    # Root number
                     rootno = sf.text
                 elif sf.get('code') == 'z':    # Table identification
-                    table = 'T{}--'.format(sf.text)
+                    table = '{}--'.format(sf.text)
                 # elif sf.get('code') == 't':    # Digits added from internal subarrangement or add table
                 #     components.append(sf.text)
                 elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
@@ -366,7 +366,7 @@ def get_classno(node, nsmap):
         code = sf.get('code')
 
         if code == 'z':
-            table = 'T{}--'.format(sf.text)
+            table = '{}--'.format(sf.text)
         elif code == 'y':
             if sf.text == '1':
                 addtable = ':'
@@ -405,7 +405,7 @@ def get_parent(node, nsmap):
         code = sf.get('code')
 
         if code == 'z':
-            table = 'T{}--'.format(sf.text)
+            table = '{}--'.format(sf.text)
         elif code == 'y':
             if sf.text == '1':
                 addtable = ':'
