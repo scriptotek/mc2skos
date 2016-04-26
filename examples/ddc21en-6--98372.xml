@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="153" ind1=" " ind2=" ">
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">98372</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="h">South American native languages</marc:subfield>
+         <marc:subfield code="h">Quechuan (Kechuan), Aymaran, Tucanoan, Tupí, Arawakan languages</marc:subfield>
+         <marc:subfield code="j">Jivaroan languages</marc:subfield>
+         <marc:subfield code="j">Jivaro proper. Shuar</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="1" ind2="#">
+         <marc:subfield code="w">jh</marc:subfield>
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">9837</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="h">South American native languages</marc:subfield>
+         <marc:subfield code="h">Quechuan (Kechuan), Aymaran, Tucanoan, Tupí, Arawakan languages</marc:subfield>
+         <marc:subfield code="j">Jivaroan languages</marc:subfield>
+         <marc:subfield code="t">Jivaro proper</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="680" ind1="0" ind2="#">
+         <marc:subfield code="i">Including Huambisa</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="685" ind1="0" ind2="3">
+         <marc:subfield code="i">expanded from</marc:subfield>
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="b">983</marc:subfield>
+         <marc:subfield code="d">19960930</marc:subfield>
+         <marc:subfield code="2">21</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Huambisa language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Jivaro language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Jivaroa language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Shuar language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Shuara language</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+</marc:collection>

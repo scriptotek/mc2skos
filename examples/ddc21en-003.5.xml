@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="084" ind1="0" ind2="#">
+         <marc:subfield code="a">ddc</marc:subfield>
+         <marc:subfield code="c">21</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="253" ind1="2" ind2="#">
+         <marc:subfield code="i">For control and stability of systems in a specific subject, see the subject plus notation</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">0115</marc:subfield>
+         <marc:subfield code="i">from Table 1, e.g., control and stability of systems in general engineering</marc:subfield>
+         <marc:subfield code="a">620.00115</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="153" ind1=" " ind2=" ">
+         <marc:subfield code="a">003.5</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Systems</marc:subfield>
+         <marc:subfield code="j">Theory of communication and control</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="0" ind2="#">
+         <marc:subfield code="w">kh</marc:subfield>
+         <marc:subfield code="a">515.64</marc:subfield>
+         <marc:subfield code="h">Natural sciences and mathematics</marc:subfield>
+         <marc:subfield code="h">Mathematics</marc:subfield>
+         <marc:subfield code="h">Analysis</marc:subfield>
+         <marc:subfield code="h">Other analytic methods</marc:subfield>
+         <marc:subfield code="j">Calculus of variations</marc:subfield>
+         <marc:subfield code="t">interdisciplinary works on control theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="0" ind2="#">
+         <marc:subfield code="w">kh</marc:subfield>
+         <marc:subfield code="a">629.8312</marc:subfield>
+         <marc:subfield code="h">Technology (Applied sciences)</marc:subfield>
+         <marc:subfield code="h">Engineering and allied operations</marc:subfield>
+         <marc:subfield code="h">Other branches of engineering</marc:subfield>
+         <marc:subfield code="h">Automatic control engineering</marc:subfield>
+         <marc:subfield code="h">Closed-loop (Feedback) systems</marc:subfield>
+         <marc:subfield code="h">General principles</marc:subfield>
+         <marc:subfield code="j">Control theory</marc:subfield>
+         <marc:subfield code="t">interdisciplinary works on control theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="680" ind1="1" ind2="#">
+         <marc:subfield code="i">In living and nonliving systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="680" ind1="0" ind2="#">
+         <marc:subfield code="i">Including bionics</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="680" ind1="1" ind2="#">
+         <marc:subfield code="i">Class here cybernetics, interdisciplinary works on the control and stability of systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="684" ind1="0" ind2="#">
+         <marc:subfield code="a">003.5</marc:subfield>
+         <marc:subfield code="i">vs.</marc:subfield>
+         <marc:subfield code="a">629.8</marc:subfield>
+         <marc:subfield code="j">Theory of communication and control vs. Automatic control engineering</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="684" ind1="1" ind2="#">
+         <marc:subfield code="i">Class interdisciplinary works on control of living and nonliving systems in</marc:subfield>
+         <marc:subfield code="a">003.5</marc:subfield>
+         <marc:subfield code="i">or with various specific kinds of systems in</marc:subfield>
+         <marc:subfield code="a">003.7</marc:subfield>
+         <marc:subfield code="c">003.8.</marc:subfield>
+         <marc:subfield code="i">Class automatic control of man-made physical systems in</marc:subfield>
+         <marc:subfield code="a">629.8.</marc:subfield>
+         <marc:subfield code="i">If in doubt, prefer</marc:subfield>
+         <marc:subfield code="a">003.5.</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="685" ind1="0" ind2="3">
+         <marc:subfield code="t">Theory of communication and control</marc:subfield>
+         <marc:subfield code="b">003</marc:subfield>
+         <marc:subfield code="d">19890306</marc:subfield>
+         <marc:subfield code="2">20</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="685" ind1="0" ind2="0">
+         <marc:subfield code="t">Cybernetics</marc:subfield>
+         <marc:subfield code="i">formerly located in</marc:subfield>
+         <marc:subfield code="b">001.53</marc:subfield>
+         <marc:subfield code="d">19890306</marc:subfield>
+         <marc:subfield code="2">20</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Control theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Control theory</marc:subfield>
+         <marc:subfield code="b">systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Bionics</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Cybernetics</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Process control</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Systems control</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Systems stability</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="153" ind1=" " ind2=" ">
+         <marc:subfield code="a">302.2</marc:subfield>
+         <marc:subfield code="h">Social sciences</marc:subfield>
+         <marc:subfield code="k">Specific topics in sociology and anthropology</marc:subfield>
+         <marc:subfield code="h">Social interaction</marc:subfield>
+         <marc:subfield code="j">Communication</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="0" ind2="#">
+         <marc:subfield code="w">kh</marc:subfield>
+         <marc:subfield code="a">003.5</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Systems</marc:subfield>
+         <marc:subfield code="j">Theory of communication and control</marc:subfield>
+         <marc:subfield code="t">social aspects of and interdisciplinary works on communication in systems</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="153" ind1=" " ind2=" ">
+         <marc:subfield code="a">006.3</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Special computer methods</marc:subfield>
+         <marc:subfield code="j">Artificial intelligence</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="0" ind2="#">
+         <marc:subfield code="w">jg</marc:subfield>
+         <marc:subfield code="a">003.5</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Systems</marc:subfield>
+         <marc:subfield code="j">Theory of communication and control</marc:subfield>
+         <marc:subfield code="t">artificial intelligence</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+</marc:collection>
