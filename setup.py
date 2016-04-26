@@ -30,6 +30,8 @@ setup(name='mc2skos',
       url='https://github.com/scriptotek/mc2skos',
       license='MIT',
       install_requires=requirements,
+      test_suite='nose.collector',
+      test_require=['nose','coverage'],
       packages=['mc2skos'],
       entry_points={'console_scripts': ['mc2skos=mc2skos.mc2skos:main']}
       )
