@@ -160,7 +160,8 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
             g.add((uri, SKOS.broader, namespace[parent]))
     else:
         logger.info('Marking %s as topConcept', class_no)
-        g.add((uri, SKOS.topConceptOf, skos_scheme))
+        if skos_scheme is not None:
+            g.add((uri, SKOS.topConceptOf, skos_scheme))
         # sys.exit(1)
         # return 'records where parents could not be found'
 
