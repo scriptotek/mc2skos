@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="084" ind1="0" ind2="#">
+         <marc:subfield code="a">ddc</marc:subfield>
+         <marc:subfield code="c">21</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="153" ind1=" " ind2=" ">
+         <marc:subfield code="a">003.54</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Systems</marc:subfield>
+         <marc:subfield code="h">Theory of communication and control</marc:subfield>
+         <marc:subfield code="j">Information theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="253" ind1="2" ind2="#">
+         <marc:subfield code="i">Class information theory in communications engineering in</marc:subfield>
+         <marc:subfield code="a">621.3822,</marc:subfield>
+         <marc:subfield code="i">without using notation</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">01154</marc:subfield>
+         <marc:subfield code="i">from Table 1</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="253" ind1="2" ind2="#">
+         <marc:subfield code="i">Class information theory in communications engineering of a specific kind of communications with the kind, without using notation</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">01154</marc:subfield>
+         <marc:subfield code="i">from Table 1, e.g., radio</marc:subfield>
+         <marc:subfield code="a">621.384;</marc:subfield>
+         <marc:subfield code="i">class information theory in any other specific subject with the subject, plus notation</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">01154</marc:subfield>
+         <marc:subfield code="i">from Table 1, e.g., information theory in economics</marc:subfield>
+         <marc:subfield code="a">330.01154</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="020" ind1="0" ind2="#">
+         <marc:subfield code="w">l</marc:subfield>
+         <marc:subfield code="a">020</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="j">Library and information sciences</marc:subfield>
+         <marc:subfield code="t">information theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="0" ind2="#">
+         <marc:subfield code="w">l</marc:subfield>
+         <marc:subfield code="a">302.2</marc:subfield>
+         <marc:subfield code="h">Social sciences</marc:subfield>
+         <marc:subfield code="k">Specific topics in sociology and anthropology</marc:subfield>
+         <marc:subfield code="h">Social interaction</marc:subfield>
+         <marc:subfield code="j">Communication</marc:subfield>
+         <marc:subfield code="t">information theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="0" ind2="#">
+         <marc:subfield code="w">l</marc:subfield>
+         <marc:subfield code="a">621.3822</marc:subfield>
+         <marc:subfield code="h">Technology (Applied sciences)</marc:subfield>
+         <marc:subfield code="h">Engineering and allied operations</marc:subfield>
+         <marc:subfield code="h">Applied physics</marc:subfield>
+         <marc:subfield code="h">Electrical engineering; lighting; superconductivity; magnetic engineering; applied optics; paraphotic technology; electronics; communications engineering; computers</marc:subfield>
+         <marc:subfield code="h">Electronics, communications engineering</marc:subfield>
+         <marc:subfield code="h">Communications engineering</marc:subfield>
+         <marc:subfield code="j">Signal processing</marc:subfield>
+         <marc:subfield code="t">interdisciplinary works on information theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="680" ind1="1" ind2="#">
+         <marc:subfield code="i">Theory concerning measurement of quantities of information; accuracy in transmission of messages subject to noise (unwanted, usually random, signals), distortion, and transmission failure; and methods of coding for efficient, accurate transmission</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="680" ind1="1" ind2="#">
+         <marc:subfield code="i">Class here coding theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="685" ind1="0" ind2="0">
+         <marc:subfield code="t">Information theory</marc:subfield>
+         <marc:subfield code="i">formerly located in</marc:subfield>
+         <marc:subfield code="b">001.539</marc:subfield>
+         <marc:subfield code="d">19890306</marc:subfield>
+         <marc:subfield code="2">20</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="685" ind1="0" ind2="0">
+         <marc:subfield code="t">Coding theory</marc:subfield>
+         <marc:subfield code="i">formerly located in</marc:subfield>
+         <marc:subfield code="b">519.4</marc:subfield>
+         <marc:subfield code="d">19890306</marc:subfield>
+         <marc:subfield code="2">20</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Coding theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Information theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Signal theory</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Signal theory</marc:subfield>
+         <marc:subfield code="b">systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="011" ind1="1" ind2="#">
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="b">011</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">011</marc:subfield>
+         <marc:subfield code="r">003</marc:subfield>
+         <marc:subfield code="s">54</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="u">01154</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="765" ind1="1" ind2="#">
+         <marc:subfield code="b">330</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">0</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="s">011</marc:subfield>
+         <marc:subfield code="u">330.01154</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="765" ind1="1" ind2="#">
+         <marc:subfield code="b">330.011</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">011</marc:subfield>
+         <marc:subfield code="r">003</marc:subfield>
+         <marc:subfield code="s">54</marc:subfield>
+         <marc:subfield code="u">330.01154</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+</marc:collection>

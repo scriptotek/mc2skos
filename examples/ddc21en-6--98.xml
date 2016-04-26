@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="084" ind1="0" ind2="#">
+         <marc:subfield code="a">ddc</marc:subfield>
+         <marc:subfield code="c">21</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="153" ind1="1" ind2="#">
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">98</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="j">South American native languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="1" ind2="#">
+         <marc:subfield code="w">j</marc:subfield>
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">9741</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="h">North American native languages</marc:subfield>
+         <marc:subfield code="h">Penutian, Mixe-Zoquean, Mayan, Uto-Aztecan, Kiowa-Tanoan languages</marc:subfield>
+         <marc:subfield code="j">Penutian, Mixe-Zoquean, Mayan languages</marc:subfield>
+         <marc:subfield code="t">Araucanian, Uru-Chipaya languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="1" ind2="#">
+         <marc:subfield code="w">j</marc:subfield>
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">982</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="h">South American native languages</marc:subfield>
+         <marc:subfield code="j">Chibchan and Paezan languages</marc:subfield>
+         <marc:subfield code="t">Yanomam languages, Warao</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="1" ind2="#">
+         <marc:subfield code="w">anaa</marc:subfield>
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">983</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="h">South American native languages</marc:subfield>
+         <marc:subfield code="j">Quechuan (Kechuan), Aymaran, Tucanoan, Tupí, Arawakan languages</marc:subfield>
+         <marc:subfield code="t">Yaruro</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="1" ind2="#">
+         <marc:subfield code="w">j</marc:subfield>
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">9837</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="h">South American native languages</marc:subfield>
+         <marc:subfield code="h">Quechuan (Kechuan), Aymaran, Tucanoan, Tupí, Arawakan languages</marc:subfield>
+         <marc:subfield code="j">Jivaroan languages</marc:subfield>
+         <marc:subfield code="t">Yaruro</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="1" ind2="#">
+         <marc:subfield code="w">j</marc:subfield>
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">984</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="h">South American native languages</marc:subfield>
+         <marc:subfield code="j">Carib, Macro-Ge, Nambiquaran, Panoan languages</marc:subfield>
+         <marc:subfield code="t">Hixkaryana, Mataco-Guaicuru, Tacanan, Witotoan languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="680" ind1="0" ind2="#">
+         <marc:subfield code="i">Including Araucanian, Cahuapanan, Mataco-Guaicuru, Tacanan, Uru-Chipaya, Witotoan, Yanomam languages; Hixkaryana, Warao, Yaruro</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">American Indian languages</marc:subfield>
+         <marc:subfield code="c">South America</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">American native languages</marc:subfield>
+         <marc:subfield code="c">South America</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Amerind languages</marc:subfield>
+         <marc:subfield code="c">South America</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Andoke language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Andoque language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Araona language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Araucanian language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Cahuapanan languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Catuquina language (Catuquinan)</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Chapacura language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Chayahuita language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Chipaya language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Chulupí language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Guaicuru languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Guaycuruan languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Hishkaryana language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Hixkaryana language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Indian languages (American)</marc:subfield>
+         <marc:subfield code="c">South America</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Mapuche language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Mapudungu language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Mataco languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Mataco-Guaicuru languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Murui language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Native American languages</marc:subfield>
+         <marc:subfield code="c">South America</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">South American native languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Tacanan languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Tucuna language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Uru-Chipaya languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Waica language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Warao language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Warrau language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Witotoan languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Yanomam languages</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Yanomamo language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Yaruro language</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+</marc:collection>

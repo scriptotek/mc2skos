@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="084" ind1="0" ind2="#">
+         <marc:subfield code="a">ddc</marc:subfield>
+         <marc:subfield code="c">21</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="153" ind1=" " ind2=" ">
+         <marc:subfield code="a">003.7</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Systems</marc:subfield>
+         <marc:subfield code="j">Kinds of systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="680" ind1="0" ind2="#">
+         <marc:subfield code="i">Including deterministic, hierarchical, lumped-parameter, self-organizing, small-scale systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="684" ind1="0" ind2="#">
+         <marc:subfield code="a">003.7</marc:subfield>
+         <marc:subfield code="j">Kinds of systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="684" ind1="1" ind2="#">
+         <marc:subfield code="i">Many kinds of systems are defined in terms of the equations used to model them, e.g., distributed-parameter systems are defined as systems governed by partial differential equations. Other equations may be used to model the behavior of the same real-world system. Class a work about a specific kind of system according to the way the work describes the system, e.g., a work that discusses applying the mathematics of stochastic (random) processes to systems</marc:subfield>
+         <marc:subfield code="a">003.76.</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="685" ind1="0" ind2="3">
+         <marc:subfield code="t">Kinds of systems</marc:subfield>
+         <marc:subfield code="b">003</marc:subfield>
+         <marc:subfield code="d">19890306</marc:subfield>
+         <marc:subfield code="2">20</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="685" ind1="0" ind2="0">
+         <marc:subfield code="t">Self-organizing systems</marc:subfield>
+         <marc:subfield code="i">formerly located in</marc:subfield>
+         <marc:subfield code="b">001.533</marc:subfield>
+         <marc:subfield code="d">19890306</marc:subfield>
+         <marc:subfield code="2">20</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Deterministic systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Hierarchical systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Lumped-parameter systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Self-organizing systems</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Small-scale systems</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="153" ind1=" " ind2=" ">
+         <marc:subfield code="a">003.8</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Systems</marc:subfield>
+         <marc:subfield code="j">Systems distinguished in relation to time</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="0" ind2="#">
+         <marc:subfield code="w">jg</marc:subfield>
+         <marc:subfield code="a">003.7</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Systems</marc:subfield>
+         <marc:subfield code="j">Kinds of systems</marc:subfield>
+         <marc:subfield code="t">systems distinguished in relation to time</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+</marc:collection>

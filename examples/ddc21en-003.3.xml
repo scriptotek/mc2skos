@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="084" ind1="0" ind2="#">
+         <marc:subfield code="a">ddc</marc:subfield>
+         <marc:subfield code="c">21</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="153" ind1=" " ind2=" ">
+         <marc:subfield code="a">003.3</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Systems</marc:subfield>
+         <marc:subfield code="j">Computer modeling and simulation</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="253" ind1="2" ind2="#">
+         <marc:subfield code="i">For computer modeling and simulation applied to a specific subject, see the subject plus notation</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">0113</marc:subfield>
+         <marc:subfield code="i">from Table 1, e.g., computer modeling in economics</marc:subfield>
+         <marc:subfield code="a">330.0113</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="453" ind1="0" ind2="#">
+         <marc:subfield code="w">m</marc:subfield>
+         <marc:subfield code="a">003.0285</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Systems</marc:subfield>
+         <marc:subfield code="h">Miscellany</marc:subfield>
+         <marc:subfield code="h">Auxiliary techniques and procedures; apparatus, equipment, materials</marc:subfield>
+         <marc:subfield code="k">Auxiliary techniques and procedures</marc:subfield>
+         <marc:subfield code="j">Data processing. Computer applications</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="0" ind2="#">
+         <marc:subfield code="w">k</marc:subfield>
+         <marc:subfield code="a">001.42</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="h">Knowledge</marc:subfield>
+         <marc:subfield code="h">Research; statistical methods</marc:subfield>
+         <marc:subfield code="j">Research methods</marc:subfield>
+         <marc:subfield code="t">computer modeling and simulation</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="0" ind2="#">
+         <marc:subfield code="w">k</marc:subfield>
+         <marc:subfield code="a">004</marc:subfield>
+         <marc:subfield code="h">Generalities</marc:subfield>
+         <marc:subfield code="j">Data processing. Computer science</marc:subfield>
+         <marc:subfield code="t">computer modeling and simulation</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="680" ind1="1" ind2="#">
+         <marc:subfield code="i">Class here data processing and computer science applied to systems, computer implementation of mathematical models of systems, interdisciplinary works on computer modeling and simulation</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="684" ind1="0" ind2="#">
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">0285</marc:subfield>
+         <marc:subfield code="i">vs.</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">0113</marc:subfield>
+         <marc:subfield code="j">Data processing. Computer applications vs. [Computer modeling and simulation]</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="685" ind1="0" ind2="3">
+         <marc:subfield code="t">Computer modeling and simulation</marc:subfield>
+         <marc:subfield code="b">003</marc:subfield>
+         <marc:subfield code="d">19890306</marc:subfield>
+         <marc:subfield code="2">20</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Computer modeling</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Computer simulation</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="761" ind1=" " ind2=" ">
+         <marc:subfield code="i">Standard subdivisions are added for either or both topics in heading</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="761" ind1=" " ind2=" ">
+         <marc:subfield code="i">Add to base number</marc:subfield>
+         <marc:subfield code="b">003.3</marc:subfield>
+         <marc:subfield code="i">the numbers following</marc:subfield>
+         <marc:subfield code="r">00</marc:subfield>
+         <marc:subfield code="i">in</marc:subfield>
+         <marc:subfield code="d">004</marc:subfield>
+         <marc:subfield code="c">006,</marc:subfield>
+         <marc:subfield code="i">e.g., computer simulation languages</marc:subfield>
+         <marc:subfield code="e">003.3513</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="765" ind1="1" ind2="#">
+         <marc:subfield code="b">003.3</marc:subfield>
+         <marc:subfield code="a">003.3</marc:subfield>
+         <marc:subfield code="r">00</marc:subfield>
+         <marc:subfield code="s">513</marc:subfield>
+         <marc:subfield code="u">003.3513</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="765" ind1="1" ind2="#">
+         <marc:subfield code="b">003</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="a">0</marc:subfield>
+         <marc:subfield code="z">1</marc:subfield>
+         <marc:subfield code="s">0285</marc:subfield>
+         <marc:subfield code="u">003.0285</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+</marc:collection>
