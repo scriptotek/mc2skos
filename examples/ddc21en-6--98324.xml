@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+   <marc:record>
+      <marc:leader>*****nw###22*****n##4500</marc:leader>
+      <marc:datafield tag="084" ind1="0" ind2="#">
+         <marc:subfield code="a">ddc</marc:subfield>
+         <marc:subfield code="c">21</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="153" ind1=" " ind2=" ">
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">98324</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="h">South American native languages</marc:subfield>
+         <marc:subfield code="h">Quechuan (Kechuan), Aymaran, Tucanoan, Tupí, Arawakan languages</marc:subfield>
+         <marc:subfield code="h">Quechuan (Kechuan) and Aymaran languages</marc:subfield>
+         <marc:subfield code="j">Aymaran languages. Aymara</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="553" ind1="1" ind2="#">
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">98323</marc:subfield>
+         <marc:subfield code="h">Languages</marc:subfield>
+         <marc:subfield code="h">Other languages</marc:subfield>
+         <marc:subfield code="h">South American native languages</marc:subfield>
+         <marc:subfield code="h">Quechuan (Kechuan), Aymaran, Tucanoan, Tupí, Arawakan languages</marc:subfield>
+         <marc:subfield code="h">Quechuan (Kechuan) and Aymaran languages</marc:subfield>
+         <marc:subfield code="j">Quechuan (Kechuan) languages. Quechua (Kechua)</marc:subfield>
+         <marc:subfield code="t">Aymaran languages. Aymara</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="685" ind1="2" ind2="1">
+         <marc:subfield code="t">Aymaran languages</marc:subfield>
+         <marc:subfield code="i">formerly</marc:subfield>
+         <marc:subfield code="z">6</marc:subfield>
+         <marc:subfield code="a">98323</marc:subfield>
+         <marc:subfield code="d">19960930</marc:subfield>
+         <marc:subfield code="2">21</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Aymara language</marc:subfield>
+      </marc:datafield>
+      <marc:datafield tag="753" ind1=" " ind2=" ">
+         <marc:subfield code="a">Aymaran languages</marc:subfield>
+      </marc:datafield>
+   </marc:record>
+</marc:collection>
