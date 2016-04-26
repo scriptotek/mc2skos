@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # encoding=utf-8
-
+from __future__ import print_function
 import os
 import sys
 
 try:
     from setuptools import setup
 except ImportError:
-    print "This package requires 'setuptools' to be installed."
+    print("This package requires 'setuptools' to be installed.")
     sys.exit(1)
 
 requirements = ['rdflib', 'lxml', 'otsrdflib']
