@@ -4,11 +4,6 @@
 # Script to convert MARC 21 Classification records
 # (serialized as MARCXML) to SKOS concepts. See
 # README.md for for more information.
-#
-# Usage:
-#
-#   $ python mc2skos.py infile.xml outfile.rdf
-#
 
 import sys
 import re
