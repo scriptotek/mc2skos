@@ -78,20 +78,6 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
 
     out = {'notes': [], 'scope_notes': [], 'history_notes': [], 'index_terms': []}
 
-    # Parse 084: Classification Scheme and Edition
-    r = rec.xpath('mx:datafield[@tag="084"]', namespaces=nsmap)
-    if not r:
-        return 'records missing 084 field'
-
-    f084 = r[0]
-    scheme = [x for x in f084.xpath('mx:subfield[@code="a"]/text()', namespaces=nsmap)]
-    edt = [x for x in f084.xpath('mx:subfield[@code="c"]/text()', namespaces=nsmap)]
-    if len(scheme) != 1 or len(edt) != 1:
-        logger.debug('Ignoring record missing scheme or edition')
-        return 'records missing classification scheme or edition'
-    out['scheme'] = scheme[0]
-    out['edition'] = edt[0]
-
     # Parse 153: Classification number
     r = rec.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
     class_no = get_classno(rec, nsmap)
