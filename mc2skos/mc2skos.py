@@ -527,7 +527,7 @@ def main():
     s = OrderedTurtleSerializer(g)
     s.sorters = {
       'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0]),
-      'http://dewey.info/class/T([0-9])\-\-([0-9]+)': lambda x: 1000. + int(x[0]) + float('.' + x[1])
+      'http://dewey.info/class/([0-9])\-\-([0-9]+)': lambda x: 1000. + int(x[0]) + float('.' + x[1])
     }
     s.serialize(open(out_file, 'wb'))
     logger.info('Wrote RDF: %s', out_file)
