@@ -26,12 +26,13 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
 
-g = Graph()
 WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
 
 counts = {}
 
+class InvalidRecordError(RuntimeError):
+    pass
 
 def stringify(nodes):
     note = ''
@@ -68,13 +69,16 @@ def get_ess(node, nsmap):
     return [x.replace('ess=', '') for x in node.xpath('mx:subfield[@code="9"]/text()[1]', namespaces=nsmap)]
 
 
-def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexterms=False, include_notes=False, include_components=False):
+def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_indexterms=False, include_notes=False, include_components=False):
     # Parse a single MARC21 classification record
     class_no = ''
 
-    leader = rec.xpath('mx:leader', namespaces=nsmap)[0].text
+    try:
+        leader = rec.xpath('mx:leader', namespaces=nsmap)[0].text
+    except IndexError:
+        raise InvalidRecordError('Record does not have a leader')
     if leader[6] != 'w':  # w: classification, z: authority
-        return
+        raise InvalidRecordError('Record is not a Marc21 Classification record')
 
     out = {'notes': [], 'scope_notes': [], 'history_notes': [], 'index_terms': []}
 
@@ -121,7 +125,7 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     # Generate URI
     uri = namespace[out['class_no']]
 
-    existing = [x for x in g.triples((uri, None, None))]
+    existing = [x for x in graph.triples((uri, None, None))]
     if len(existing) != 0:
         logger.warning('Duplicate records for %s', out['class_no'])
         return 'duplicate records'
@@ -130,35 +134,35 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     # Strictly, we do not need to explicitly state here that <A> and <B> are instances
     # of skos:Concept, because such statements are entailed by the definition
     # of skos:semanticRelation.
-    g.add((uri, RDF.type, SKOS.Concept))
+    graph.add((uri, RDF.type, SKOS.Concept))
 
     # $e - Classification number hierarchy--single number or beginning number of span (R)
     parent = get_parent(rec, nsmap)
     if parent:
         if skos_scheme is not None:
-            g.add((uri, SKOS.inScheme, skos_scheme))
+            graph.add((uri, SKOS.inScheme, skos_scheme))
         if parent != out['class_no']:
-            g.add((uri, SKOS.broader, namespace[parent]))
+            graph.add((uri, SKOS.broader, namespace[parent]))
     else:
         logger.info('Marking %s as topConcept', class_no)
         if skos_scheme is not None:
-            g.add((uri, SKOS.topConceptOf, skos_scheme))
+            graph.add((uri, SKOS.topConceptOf, skos_scheme))
         # sys.exit(1)
         # return 'records where parents could not be found'
 
     if same_as is not None:
-        g.add((uri, OWL.sameAs, URIRef(same_as.format(class_no=class_no))))
+        graph.add((uri, OWL.sameAs, URIRef(same_as.format(class_no=class_no))))
 
     # Add caption as skos:prefLabel
     if 'caption' in out:
-        g.add((uri, SKOS.prefLabel, Literal(out['caption'], lang='nb')))
+        graph.add((uri, SKOS.prefLabel, Literal(out['caption'], lang='nb')))
 
     # Add classification number as skos:notation
     if 'class_no' in out:
         if out['class_no'].find('--') != -1:
-            g.add((uri, SKOS.notation, Literal('T' + out['class_no'])))
+            graph.add((uri, SKOS.notation, Literal('T' + out['class_no'])))
         else:
-            g.add((uri, SKOS.notation, Literal(out['class_no'])))
+            graph.add((uri, SKOS.notation, Literal(out['class_no'])))
 
     # 253 : Complex See Reference (R)
     # Example:
@@ -173,7 +177,7 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="253"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 353 : Complex See Also Reference (R)
     # Example:
@@ -187,7 +191,7 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="353"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 680 : Scope note
     # Example:
@@ -206,22 +210,22 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="680"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            g.add((uri, SKOS.scopeNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.scopeNote, Literal(note, lang='nb')))
             ess = get_ess(entry, nsmap)
             if 'ndf' in ess:
-                g.add((uri, SKOS.definition, Literal(note, lang='nb')))
+                graph.add((uri, SKOS.definition, Literal(note, lang='nb')))
             elif 'nvn' in ess:
                 for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                    g.add((uri, WD.variantName, Literal(t.capitalize(), lang='nb')))
+                    graph.add((uri, WD.variantName, Literal(t.capitalize(), lang='nb')))
             elif 'nch' in ess:
                 for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                    g.add((uri, WD.classHere, Literal(t.capitalize(), lang='nb')))
+                    graph.add((uri, WD.classHere, Literal(t.capitalize(), lang='nb')))
             elif 'nin' in ess:
                 for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                    g.add((uri, WD.including, Literal(t.capitalize(), lang='nb')))
+                    graph.add((uri, WD.including, Literal(t.capitalize(), lang='nb')))
             elif 'nph' in ess:
                 for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                    g.add((uri, WD.formerName, Literal(t.capitalize(), lang='nb')))
+                    graph.add((uri, WD.formerName, Literal(t.capitalize(), lang='nb')))
 
     # 683 : Application Instruction Note
     # Example:
@@ -236,7 +240,7 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="683"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 685 : History note
     # Example:
@@ -250,10 +254,10 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="685"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            g.add((uri, SKOS.historyNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.historyNote, Literal(note, lang='nb')))
             ess = get_ess(entry, nsmap)
             if 'ndn' in ess:
-                g.add((uri, OWL.deprecated, Literal(True)))
+                graph.add((uri, OWL.deprecated, Literal(True)))
 
     # 694 : ??? Note : Wrong code for 684 'Auxiliary Instruction Note' ??
     # Example:
@@ -268,7 +272,7 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
             ess = get_ess(entry, nsmap)
             if 'nml' in ess:
-                g.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+                graph.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
 
     # 700 - Index Term - Personal Name (R)
     # 710 - Index Term - Corporate Name (R)
@@ -287,7 +291,7 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
 
             if term == '':
                 return 'records having empty index terms'
-            g.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
+            graph.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
 
     # 765 : Synthesized Number Components
     if include_components:
@@ -324,16 +328,16 @@ def process_record(rec, nsmap, namespace, skos_scheme, same_as, include_indexter
         if len(components) != 0:
             component = components.pop(0)
             b1 = BNode()
-            g.add((uri, MADS.componentList, b1))
-            g.add((b1, RDF.first, namespace[component]))
+            graph.add((uri, MADS.componentList, b1))
+            graph.add((b1, RDF.first, namespace[component]))
 
             for component in components:
                 b2 = BNode()
-                g.add((b1, RDF.rest, b2))
-                g.add((b2, RDF.first, namespace[component]))
+                graph.add((b1, RDF.rest, b2))
+                graph.add((b2, RDF.first, namespace[component]))
                 b1 = b2
 
-            g.add((b1, RDF.rest, RDF.nil))
+            graph.add((b1, RDF.rest, RDF.nil))
 
     return 'valid records'
 
@@ -458,7 +462,9 @@ def main():
 
     ns1 = Namespace(args.namespace[0])
     DCT = Namespace('http://purl.org/dc/terms/')
-    nm = g.namespace_manager
+
+    graph = Graph()
+    nm = graph.namespace_manager
     nm.bind('dct', DCT)
     nm.bind('skos', SKOS)
     nm.bind('wd', WD)
@@ -500,7 +506,10 @@ def main():
     n = 0
     t0 = time.time()
     for record in get_records(in_file):
-        res = process_record(record, nsmap, **options)
+        try:
+            res = process_record(graph, record, nsmap, **options)
+        except InvalidRecordError:
+            pass  # ignore
         # if res is not None:
         #     if res not in counts:
         #         counts[res] = 0
@@ -510,7 +519,7 @@ def main():
     for k, v in counts.items():
         logger.info(' - %d %s', v, k)
 
-    s = OrderedTurtleSerializer(g)
+    s = OrderedTurtleSerializer(graph)
     s.sorters = {
       'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0]),
       'http://dewey.info/class/([0-9])\-\-([0-9]+)': lambda x: 1000. + int(x[0]) + float('.' + x[1])
