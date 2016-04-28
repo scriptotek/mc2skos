@@ -19,7 +19,8 @@ Using [Pip](http://pip.readthedocs.org/en/latest/installing.html):
 pip install -U git+https://github.com/scriptotek/mc2skos.git
 ```
 
-* Requires Python 2.6 or 2.7. Not tested with 3.x.
+* Works with both Python 2.x and 3.x. See [Travis](https://travis-ci.org/scriptotek/mc2skos)
+  for details on tested Python versions.
 * If lxml fails to install on Windows, try the windows installer
 from [from PyPI](https://pypi.python.org/pypi/lxml/3.4.0).
 * Make sure the Python scripts folder has been added to your PATH.
