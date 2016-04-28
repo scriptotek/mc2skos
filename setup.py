@@ -10,7 +10,7 @@ except ImportError:
     print("This package requires 'setuptools' to be installed.")
     sys.exit(1)
 
-requirements = ['rdflib', 'lxml', 'otsrdflib']
+requirements = ['rdflib', 'lxml', 'otsrdflib', 'iso-639']
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.md')).read()

@@ -1,3 +1,4 @@
 rdflib
 lxml
 otsrdflib
+iso-639

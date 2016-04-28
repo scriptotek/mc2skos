@@ -73,6 +73,28 @@ class TestProcessRecord(unittest.TestCase):
             (uri, SKOS.notation, Literal('003.5')),
         ])
 
+    def test_language(self):
+        rec = etree.fromstring('''
+          <marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
+            <marc:leader>00000nw  a2200000n  4500</marc:leader>
+            <marc:datafield tag="040" ind2=" " ind1=" ">
+              <marc:subfield code="a">OCLCD</marc:subfield>
+              <marc:subfield code="b">nob</marc:subfield>
+              <marc:subfield code="c">OCLCD</marc:subfield>
+            </marc:datafield>
+            <marc:datafield tag="153" ind2=" " ind1=" ">
+              <marc:subfield code="a">564.58</marc:subfield>
+              <marc:subfield code="e">564.5</marc:subfield>
+              <marc:subfield code="j">Decapoda (tiarmede blekkspruter)</marc:subfield>
+            </marc:datafield>
+          </marc:record>
+        ''')
+        graph = Graph()
+        process_record(graph, rec, self.nsmap, self.ns, None, None)
+        uri = URIRef(u'http://test/564.58')
+
+        assert graph.preferredLabel(uri)[0][0] == SKOS.prefLabel
+        assert graph.preferredLabel(uri)[0][1].language == 'nb'
 
 if __name__ == '__main__':
     unittest.main()

@@ -9,6 +9,7 @@ import sys
 import re
 import time
 from lxml import etree
+from iso639 import languages
 import argparse
 from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
 from rdflib import URIRef, RDFS, Literal, Graph, BNode
@@ -81,6 +82,11 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
         raise InvalidRecordError('Record is not a Marc21 Classification record')
 
     out = {'notes': [], 'scope_notes': [], 'history_notes': [], 'index_terms': []}
+
+    # Parse 040: Record Source
+    lang = 'en'
+    for res in rec.xpath('mx:datafield[@tag="040"]/mx:subfield[@code="b"]', namespaces=nsmap):
+        lang = languages.get(part2b=res.text).part1
 
     # Parse 153: Classification number
     r = rec.xpath('mx:datafield[@tag="153"]', namespaces=nsmap)
@@ -155,7 +161,7 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
 
     # Add caption as skos:prefLabel
     if 'caption' in out:
-        graph.add((uri, SKOS.prefLabel, Literal(out['caption'], lang='nb')))
+        graph.add((uri, SKOS.prefLabel, Literal(out['caption'], lang=lang)))
 
     # Add classification number as skos:notation
     if 'class_no' in out:
@@ -177,7 +183,7 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="253"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            graph.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.editorialNote, Literal(note, lang=lang)))
 
     # 353 : Complex See Also Reference (R)
     # Example:
@@ -191,7 +197,7 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="353"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            graph.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.editorialNote, Literal(note, lang=lang)))
 
     # 680 : Scope note
     # Example:
@@ -210,22 +216,22 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="680"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            graph.add((uri, SKOS.scopeNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.scopeNote, Literal(note, lang=lang)))
             ess = get_ess(entry, nsmap)
             if 'ndf' in ess:
-                graph.add((uri, SKOS.definition, Literal(note, lang='nb')))
+                graph.add((uri, SKOS.definition, Literal(note, lang=lang)))
             elif 'nvn' in ess:
                 for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                    graph.add((uri, WD.variantName, Literal(t.capitalize(), lang='nb')))
+                    graph.add((uri, WD.variantName, Literal(t.capitalize(), lang=lang)))
             elif 'nch' in ess:
                 for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                    graph.add((uri, WD.classHere, Literal(t.capitalize(), lang='nb')))
+                    graph.add((uri, WD.classHere, Literal(t.capitalize(), lang=lang)))
             elif 'nin' in ess:
                 for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                    graph.add((uri, WD.including, Literal(t.capitalize(), lang='nb')))
+                    graph.add((uri, WD.including, Literal(t.capitalize(), lang=lang)))
             elif 'nph' in ess:
                 for t in entry.xpath('mx:subfield[@code="t"]/text()', namespaces=nsmap):
-                    graph.add((uri, WD.formerName, Literal(t.capitalize(), lang='nb')))
+                    graph.add((uri, WD.formerName, Literal(t.capitalize(), lang=lang)))
 
     # 683 : Application Instruction Note
     # Example:
@@ -240,7 +246,7 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="683"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            graph.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.editorialNote, Literal(note, lang=lang)))
 
     # 685 : History note
     # Example:
@@ -254,7 +260,7 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
     if include_notes:
         for entry in rec.xpath('mx:datafield[@tag="685"]', namespaces=nsmap):
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
-            graph.add((uri, SKOS.historyNote, Literal(note, lang='nb')))
+            graph.add((uri, SKOS.historyNote, Literal(note, lang=lang)))
             ess = get_ess(entry, nsmap)
             if 'ndn' in ess:
                 graph.add((uri, OWL.deprecated, Literal(True)))
@@ -272,7 +278,7 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
             note = stringify(entry.xpath('mx:subfield', namespaces=nsmap))
             ess = get_ess(entry, nsmap)
             if 'nml' in ess:
-                graph.add((uri, SKOS.editorialNote, Literal(note, lang='nb')))
+                graph.add((uri, SKOS.editorialNote, Literal(note, lang=lang)))
 
     # 700 - Index Term - Personal Name (R)
     # 710 - Index Term - Corporate Name (R)
@@ -291,7 +297,7 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
 
             if term == '':
                 return 'records having empty index terms'
-            graph.add((uri, SKOS.altLabel, Literal(term, lang='nb')))
+            graph.add((uri, SKOS.altLabel, Literal(term, lang=lang)))
 
     # 765 : Synthesized Number Components
     if include_components:
