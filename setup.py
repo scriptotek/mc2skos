@@ -10,8 +10,6 @@ except ImportError:
     print("This package requires 'setuptools' to be installed.")
     sys.exit(1)
 
-requirements = ['rdflib', 'lxml', 'otsrdflib', 'iso-639']
-
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.md')).read()
 
@@ -22,16 +20,23 @@ setup(name='mc2skos',
       classifiers=[
           'Programming Language :: Python',
           'Programming Language :: Python :: 2.6',
-          'Programming Language :: Python :: 2.7'
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.3',
+          'Programming Language :: Python :: 3.4',
+          'Programming Language :: Python :: 3.5',
       ],
       keywords='marc rdf skos',
       author='Dan Michael O. Heggø',
       author_email='danmichaelo@gmail.com',
       url='https://github.com/scriptotek/mc2skos',
       license='MIT',
-      install_requires=requirements,
-      test_suite='nose.collector',
-      test_require=['nose','coverage'],
+      install_requires=['rdflib',
+                        'lxml',
+                        'otsrdflib',
+                        'iso-639',
+                        ],
+      setup_requires=['pytest-runner'],
+      tests_require=['pytest', 'pytest-pep8', 'pytest-cov'],
       packages=['mc2skos'],
       entry_points={'console_scripts': ['mc2skos=mc2skos.mc2skos:main']}
       )

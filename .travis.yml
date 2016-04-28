@@ -6,12 +6,7 @@ python:
   - "3.4"
   - "3.5"
   - "nightly"
-install:
-  - pip install -r requirements.txt
-  - pip install -r requirements-test.txt
-  - pip install coveralls
-script: 
-  - python setup.py install
-  - nosetests --with-coverage --cover-package=mc2skos
+script:
+  - python setup.py test
 after_success:
-  - coveralls
+  - bash <(curl -s https://codecov.io/bash)
