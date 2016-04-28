@@ -32,19 +32,31 @@ MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
 
 counts = {}
 
+
 class InvalidRecordError(RuntimeError):
     pass
+
 
 def stringify(nodes):
     note = ''
     for subfield in nodes:
         c = subfield.get('code')
         if c in ['a', 'c', 'i', 't', 'x']:
+
+            # Captions can include Processing Instruction tags, like in this example
+            # (linebreaks added):
+            #
+            #   <mx:subfield xmlns:mx="http://www.loc.gov/MARC21/slim"
+            #                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" code="t">
+            #     <?ddc fotag="fo:inline" font-style="italic"?>L
+            #       <?ddc fotag="fo:inline" vertical-align="super" font-size="70%"?>p
+            #       <?ddc fotag="/fo:inline"?>
+            #     <?ddc fotag="/fo:inline"?>-rom
+            #   </mx:subfield>
+            #
+            # The code below just strips away the PI tags, giving "Lp-rom" for this example.
+
             children = subfield.getchildren()
-
-            # because this can happen...
-            # <mx:subfield xmlns:mx="http://www.loc.gov/MARC21/slim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" code="t"><?ddc fotag="fo:inline" font-style="italic"?>L<?ddc fotag="fo:inline" vertical-align="super" font-size="70%"?>p<?ddc fotag="/fo:inline"?><?ddc fotag="/fo:inline"?>-rom</mx:subfield>
-
             if len(children) != 0:
                 txt = ''
                 for child in children:
@@ -70,7 +82,8 @@ def get_ess(node, nsmap):
     return [x.replace('ess=', '') for x in node.xpath('mx:subfield[@code="9"]/text()[1]', namespaces=nsmap)]
 
 
-def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_indexterms=False, include_notes=False, include_components=False):
+def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_indexterms=False,
+                   include_notes=False, include_components=False):
     # Parse a single MARC21 classification record
     class_no = ''
 
@@ -289,7 +302,8 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
     # 751 - Index Term - Geographic Name (R)
     # String order: $a : $x : $v : $y : $z
     if include_indexterms:
-        for entry in rec.xpath('mx:datafield[@tag="700" or @tag="710" or @tag="711" or @tag="730" or @tag="748" or @tag="750" or @tag="751"]', namespaces=nsmap):
+        tags = ['@tag="{}"' for tag in ['700', '710', '711', '730', '748', '750', '751']]
+        for entry in rec.xpath('mx:datafield[{}]'.format(' or '.join(tags)), namespaces=nsmap):
             term = []
             for x in ['a', 'x', 'y', 'z', 'v']:
                 term.extend(entry.xpath('mx:subfield[@code="%s"]/text()' % (x), namespaces=nsmap))
@@ -423,9 +437,6 @@ def get_parent(node, nsmap):
 
     return parent
 
-    # node = doc.xpath('//mx:datafield[@tag="153"][count(./mx:subfield[@code="a"]) = 1 and ./mx:subfield[@code="a"] = "%s" and ./mx:subfield[@code="c"] = "%s"]' % (par1, par2),
-    #                  namespaces={'mx': 'http://www.loc.gov/MARC21/slim'})
-
 
 def get_records(in_file):
     logger.info('Parsing: %s', in_file)
@@ -460,9 +471,12 @@ def main():
     parser.add_argument('--sameas', dest='sameAs', help='Template for sameAs URIs.')
     parser.add_argument('--prefix', dest='prefix', help='Namespace prefix.')
 
-    parser.add_argument('--indexterms', dest='indexterms', action='store_true', help='Include index terms from 7XX.')
-    parser.add_argument('--notes', dest='notes', action='store_true', help='Include note fields.')
-    parser.add_argument('--components', dest='components', action='store_true', help='Include component information from 765.')
+    parser.add_argument('--indexterms', dest='indexterms', action='store_true',
+                        help='Include index terms from 7XX.')
+    parser.add_argument('--notes', dest='notes', action='store_true',
+                        help='Include note fields.')
+    parser.add_argument('--components', dest='components', action='store_true',
+                        help='Include component information from 765.')
 
     args = parser.parse_args()
 
