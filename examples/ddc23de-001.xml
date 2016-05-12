@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+<marc:record>
+  <marc:leader>00000nw  a2200000n  4500</marc:leader>
+  <marc:controlfield tag="001">e957a697-9369-3496-85af-bd067229b32d</marc:controlfield>
+  <marc:controlfield tag="003">DE-101</marc:controlfield>
+  <marc:controlfield tag="005">20110728111208.0</marc:controlfield>
+  <marc:controlfield tag="008">000202aaaabaaa</marc:controlfield>
+  <marc:datafield tag="035" ind2=" " ind1=" ">
+    <marc:subfield code="a">ocd00116591</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="040" ind2=" " ind1=" ">
+    <marc:subfield code="a">OCoLC-D</marc:subfield>
+    <marc:subfield code="b">ger</marc:subfield>
+    <marc:subfield code="c">DE-101</marc:subfield>
+    <marc:subfield code="d">DE-101</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="084" ind2=" " ind1="0">
+    <marc:subfield code="a">ddc</marc:subfield>
+    <marc:subfield code="c">23de</marc:subfield>
+    <marc:subfield code="e">ger</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="153" ind2=" " ind1=" ">
+    <marc:subfield code="a">001</marc:subfield>
+    <marc:subfield code="e">00</marc:subfield>
+    <marc:subfield code="j">Wissen</marc:subfield>
+    <marc:subfield code="9">ess=en</marc:subfield>
+    <marc:subfield code="9">ess=eh</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="680" ind2=" " ind1="1">
+    <marc:subfield code="i">Darstellung und kritische Bewertung intellektueller, geistiger Aktivität im Allgemeinen</marc:subfield>
+    <marc:subfield code="9">ess=nsc</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="680" ind2=" " ind1="0">
+    <marc:subfield code="i">Einschließlich:</marc:subfield>
+    <marc:subfield code="t">fächerübergreifende Werke über Berater</marc:subfield>
+    <marc:subfield code="9">ess=nin</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="680" ind2=" " ind1="1">
+    <marc:subfield code="i">Hier auch:</marc:subfield>
+    <marc:subfield code="t">Diskussion von Ideen aus vielen Gebieten, fächerübergreifender Ansatz zum Wissensbegriff</marc:subfield>
+    <marc:subfield code="9">ess=nch</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="253" ind2=" " ind1="2">
+    <marc:subfield code="i">Klassifiziere</marc:subfield>
+    <marc:subfield code="t">Epistemologie</marc:subfield>
+    <marc:subfield code="i">in</marc:subfield>
+    <marc:subfield code="a">121</marc:subfield>
+    <marc:subfield code="9">ess=nce</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="253" ind2=" " ind1="2">
+    <marc:subfield code="i">Klassifiziere</marc:subfield>
+    <marc:subfield code="t">eine Zusammenstellung von Wissen in einer bestimmten Form</marc:subfield>
+    <marc:subfield code="i">bei der Form, z.B.</marc:subfield>
+    <marc:subfield code="t">Enzyklopädien</marc:subfield>
+    <marc:subfield code="e">030</marc:subfield>
+    <marc:subfield code="9">ess=ncw</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="253" ind2=" " ind1="0">
+    <marc:subfield code="i">Für</marc:subfield>
+    <marc:subfield code="t">Berater oder für den Einsatz von Beratern in einem bestimmten Thema</marc:subfield>
+    <marc:subfield code="i">siehe das Thema, z.B.</marc:subfield>
+    <marc:subfield code="t">Bibliotheksberater</marc:subfield>
+    <marc:subfield code="e">023.2</marc:subfield>
+    <marc:subfield code="i">, technische Berater</marc:subfield>
+    <marc:subfield code="e">620</marc:subfield>
+    <marc:subfield code="i">, Einsatz von Beratern im Management</marc:subfield>
+    <marc:subfield code="e">658.46</marc:subfield>
+    <marc:subfield code="9">ess=nsw</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="684" ind2=" " ind1="2">
+    <marc:subfield code="i">Siehe Praxishilfe bei</marc:subfield>
+    <marc:subfield code="a">500</marc:subfield>
+    <marc:subfield code="i">vs.</marc:subfield>
+    <marc:subfield code="a">001</marc:subfield>
+    <marc:subfield code="9">ess=nsm</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="750" ind2="7" ind1=" ">
+    <marc:subfield code="a">Berater</marc:subfield>
+    <marc:subfield code="2">ddcri</marc:subfield>
+    <marc:subfield code="9">ps=PE</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="750" ind2="7" ind1=" ">
+    <marc:subfield code="a">Gutachter</marc:subfield>
+    <marc:subfield code="2">ddcri</marc:subfield>
+    <marc:subfield code="9">ps=PE</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="750" ind2="7" ind1=" ">
+    <marc:subfield code="a">Experten</marc:subfield>
+    <marc:subfield code="2">ddcri</marc:subfield>
+    <marc:subfield code="9">ps=PE</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="750" ind2="7" ind1=" ">
+    <marc:subfield code="a">Fächerübergreifender Ansatz zum Wissensbegriff</marc:subfield>
+    <marc:subfield code="2">ddcri</marc:subfield>
+    <marc:subfield code="9">ps=PE</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="750" ind2="7" ind1=" ">
+    <marc:subfield code="a">Wissen</marc:subfield>
+    <marc:subfield code="2">ddcri</marc:subfield>
+    <marc:subfield code="9">ps=PE</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="750" ind2="7" ind1=" ">
+    <marc:subfield code="a">Wissensbegriff</marc:subfield>
+    <marc:subfield code="2">ddcri</marc:subfield>
+    <marc:subfield code="9">ps=PE</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="750" ind2="7" ind1=" ">
+    <marc:subfield code="a">Wissenschaften (Wissensbegriff)</marc:subfield>
+    <marc:subfield code="2">ddcri</marc:subfield>
+    <marc:subfield code="9">ps=PE</marc:subfield>
+  </marc:datafield>
+</marc:record>
+</marc:collection>
