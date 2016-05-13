@@ -1,0 +1,26 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://test/003.52> a skos:Concept ;
+    skos:notation "003.52" ;
+    skos:prefLabel "Perception theory"@en .
+
+<http://test/006.37> a skos:Concept ;
+    skos:notation "006.37" ;
+    skos:prefLabel "Computer vision"@en .
+
+<http://test/006.4> a skos:Concept ;
+    skos:notation "006.4" ;
+    skos:prefLabel "Computer pattern recognition"@en .
+
+<http://test/153.7> a skos:Concept ;
+    skos:notation "153.7" ;
+    skos:prefLabel "Perceptual processes"@en .
+
+<http://test/573.87> a skos:Concept ;
+    skos:notation "573.87" ;
+    skos:prefLabel "Sense organs"@en .
+
