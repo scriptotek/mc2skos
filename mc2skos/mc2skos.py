@@ -303,7 +303,7 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
     # String order: $a : $x : $v : $y : $z
     if include_indexterms:
         tags = ['@tag="{}"' for tag in ['700', '710', '711', '730', '748', '750', '751']]
-        for entry in rec.xpath('mx:datafield[{}]'.format(' or '.join(tags)), namespaces=nsmap):
+        for entry in rec.xpath('mx:datafield[{0}]'.format(' or '.join(tags)), namespaces=nsmap):
             term = []
             for x in ['a', 'x', 'y', 'z', 'v']:
                 term.extend(entry.xpath('mx:subfield[@code="%s"]/text()' % (x), namespaces=nsmap))
@@ -335,7 +335,7 @@ def process_record(graph, rec, nsmap, namespace, skos_scheme, same_as, include_i
                 elif sf.get('code') == 'r':    # Root number
                     rootno = sf.text
                 elif sf.get('code') == 'z':    # Table identification
-                    table = '{}--'.format(sf.text)
+                    table = '{0}--'.format(sf.text)
                 # elif sf.get('code') == 't':    # Digits added from internal subarrangement or add table
                 #     components.append(sf.text)
                 elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
@@ -375,12 +375,12 @@ def get_classno(node, nsmap):
         code = sf.get('code')
 
         if code == 'z':
-            table = '{}--'.format(sf.text)
+            table = '{0}--'.format(sf.text)
         elif code == 'y':
             if sf.text == '1':
                 addtable = ':'
             else:
-                addtable = ':{};'.format(sf.text)
+                addtable = ':{0};'.format(sf.text)
         elif code in ['a', 'c', 'e', 'f']:
             val = table + addtable + sf.text
             if code == 'a':
@@ -414,12 +414,12 @@ def get_parent(node, nsmap):
         code = sf.get('code')
 
         if code == 'z':
-            table = '{}--'.format(sf.text)
+            table = '{0}--'.format(sf.text)
         elif code == 'y':
             if sf.text == '1':
                 addtable = ':'
             else:
-                addtable = ':{};'.format(sf.text)
+                addtable = ':{0};'.format(sf.text)
         elif code in ['a', 'c', 'e', 'f']:
             val = table + addtable + sf.text
             if code == 'e':
