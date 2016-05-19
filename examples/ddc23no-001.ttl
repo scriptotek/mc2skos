@@ -4,8 +4,9 @@
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://test/001> a skos:Concept ;
-    skos:broader <http://test/00> ;
+<http://dewey.info/class/001/e23/> a skos:Concept ;
+    skos:broader <http://dewey.info/class/00/e23/> ;
+    skos:inScheme <http://dewey.info/scheme/edition/e23/> ;
     skos:notation "001" ;
     skos:prefLabel "Kunnskap"@nb .
 

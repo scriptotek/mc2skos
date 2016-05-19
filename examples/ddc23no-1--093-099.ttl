@@ -4,8 +4,10 @@
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://test/1--093-099> a skos:Concept ;
-    skos:broader <http://test/1--09> ;
+<http://dewey.info/class/1--093-099/e23/> a skos:Concept ;
+    skos:broader <http://dewey.info/class/1--09/e23/> ;
+    skos:inScheme <http://dewey.info/scheme/edition/e23/>,
+        <http://dewey.info/table/1/e23/> ;
     skos:notation "T1--093-099" ;
     skos:prefLabel "Bestemte verdensdeler, stater, lokalområder; himmellegemer utenfor jorda"@nb .
 

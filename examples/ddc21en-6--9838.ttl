@@ -4,7 +4,9 @@
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://test/6--9838> a skos:Concept ;
+<http://dewey.info/class/6--9838/e21/> a skos:Concept ;
+    skos:inScheme <http://dewey.info/scheme/edition/e21/>,
+        <http://dewey.info/table/6/e21/> ;
     skos:notation "T6--9838" ;
     skos:prefLabel "Tupí languages"@en .
 

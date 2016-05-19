@@ -4,15 +4,8 @@
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://test/003.5> a skos:Concept ;
+<http://dewey.info/class/003.5/e21/> a skos:Concept ;
+    skos:inScheme <http://dewey.info/scheme/edition/e21/> ;
     skos:notation "003.5" ;
     skos:prefLabel "Theory of communication and control"@en .
-
-<http://test/006.3> a skos:Concept ;
-    skos:notation "006.3" ;
-    skos:prefLabel "Artificial intelligence"@en .
-
-<http://test/302.2> a skos:Concept ;
-    skos:notation "302.2" ;
-    skos:prefLabel "Communication"@en .
 

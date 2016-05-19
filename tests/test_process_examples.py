@@ -21,17 +21,16 @@ def marc_file(request):
     return request.param
 
 
-def test_example(marc_file):
+def test_ddc_example(marc_file):
 
     graph = Graph()
     nsmap = {'mx': 'http://www.loc.gov/MARC21/slim'}
-    ns = Namespace('http://test/')
 
-    print(marc_file)
-    match = re.match('^(?P<name>examples/(?P<scheme>[a-z]+\d{2})(?P<lang>[a-z]+)-(?P<notation>((?P<table>\d+)--)?[\d.]+-?[\d.]*))\.xml$', marc_file)
+    match = re.match('^(?P<name>examples/ddc(?P<edition>\d{2})(?P<lang>[a-z]+)-(?P<notation>((?P<table>\d+)--)?[\d.]+-?[\d.]*))\.xml$', marc_file)
     assert match is not None
 
     name = match.group('name')
+    edition = match.group('edition')
     notation = match.group('notation')
     table = match.group('table')
 
@@ -39,10 +38,10 @@ def test_example(marc_file):
 
     graph = Graph()
     for record in get_records(marc_file):
-        process_record(graph, record, nsmap, ns, None, None)
+        process_record(graph, record)
 
     expect = Graph()
-    uri = URIRef(u'http://test/' + notation)
+    uri = URIRef(u'http://dewey.info/class/' + notation + '/e' + edition + '/')
     expect.add((uri, RDF.type, SKOS.Concept))
     if table:
         notation = "T" + notation

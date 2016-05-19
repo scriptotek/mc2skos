@@ -28,12 +28,31 @@ from [from PyPI](https://pypi.python.org/pypi/lxml/3.4.0).
 ### Usage example:
 
 ```bash
-mc2skos infile.xml outfile.ttl 'http://data.ub.uio.no/ddc/' \
-  --scheme 'http://data.ub.uio.no/ddc/' \
-  --sameas 'http://dewey.info/class/{class_no}/e23/'
+mc2skos infile.xml outfile.ttl
 ```
 
 Run `mc2skos -h` for options.
+
+### URIs
+
+For records with `084 $a == "ddc"`, URIs are generated on the form
+`http://dewey.info/{collection}/{object}/e{edition}/`, where
+`collection` is "class", "table" or "scheme", and `{edition}` is
+taken from `084 $c` (with language code stripped).
+
+```
+<http://dewey.info/class/6--982/e21/> a skos:Concept ;
+    skos:inScheme <http://dewey.info/scheme/edition/e21/>,
+        <http://dewey.info/table/6/e21/> ;
+    skos:notation "T6--982" ;
+    skos:prefLabel "Chibchan and Paezan languages"@en .
+```
+
+To override this, you can specify `--uri` to set a URI template for classes and table record,
+`--scheme` to set a URI to be used with `skos:inScheme` for all records, and `--table_scheme`
+to set a URI template to be used with `skos:inScheme` for table records. Note that
+if `--uri` is specified, but not `--scheme`, no `skos:inScheme` will be added. Same goes
+with `--table_scheme`.
 
 ### Mapping schema
 
@@ -45,9 +64,9 @@ to skos:altLabel.
 
 | MARC21XML                                        | RDF                                  |
 |--------------------------------------------------|--------------------------------------|
-| `153 $a` Classification number                   | `skos:notation`                      |
+| `153 $a`, `$c`, `$z` Classification number       | `skos:notation`                      |
 | `153 $j` Caption                                 | `skos:prefLabel`                     |
-| `153 $e` Classification number hierarchy         | `skos:broader`                       |
+| `153 $e`, `$f`, `$z` Classification number hierarchy | `skos:broader`                       |
 | `253` Complex See Reference                      | `skos:editorialNote`                 |
 | `353` Complex See Also Reference                 | `skos:editorialNote`                 |
 | `680` Scope Note                                 | `skos:scopeNote`                     |
@@ -73,11 +92,11 @@ components, we use RDF lists. Example:
 ```turtle
 @prefix mads: <http://www.loc.gov/mads/rdf/v1#> .
 
-<http://data.ub.uio.no/ddc/001.30973> a skos:Concept ;
+<http://dewey.info/class/001.30973/e23/> a skos:Concept ;
     mads:componentList (
-        <http://data.ub.uio.no/ddc/001.3>
-        <http://data.ub.uio.no/ddc/T1--09>
-        <http://data.ub.uio.no/ddc/T2--73>
+        <http://dewey.info/class/001.3/e23/>
+        <http://dewey.info/class/T1--09/e23/>
+        <http://dewey.info/class/T2--73/e23/>
     ) ;
     skos:notation "001.30973" .
 
@@ -94,7 +113,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 SELECT ?c1_notation ?c1_label ?c2_notation ?c2_label
 WHERE { GRAPH <http://localhost/ddc23no> {
 
-    <http://data.ub.uio.no/ddc/001.30973> mads:componentList ?l .
+    <http://dewey.info/class/001.30973/e23/> mads:componentList ?l .
         ?l rdf:rest* ?sl .
         ?sl rdf:first ?e1 .
         ?sl rdf:rest ?sln .
