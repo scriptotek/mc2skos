@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+  <marc:record>
+    <marc:leader>00000nw  a2200000n  4500</marc:leader>
+    <marc:controlfield tag="001">ocd00116591</marc:controlfield>
+    <marc:controlfield tag="003">OCoLC-D</marc:controlfield>
+    <marc:controlfield tag="005">20150929121529.8</marc:controlfield>
+    <marc:controlfield tag="008">091203aaaaaaaa</marc:controlfield>
+    <marc:datafield ind1=" " ind2=" " tag="040">
+      <marc:subfield code="a">OCLCD</marc:subfield>
+      <marc:subfield code="b">nob</marc:subfield>
+      <marc:subfield code="c">OCLCD</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1="0" ind2=" " tag="084">
+      <marc:subfield code="a">ddc</marc:subfield>
+      <marc:subfield code="c">23no</marc:subfield>
+      <marc:subfield code="e">nob</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1=" " ind2=" " tag="153">
+      <marc:subfield code="a">001</marc:subfield>
+      <marc:subfield code="e">00</marc:subfield>
+      <marc:subfield code="j">Kunnskap</marc:subfield>
+      <marc:subfield code="9">ess=en</marc:subfield>
+      <marc:subfield code="9">ess=eh</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1="1" ind2=" " tag="680">
+      <marc:subfield code="t">Beskrivelse og kritisk vurdering av intellektuell virksomhet i alminnelighet</marc:subfield>
+      <marc:subfield code="9">ess=nsc</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1="0" ind2=" " tag="680">
+      <marc:subfield code="i">Inkluderer:</marc:subfield>
+      <marc:subfield code="t">Tverrfaglige verker om spesialister</marc:subfield>
+      <marc:subfield code="9">ess=nin</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1="1" ind2=" " tag="680">
+      <marc:subfield code="i">Her:</marc:subfield>
+      <marc:subfield code="t">Idéer fra flere områder</marc:subfield>
+      <marc:subfield code="i">;</marc:subfield>
+      <marc:subfield code="t">tverrfaglig tilnærming til kunnskap</marc:subfield>
+      <marc:subfield code="9">ess=nch</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1="2" ind2=" " tag="253">
+      <marc:subfield code="i">Klassifiser</marc:subfield>
+      <marc:subfield code="t">erkjennelsesteori (epistemologi)</marc:subfield>
+      <marc:subfield code="i">i</marc:subfield>
+      <marc:subfield code="a">121</marc:subfield>
+      <marc:subfield code="9">ess=nce</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1="2" ind2=" " tag="253">
+      <marc:subfield code="i">Klassifiser</marc:subfield>
+      <marc:subfield code="t">en samling av kunnskap i en bestemt form</marc:subfield>
+      <marc:subfield code="i">med formen, f.eks.</marc:subfield>
+      <marc:subfield code="t">leksika</marc:subfield>
+      <marc:subfield code="e">030</marc:subfield>
+      <marc:subfield code="9">ess=ncw</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1="0" ind2=" " tag="253">
+      <marc:subfield code="t">Spesialister eller bruken av spesialister innen et bestemt emne</marc:subfield>
+      <marc:subfield code="i">, se emnet, f.eks.</marc:subfield>
+      <marc:subfield code="t">spesialister innen lungemedisin</marc:subfield>
+      <marc:subfield code="e">616.24</marc:subfield>
+      <marc:subfield code="i">,</marc:subfield>
+      <marc:subfield code="t">bruken av spesialister innen ingeniørfag</marc:subfield>
+      <marc:subfield code="e">620</marc:subfield>
+      <marc:subfield code="i">,</marc:subfield>
+      <marc:subfield code="t">bruken av konsulenter innen ledelse</marc:subfield>
+      <marc:subfield code="e">658.46</marc:subfield>
+      <marc:subfield code="9">ess=nsw</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1="2" ind2=" " tag="684">
+      <marc:subfield code="i">Se manualen:</marc:subfield>
+      <marc:subfield code="a">500</marc:subfield>
+      <marc:subfield code="i">vs.</marc:subfield>
+      <marc:subfield code="a">001</marc:subfield>
+      <marc:subfield code="9">ess=</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1=" " ind2="7" tag="750">
+      <marc:subfield code="a">Konsulenter (spesialister)</marc:subfield>
+      <marc:subfield code="0">(OCoLC-D)ccd9b76f-6c64-4713-8bd9-4c22c3f2409b</marc:subfield>
+      <marc:subfield code="2">ddcri</marc:subfield>
+      <marc:subfield code="9">ps=PE</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1=" " ind2="7" tag="750">
+      <marc:subfield code="a">Spesialister</marc:subfield>
+      <marc:subfield code="0">(OCoLC-D)ba923cf2-65e0-4b97-a5b7-fa1ccab20532</marc:subfield>
+      <marc:subfield code="2">ddcri</marc:subfield>
+      <marc:subfield code="9">ps=PE</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1=" " ind2="7" tag="750">
+      <marc:subfield code="a">Eksperter</marc:subfield>
+      <marc:subfield code="0">(OCoLC-D)91533959-14dc-481e-baaf-b863a62d2078</marc:subfield>
+      <marc:subfield code="2">ddcri</marc:subfield>
+      <marc:subfield code="9">ps=PE</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1=" " ind2="7" tag="750">
+      <marc:subfield code="a">Tverrfaglig tilnærming til kunnskap</marc:subfield>
+      <marc:subfield code="0">(OCoLC-D)1d367be7-5817-42fb-9776-dfe9d46ceb16</marc:subfield>
+      <marc:subfield code="2">ddcri</marc:subfield>
+      <marc:subfield code="9">ps=PE</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1=" " ind2="7" tag="750">
+      <marc:subfield code="a">Kunnskap</marc:subfield>
+      <marc:subfield code="0">(OCoLC-D)0d247098-13a8-45b2-8033-f3b398343a72</marc:subfield>
+      <marc:subfield code="2">ddcri</marc:subfield>
+      <marc:subfield code="9">ps=PE</marc:subfield>
+    </marc:datafield>
+    <marc:datafield ind1=" " ind2="7" tag="750">
+      <marc:subfield code="a">Vitenskap (kunnskap)</marc:subfield>
+      <marc:subfield code="0">(OCoLC-D)6df2bf4e-1deb-4f4f-b28a-dba4f634ffc0</marc:subfield>
+      <marc:subfield code="2">ddcri</marc:subfield>
+      <marc:subfield code="9">ps=PE</marc:subfield>
+    </marc:datafield>
+  </marc:record>
+</marc:collection>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mx:collection xmlns:mx="http://www.loc.gov/MARC21/slim">
+  <mx:record>
+    <mx:leader>00000nw  a2200000n  4500</mx:leader>
+    <mx:controlfield tag="001">ocd00119742</mx:controlfield>
+    <mx:controlfield tag="003">OCoLC-D</mx:controlfield>
+    <mx:controlfield tag="005">20150824094156.0</mx:controlfield>
+    <mx:controlfield tag="008">091203bbaaaaba</mx:controlfield>
+    <mx:datafield ind1=" " ind2=" " tag="040">
+      <mx:subfield code="a">OCLCD</mx:subfield>
+      <mx:subfield code="b">nob</mx:subfield>
+      <mx:subfield code="c">OCLCD</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="0" ind2=" " tag="084">
+      <mx:subfield code="a">ddc</mx:subfield>
+      <mx:subfield code="c">23no</mx:subfield>
+      <mx:subfield code="e">nob</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1=" " ind2=" " tag="153">
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="e">09</mx:subfield>
+      <mx:subfield code="j">Bestemte verdensdeler, stater, lokalområder; himmellegemer utenfor jorda</mx:subfield>
+      <mx:subfield code="9">ess=ten</mx:subfield>
+      <mx:subfield code="9">ess=eh</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="0" ind2=" " tag="765">
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="b">09</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="z">2</mx:subfield>
+      <mx:subfield code="s">3</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="u">093</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="0" ind2=" " tag="765">
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="b">09</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="z">2</mx:subfield>
+      <mx:subfield code="s">9</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="u">099</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="680">
+      <mx:subfield code="i">Historie og beskrivelse etter</mx:subfield>
+      <mx:subfield code="t">sted</mx:subfield>
+      <mx:subfield code="i">, etter</mx:subfield>
+      <mx:subfield code="t">bestemte hendelser innen emnet</mx:subfield>
+      <mx:subfield code="9">ess=nsc</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="680">
+      <mx:subfield code="i">Vær oppmerksom på at inndelingene i den spesielle hjelpetabellen under ikke er generell forminndeling</mx:subfield>
+      <mx:subfield code="9">ess=nsc</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="i">Gis det ikke andre anvisninger i den spesielle hjelpetabellen under, skal følgende preferansetabell brukes, f.eks.</mx:subfield>
+      <mx:subfield code="t">et statistikktidsskrift</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">021</mx:subfield>
+      <mx:subfield code="i">(ikke</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">05</mx:subfield>
+      <mx:subfield code="i">):</mx:subfield>
+      <mx:subfield code="9">ess=bt</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Vedlikehold og reparasjoner</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">028</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Prognoser</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">01</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Bestemte verdensdeler, stater, lokalområder</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Områder, regioner, steder generelt</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">091</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Historiske perioder</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">0901</mx:subfield>
+      <mx:subfield code="c">0905</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Arkeologi</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">09009</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Museer, samlinger, utstillinger</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">074</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Samlervirksomhet</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">075</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Illustrasjoner</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">022</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Statistikk</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">021</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Ordbøker, leksika, konkordanser</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">03</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Historie og geografisk behandling (uten underinndeling)</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">09</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="j">Periodika</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="y">1</mx:subfield>
+      <mx:subfield code="a">05</mx:subfield>
+      <mx:subfield code="9">ess=</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="1" ind2=" " tag="768">
+      <mx:subfield code="9">ess=et</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1=" " ind2="0" tag="761">
+      <mx:subfield code="i">Til basisnummeret</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="b">09</mx:subfield>
+      <mx:subfield code="i">legges notasjon</mx:subfield>
+      <mx:subfield code="z">2</mx:subfield>
+      <mx:subfield code="d">3</mx:subfield>
+      <mx:subfield code="c">9</mx:subfield>
+      <mx:subfield code="i">fra Hjelpetabell 2, f.eks.</mx:subfield>
+      <mx:subfield code="t">et emne med tilknytning til Norge</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="e">09481</mx:subfield>
+      <mx:subfield code="i">,</mx:subfield>
+      <mx:subfield code="t">med tilknytning til Brasil</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="e">0981</mx:subfield>
+      <mx:subfield code="i">; deretter tilføyes følgende:</mx:subfield>
+      <mx:subfield code="9">ess=ba4</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1=" " ind2=" " tag="674">
+      <mx:subfield code="i">Forkortes slik det er forklart i Hjelpetabell 2; dersom nummeret i Hjelpetabell 2 ikke har en forkortelsesangivelse, forkortes det etter nummeret fra Hjelpetabell 2</mx:subfield>
+      <mx:subfield code="9">ess=set</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1=" " ind2="0" tag="761">
+      <mx:subfield code="9">ess=eat</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="2" ind2=" " tag="683">
+      <mx:subfield code="i">(Tillatt løsning: Historiske perioder fra</mx:subfield>
+      <mx:subfield code="a">930</mx:subfield>
+      <mx:subfield code="c">990</mx:subfield>
+      <mx:subfield code="i">kan tilføyes et siffer</mx:subfield>
+      <mx:subfield code="f">0</mx:subfield>
+      <mx:subfield code="i">for alle områder, unntatt Nord-Amerika og Sør-Amerika som får</mx:subfield>
+      <mx:subfield code="f">00</mx:subfield>
+      <mx:subfield code="i">, f.eks.</mx:subfield>
+      <mx:subfield code="t">borgerkrigen i USA</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="e">097307</mx:subfield>
+      <mx:subfield code="i">,</mx:subfield>
+      <mx:subfield code="t">Brasil under keiserdømmet</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="e">098104</mx:subfield>
+      <mx:subfield code="i">,</mx:subfield>
+      <mx:subfield code="t">Nord-Amerika på 1900-tallet</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="e">097005</mx:subfield>
+      <mx:subfield code="i">. Dersom denne tillatte løsningen brukes, skal ikke</mx:subfield>
+      <mx:subfield code="a">090</mx:subfield>
+      <mx:subfield code="i">fra den spesielle hjelpetabellen over brukes. Et ekstra siffer 0 tilføyes numrene fra den spesielle hjelpetabellen ovenfor, f.eks.</mx:subfield>
+      <mx:subfield code="t">statistikk som gjelder Brasil</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="e">09810021</mx:subfield>
+      <mx:subfield code="i">)</mx:subfield>
+      <mx:subfield code="9">ess=nop</mx:subfield>
+      <mx:subfield code="9">ess=in1</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="2" ind2=" " tag="684">
+      <mx:subfield code="i">Se manualen:</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">0922</mx:subfield>
+      <mx:subfield code="i">vs.</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">093</mx:subfield>
+      <mx:subfield code="c">099</mx:subfield>
+      <mx:subfield code="9">ess=nsm</mx:subfield>
+    </mx:datafield>
+    <mx:datafield ind1="2" ind2=" " tag="684">
+      <mx:subfield code="i">Se manualen:</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">0940902</mx:subfield>
+      <mx:subfield code="i">vs.</mx:subfield>
+      <mx:subfield code="z">1</mx:subfield>
+      <mx:subfield code="a">0902</mx:subfield>
+      <mx:subfield code="9">ess=nsm</mx:subfield>
+    </mx:datafield>
+  </mx:record>
+</mx:collection>
