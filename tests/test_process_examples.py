@@ -23,16 +23,16 @@ class TestProcessExamples(unittest.TestCase):
         self.ns = Namespace('http://test/')
 
     def testExamples(self):
-        pattern = re.compile('^(ddc([0-9][0-9])([a-z]+)-([0-9.]+|([0-9])--([0-9.]+)))\.xml$')
+        pattern = re.compile('^(?P<name>(?P<scheme>[a-z]+\d{2})(?P<lang>[a-z]+)-(?P<notation>((?P<table>\d+)--)?[\d.]+-?[\d.]*))\.xml$')
 
         for marcfile in os.listdir('examples'):
             match = pattern.match(marcfile)
             if not match:
                 continue
 
-            name = match.group(1)
-            notation = match.group(4)
-            table = match.group(5)
+            name = match.group('name')
+            notation = match.group('notation')
+            table = match.group('table')
 
             marcfile = 'examples/' + marcfile
             # print marcfile
