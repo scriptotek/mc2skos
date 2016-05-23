@@ -89,12 +89,17 @@ class Element(object):
         for res in self.all(xpath):
             return res
 
-    def text(self, xpath=None):
+    def text(self, xpath=None, all=False):
+        # xpath: the xpath
+        # all: True to return an array with the text content for all matching elements.
+        #      False to return a string with the text content of the first matching element, or None.
         # Returns text content of first node or None
         if xpath is None:
             return self.node.text
+        if all:
+            return [res.node.text for res in self.all(xpath) if res.node.text is not None]
         for res in self.all(xpath):
-            return res.node.text
+            return res.node.text  # return text of first element
 
     def get_ess_codes(self):
         return [x[4:] for x in self.node.xpath('mx:subfield[@code="9"]/text()', namespaces=self.nsmap) if x.find('ess=') == 0]
@@ -254,7 +259,7 @@ class Record(object):
                 'type': note_type,
                 'content': entry.stringify(),
                 'ess': ess,
-                'topics': [t.text().capitalize() for t in entry.all('mx:subfield[@code="t"]')]
+                'topics': [t.capitalize() for t in entry.text('mx:subfield[@code="t"]', True)]
             })
 
         # 683 : Application Instruction Note
