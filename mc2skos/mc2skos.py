@@ -727,9 +727,11 @@ def main():
 
     # @TODO: Perhaps use OrderedTurtleSerializer if available, but fallback to default Turtle serializer if not?
     s = OrderedTurtleSerializer(graph)
-    s.sorters = {
-      'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0]),
-      'http://dewey.info/class/([0-9])\-\-([0-9]+)': lambda x: 1000. + int(x[0]) + float('.' + x[1])
-    }
+
+    s.sorters = [
+        ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
+        ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
+    ]
+
     s.serialize(open(out_file, 'wb'))
     logger.info('Wrote RDF: %s', out_file)
