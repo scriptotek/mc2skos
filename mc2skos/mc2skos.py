@@ -443,6 +443,11 @@ class Record(object):
             code = sf.get('code')
             val = sf.text()
 
+            if code not in ['a', 'c', 'e', 'f', 'z', 'y']:
+                # We expect everything else to be captions or notes, like in the example in
+                # test_153::TestParse153::testComplexEntryWithUndocumentStuff
+                break
+
             if code == 'z':
                 if buf != '':
                     parts.append(buf)
