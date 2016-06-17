@@ -154,6 +154,8 @@ class Record(object):
         self.table_scheme_uri = None
         self.default_uri_templates = default_uri_templates or {}
         self.notes = []
+        self.indexterms = []
+        self.components = []
         self.parse(options or {})
 
     def uri(self, collection, object):
@@ -310,72 +312,51 @@ class Record(object):
                 'ess': entry.get_ess_codes(),
             })
 
-        # @TODO:
-        # # 700 - Index Term - Personal Name (R)
-        # # 710 - Index Term - Corporate Name (R)
-        # # 711 - Index Term - Meeting Name (R)
-        # # 730 - Index Term - Uniform Title (R)
-        # # 748 - Index Term - Chronological (R)
-        # # 750 - Index Term - Topical (R)
-        # # 751 - Index Term - Geographic Name (R)
-        # # String order: $a : $x : $v : $y : $z
-        # if include_indexterms:
-        #     tags = ['@tag="{}"' for tag in ['700', '710', '711', '730', '748', '750', '751']]
-        #     for entry in rec.xpath('mx:datafield[{0}]'.format(' or '.join(tags)), namespaces=nsmap):
-        #         term = []
-        #         for x in ['a', 'x', 'y', 'z', 'v']:
-        #             term.extend(entry.xpath('mx:subfield[@code="%s"]/text()' % (x), namespaces=nsmap))
-        #         term = ' : '.join(term)
+        # 700 - Index Term - Personal Name (R)
+        # 710 - Index Term - Corporate Name (R)
+        # 711 - Index Term - Meeting Name (R)
+        # 730 - Index Term - Uniform Title (R)
+        # 748 - Index Term - Chronological (R)
+        # 750 - Index Term - Topical (R)
+        # 751 - Index Term - Geographic Name (R)
+        #
+        tags = ['@tag="%s"' % tag for tag in ['700', '710', '711', '730', '748', '750', '751']]
+        for entry in self.record.all('mx:datafield[%s]' % ' or '.join(tags)):
+            codes = ['@code="%s"' % code for code in ['a', 'x', 'y', 'z', 'v']]
+            term_parts = entry.text('mx:subfield[%s]' % ' or '.join(codes), True)
+            term = '--'.join(term_parts)
+            if len(term) != 0:
+                self.indexterms.append({
+                    'term': term
+                })
 
-        #         if term == '':
-        #             return 'records having empty index terms'
-        #         graph.add((uri, SKOS.altLabel, Literal(term, lang=lang)))
+        # 765 : Synthesized Number Components
+        for entry in reversed(list(self.record.all('mx:datafield[@tag="765"]'))):
 
-        # # 765 : Synthesized Number Components
-        # if include_components:
-        #     components = []
-        #     for syn in reversed(list(rec.xpath('mx:datafield[@tag="765"]', namespaces=nsmap))):
-        #         uval = syn.xpath('mx:subfield[@code="u"]/text()', namespaces=nsmap)
-        #         if len(uval) == 0:
-        #             logger.debug("Built number without components specified: %s", class_no)
-        #         table = ''
-        #         rootno = ''
+            if entry.text('mx:subfield[@code="u"]') is None:
+                logger.debug('Built number without components specified: %s', self.notation)
 
-        #         wval = syn.xpath('mx:subfield[@code="w"]/text()', namespaces=nsmap)
-        #         if len(wval) != 0:
-        #             continue  # appears to be duplicates -- check!
-
-        #         for sf in syn.xpath('mx:subfield', namespaces=nsmap):
-        #             if sf.get('code') == 'b':    # Base number
-        #                 if len(components) == 0:
-        #                     components.append(table + sf.text)
-        #                     table = ''
-        #             elif sf.get('code') == 'r':    # Root number
-        #                 rootno = sf.text
-        #             elif sf.get('code') == 'z':    # Table identification
-        #                 table = '{0}--'.format(sf.text)
-        #             # elif sf.get('code') == 't':    # Digits added from internal subarrangement or add table
-        #             #     components.append(sf.text)
-        #             elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
-        #                 sep = '.' if len(rootno) == 3 else ''
-        #                 components.append(table + rootno + sep + sf.text)
-        #                 table = ''
-        #             # elif sf.get('code') not in ['9', 'u']:
-        #             #     print sf.get('code'), sf.text, class_no
-
-        #     if len(components) != 0:
-        #         component = components.pop(0)
-        #         b1 = BNode()
-        #         graph.add((uri, MADS.componentList, b1))
-        #         graph.add((b1, RDF.first, namespace[component]))
-
-        #         for component in components:
-        #             b2 = BNode()
-        #             graph.add((b1, RDF.rest, b2))
-        #             graph.add((b2, RDF.first, namespace[component]))
-        #             b1 = b2
-
-        #         graph.add((b1, RDF.rest, RDF.nil))
+            table = ''
+            rootno = ''
+            for sf in entry.all('mx:subfield'):
+                if sf.get('code') == 'b':    # Base number
+                    if len(self.components) == 0:
+                        self.components.append(table + sf.text())
+                        table = ''
+                elif sf.get('code') == 'r':    # Root number
+                    rootno = sf.text()
+                elif sf.get('code') == 'z':    # Table identification
+                    table = '{0}--'.format(sf.text())
+                # elif sf.get('code') == 't':    # Digits added from internal subarrangement or add table
+                #     self.components.append(sf.text())
+                elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
+                    tmp = rootno + sf.text()
+                    if len(tmp) > 3:
+                        tmp = tmp[:3] + '.' + tmp[3:]
+                    self.components.append(table + tmp)
+                    table = ''
+                # elif sf.get('code') not in ['9', 'u']:
+                #     print sf.get('code'), sf.text, class_no
 
     @staticmethod
     def parse_008(value):
@@ -572,10 +553,14 @@ class Record(object):
             else:
                 graph.add((uri, SKOS.notation, Literal(self.notation)))
 
-        # Add notes
-        for note in self.notes:
-            if options.get('include_notes'):
+        # Add index terms as skos:altLabel
+        if options.get('include_indexterms'):
+            for term in self.indexterms:
+                graph.add((uri, SKOS.altLabel, Literal(term['term'], lang=self.lang)))
 
+        # Add notes
+        if options.get('include_notes'):
+            for note in self.notes:
                 # Complex see references
                 if note['type'] in [Constants.COMPLEX_SEE_REFERENCE,
                                     Constants.COMPLEX_SEE_ALSO_REFERENCE,
@@ -606,8 +591,25 @@ class Record(object):
                 elif note['type'] == Constants.HISTORY_NOTE:
                     graph.add((uri, SKOS.historyNote, Literal(note['content'], lang=self.lang)))
 
-            if note['type'] == Constants.HISTORY_NOTE and 'ndn' in note['ess']:
-                graph.add((uri, OWL.deprecated, Literal(True)))
+                if note['type'] == Constants.HISTORY_NOTE and 'ndn' in note['ess']:
+                    graph.add((uri, OWL.deprecated, Literal(True)))
+
+        # Add synthesized number components
+        if options.get('include_components') and len(self.components) != 0:
+            component = self.components.pop(0)
+            component_uri = self.uri('class', component)
+            b1 = BNode()
+            graph.add((uri, MADS.componentList, b1))
+            graph.add((b1, RDF.first, component_uri))
+
+            for component in self.components:
+                component_uri = self.uri('class', component)
+                b2 = BNode()
+                graph.add((b1, RDF.rest, b2))
+                graph.add((b2, RDF.first, component_uri))
+                b1 = b2
+
+            graph.add((b1, RDF.rest, RDF.nil))
 
 
 class UnknownClassificationScheme(RuntimeError):
@@ -638,7 +640,7 @@ def process_record(graph, rec, **kwargs):
         rec.scheme_uri = scheme_uri
         rec.table_scheme_uri = table_scheme_uri
 
-    rec.add_to_graph(graph, {})
+    rec.add_to_graph(graph, kwargs)
 
     # if same_as is not None:
     #     graph.add((uri, OWL.sameAs, URIRef(same_as.format(class_no=class_no))))

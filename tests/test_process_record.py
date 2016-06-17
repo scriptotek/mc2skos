@@ -118,6 +118,173 @@ class TestRecord(unittest.TestCase):
         assert rec.display is False
         assert rec.synthesized is True
 
+    def testSynthesizedNumberComponents1(self):
+        rec = Record(etree.fromstring('''
+        <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
+          <mx:leader>00000nw  a2200000n  4500</mx:leader>
+          <mx:controlfield tag="001">ocd00132963</mx:controlfield>
+          <mx:controlfield tag="008">100204aaaaaabb</mx:controlfield>
+          <mx:datafield tag="153" ind2=" " ind1=" ">
+            <mx:subfield code="a">306.6804</mx:subfield>
+            <mx:subfield code="e">306.63</mx:subfield>
+            <mx:subfield code="f">306.69</mx:subfield>
+            <mx:subfield code="9">ess=ien</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="765" ind2=" " ind1="0">
+              <mx:subfield code="b">306.6</mx:subfield>
+              <mx:subfield code="a">306.63</mx:subfield>
+              <mx:subfield code="c">306.69</mx:subfield>
+              <mx:subfield code="r">2</mx:subfield>
+              <mx:subfield code="s">804</mx:subfield>
+              <mx:subfield code="u">306.6804</mx:subfield>
+              <mx:subfield code="9">ess=hn</mx:subfield>
+            </mx:datafield>
+        </mx:record>
+        '''))
+
+        assert rec.components == ['306.6', '280.4']
+
+    def testSynthesizedNumberComponents2(self):
+        rec = Record(etree.fromstring('''
+        <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
+          <mx:leader>00000nw  a2200000n  4500</mx:leader>
+          <mx:controlfield tag="001">ocd00123528</mx:controlfield>
+          <mx:controlfield tag="008">091203aaaaaabb</mx:controlfield>
+          <mx:datafield tag="153" ind2=" " ind1=" ">
+            <mx:subfield code="a">299.3113</mx:subfield>
+            <mx:subfield code="e">299.31</mx:subfield>
+            <mx:subfield code="9">ess=ien</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="765" ind2=" " ind1="0">
+              <mx:subfield code="b">299.31</mx:subfield>
+              <mx:subfield code="a">299.31</mx:subfield>
+              <mx:subfield code="a">290</mx:subfield>
+              <mx:subfield code="w">290</mx:subfield>
+              <mx:subfield code="y">1</mx:subfield>
+              <mx:subfield code="a">1</mx:subfield>
+              <mx:subfield code="c">9</mx:subfield>
+              <mx:subfield code="r">20</mx:subfield>
+              <mx:subfield code="s">13</mx:subfield>
+              <mx:subfield code="u">299.3113</mx:subfield>
+            </mx:datafield>
+            <mx:datafield tag="765" ind2=" " ind1="0">
+              <mx:subfield code="b">299</mx:subfield>
+              <mx:subfield code="a">299.1</mx:subfield>
+              <mx:subfield code="c">299.4</mx:subfield>
+              <mx:subfield code="z">5</mx:subfield>
+              <mx:subfield code="r">9</mx:subfield>
+              <mx:subfield code="s">31</mx:subfield>
+              <mx:subfield code="u">299.31</mx:subfield>
+            </mx:datafield>
+        </mx:record>
+        '''))
+
+        assert rec.components == ['299', '5--931', '201.3']
+
+    @pytest.mark.skip(reason="add table numbers not yet supported")
+    def testSynthesizedNumberComponentsIncludingAddTable(self):
+        rec = Record(etree.fromstring('''
+        <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
+          <mx:leader>00000nw  a2200000n  4500</mx:leader>
+          <mx:controlfield tag="001">ocd00117858</mx:controlfield>
+          <mx:controlfield tag="003">OCoLC-D</mx:controlfield>
+          <mx:controlfield tag="005">20150910004647.0</mx:controlfield>
+          <mx:controlfield tag="008">091203aaaaaabb</mx:controlfield>
+          <mx:datafield tag="040" ind2=" " ind1=" ">
+            <mx:subfield code="a">OCLCD</mx:subfield>
+            <mx:subfield code="b">nob</mx:subfield>
+            <mx:subfield code="c">OCLCD</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="084" ind2=" " ind1="0">
+            <mx:subfield code="a">ddc</mx:subfield>
+            <mx:subfield code="c">23no</mx:subfield>
+            <mx:subfield code="e">nob</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="153" ind2=" " ind1=" ">
+            <mx:subfield code="a">032.020993</mx:subfield>
+            <mx:subfield code="e">032.02</mx:subfield>
+            <mx:subfield code="9">ess=ien</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="765" ind2=" " ind1="0">
+            <mx:subfield code="b">032.0209</mx:subfield>
+            <mx:subfield code="z">1</mx:subfield>
+            <mx:subfield code="a">093</mx:subfield>
+            <mx:subfield code="c">099</mx:subfield>
+            <mx:subfield code="z">2</mx:subfield>
+            <mx:subfield code="s">93</mx:subfield>
+            <mx:subfield code="u">032.020993</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="765" ind2=" " ind1="0">
+            <mx:subfield code="b">032.02</mx:subfield>
+            <mx:subfield code="z">1</mx:subfield>
+            <mx:subfield code="s">09</mx:subfield>
+            <mx:subfield code="u">032.0209</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="765" ind2=" " ind1="0">
+            <mx:subfield code="b">032</mx:subfield>
+            <mx:subfield code="a">032</mx:subfield>
+            <mx:subfield code="a">031</mx:subfield>
+            <mx:subfield code="c">039</mx:subfield>
+            <mx:subfield code="w">031</mx:subfield>
+            <mx:subfield code="c">039</mx:subfield>
+            <mx:subfield code="y">1</mx:subfield>
+            <mx:subfield code="t">02</mx:subfield>
+            <mx:subfield code="u">032.02</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="750" ind2="7" ind1=" ">
+            <mx:subfield code="a">Engelske almanakker</mx:subfield>
+            <mx:subfield code="z">New Zealand</mx:subfield>
+            <mx:subfield code="0">(OCoLC-D)792f96bb-142c-43c6-a20e-ed5ed2088388</mx:subfield>
+            <mx:subfield code="2">ddcri</mx:subfield>
+            <mx:subfield code="9">ps=EO</mx:subfield>
+          </mx:datafield>
+        </mx:record>
+        '''))
+
+        assert rec.components == ['032', '031-039:02', '1--09', '2--93']
+
+    def testIndexTerms(self):
+        rec = Record(etree.fromstring('''
+        <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
+          <mx:leader>00000nw  a2200000n  4500</mx:leader>
+          <mx:controlfield tag="001">ocd00146759</mx:controlfield>
+          <mx:controlfield tag="008">100204aaaaaaaa</mx:controlfield>
+          <mx:datafield tag="153" ind2=" " ind1=" ">
+            <mx:subfield code="a">543.17</mx:subfield>
+            <mx:subfield code="e">543.1</mx:subfield>
+            <mx:subfield code="j">Analytisk organisk kjemi</mx:subfield>
+            <mx:subfield code="9">ess=en</mx:subfield>
+            <mx:subfield code="9">ess=eh</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="750" ind2="7" ind1=" ">
+            <mx:subfield code="a">Analytisk kjemi</mx:subfield>
+            <mx:subfield code="x">organisk kjemi</mx:subfield>
+            <mx:subfield code="0">(OCoLC-D)8c2057ce-4544-4593-9699-1008a7dcd4ef</mx:subfield>
+            <mx:subfield code="2">ddcri</mx:subfield>
+            <mx:subfield code="9">ps=PE</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="750" ind2="7" ind1=" ">
+            <mx:subfield code="a">Kjemisk analyse</mx:subfield>
+            <mx:subfield code="x">organisk kjemi</mx:subfield>
+            <mx:subfield code="0">(OCoLC-D)934d9916-e069-4351-994f-44b4c02f2f4d</mx:subfield>
+            <mx:subfield code="2">ddcri</mx:subfield>
+            <mx:subfield code="9">ps=PE</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="750" ind2="7" ind1=" ">
+            <mx:subfield code="a">Organisk kjemi</mx:subfield>
+            <mx:subfield code="x">analytisk kjemi</mx:subfield>
+            <mx:subfield code="0">(OCoLC-D)9d92b5a2-7f96-4db7-a212-19c40edf7a93</mx:subfield>
+            <mx:subfield code="2">ddcri</mx:subfield>
+            <mx:subfield code="9">ps=PE</mx:subfield>
+          </mx:datafield>
+        </mx:record>
+        '''))
+
+        assert rec.indexterms == [
+            {'term': 'Analytisk kjemi--organisk kjemi'},
+            {'term': 'Kjemisk analyse--organisk kjemi'},
+            {'term': 'Organisk kjemi--analytisk kjemi'}]
+
 
 class TestProcessRecord(unittest.TestCase):
 
