@@ -2,7 +2,7 @@
 import unittest
 import pytest
 from lxml import etree
-from mc2skos.mc2skos import stringify
+from mc2skos.mc2skos import Element
 
 
 class TestStringify(unittest.TestCase):
@@ -11,18 +11,18 @@ class TestStringify(unittest.TestCase):
         pass
 
     def testSeeNote(self):
-        elem = etree.fromstring(u"""
+        elem = Element(etree.fromstring(u"""
             <datafield tag="253" ind1="0" ind2=" " xmlns="http://www.loc.gov/MARC21/slim">
                 <subfield code="t">Vitenskap og lærdom</subfield>
                 <subfield code="i">, se</subfield>
                 <subfield code="a">001.2</subfield>
                 <subfield code="9">ess=nse</subfield>
             </datafield>
-        """)
-        assert stringify(elem) == u'Vitenskap og lærdom, se 001.2'
+        """))
+        assert elem.stringify() == u'Vitenskap og lærdom, se 001.2'
 
     def testSeeAlsoNote(self):
-        elem = etree.fromstring(u"""
+        elem = Element(etree.fromstring(u"""
             <datafield tag="353" ind1=" " ind2=" " xmlns="http://www.loc.gov/MARC21/slim">
                 <subfield code="i">Se også</subfield>
                 <subfield code="a">900</subfield>
@@ -30,11 +30,11 @@ class TestStringify(unittest.TestCase):
                 <subfield code="t">bred beskrivelse av situasjon og vilkår for intellektuell virksomhet</subfield>
                 <subfield code="9">ess=nsa</subfield>
             </datafield>
-        """)
-        assert stringify(elem) == u'Se også 900 for en bred beskrivelse av situasjon og vilkår for intellektuell virksomhet'
+        """))
+        assert elem.stringify() == u'Se også 900 for en bred beskrivelse av situasjon og vilkår for intellektuell virksomhet'
 
     def testNoteWithClassNumberRange(self):
-        elem = etree.fromstring(u"""
+        elem = Element(etree.fromstring(u"""
             <datafield tag="253" ind1="2" ind2=" " xmlns="http://www.loc.gov/MARC21/slim">
                 <subfield code="i">Klassifiser</subfield>
                 <subfield code="t">andre bestemte internasjonale språk</subfield>
@@ -49,11 +49,11 @@ class TestStringify(unittest.TestCase):
                 <subfield code="e">496.392</subfield>
                 <subfield code="9">ess=ncw</subfield>
             </datafield>
-        """)
-        assert stringify(elem) == u'Klassifiser andre bestemte internasjonale språk med språket i 420-490, f.eks. latin som et diplomatspråk, swahili som et lingua franca'
+        """))
+        assert elem.stringify() == u'Klassifiser andre bestemte internasjonale språk med språket i 420-490, f.eks. latin som et diplomatspråk, swahili som et lingua franca'
 
     def testComplexNote(self):
-        elem = etree.fromstring(u"""
+        elem = Element(etree.fromstring(u"""
             <datafield tag="680" ind1="0" ind2=" " xmlns="http://www.loc.gov/MARC21/slim">
                 <subfield code="i">Inkluderer:</subfield>
                 <subfield code="t">Case-studier</subfield>
@@ -73,8 +73,8 @@ class TestStringify(unittest.TestCase):
                 <subfield code="t">intervjuer</subfield>
                 <subfield code="9">ess=nin</subfield>
             </datafield>
-        """)
-        assert stringify(elem) == u'Inkluderer: Case-studier [tidligere 001.432]; utvalgsteknikker; rundspørringer, spørreskjemaer, feltarbeid, deltakende observasjon, intervjuer'
+        """))
+        assert elem.stringify() == u'Inkluderer: Case-studier [tidligere 001.432]; utvalgsteknikker; rundspørringer, spørreskjemaer, feltarbeid, deltakende observasjon, intervjuer'
 
 
 if __name__ == '__main__':
