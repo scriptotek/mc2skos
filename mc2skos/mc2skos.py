@@ -619,10 +619,6 @@ class UnknownClassificationScheme(RuntimeError):
 def process_record(graph, rec, **kwargs):
     # Parse a single MARC21 classification record
 
-    # base_uri=None, skos_scheme=None, table_scheme_uri=None,
-    # same_as=None, include_indexterms=False,
-    #                include_notes=False, include_components=False):
-
     rec = Record(rec, default_uri_templates)
 
     base_uri = kwargs.get('base_uri')
@@ -641,9 +637,6 @@ def process_record(graph, rec, **kwargs):
         rec.table_scheme_uri = table_scheme_uri
 
     rec.add_to_graph(graph, kwargs)
-
-    # if same_as is not None:
-    #     graph.add((uri, OWL.sameAs, URIRef(same_as.format(class_no=class_no))))
 
 
 def get_records(in_file):
@@ -677,8 +670,6 @@ def main():
     parser.add_argument('--uri', dest='base_uri', help='URI template')
     parser.add_argument('--scheme', dest='scheme_uri', help='SKOS scheme for all records.')
     parser.add_argument('--table_scheme', dest='table_scheme_uri', help='SKOS scheme for table records, use {edition} to specify edition.')
-    parser.add_argument('--sameas', dest='same_as', help='Template for sameAs URIs.')
-    parser.add_argument('--prefix', dest='prefix', help='Namespace prefix.')
 
     parser.add_argument('--indexterms', dest='indexterms', action='store_true',
                         help='Include index terms from 7XX.')
@@ -712,7 +703,6 @@ def main():
         'base_uri': args.base_uri,
         'scheme_uri': args.scheme_uri,
         'table_scheme_uri': args.table_scheme_uri,
-        'same_as': args.same_as,
         'include_indexterms': args.indexterms,
         'include_notes': args.notes,
         'include_components': args.components
