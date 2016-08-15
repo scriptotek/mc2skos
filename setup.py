@@ -35,8 +35,8 @@ setup(name='mc2skos',
                         'otsrdflib>=0.4.0',
                         'iso-639',
                         ],
-      setup_requires=['pytest-runner'],
-      tests_require=['pytest>=2.9', 'pytest-pep8', 'pytest-cov'],
+      setup_requires=['pytest-runner>=2.9'],
+      tests_require=['pytest', 'pytest-pep8', 'pytest-cov'],
       packages=['mc2skos'],
       entry_points={'console_scripts': ['mc2skos=mc2skos.mc2skos:main']}
       )
