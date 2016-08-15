@@ -1,15 +1,29 @@
 language: python
+
 python:
-  - "2.6"
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "nightly"
+- '2.6'
+- '2.7'
+- '3.3'
+- '3.4'
+- '3.5'
+- nightly
+
 install:
-  - pip install -U setuptools   # Fix for https://travis-ci.org/scriptotek/otsrdflib/jobs/152446727
-  - python setup.py install
+- pip install -U setuptools  # Fix for https://travis-ci.org/scriptotek/otsrdflib/jobs/152446727
+- python setup.py install
+
 script:
-  - python setup.py test
+- python setup.py test
+
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
+
+deploy:
+  provider: pypi
+  user: danmichaelo
+  password:
+    secure: fGGL9Ha+JU+l7y/ftfJ/FgyX3c0foblfb8ZBQMmJ0Pl1oDswbXFUIXj8OuOSq2bqTrGgbpre+CAUGh1kAif1yY5icS/Ipu80CRt8IWUJlzqt8Z5qs6H3BjyjGYqxaq/6E5qZocvbBq65kSY8D9yJczSxq8T6EpGha801eULj70I=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: scriptotek/mc2skos
