@@ -11,9 +11,11 @@ python:
 install:
 - pip install -U setuptools  # Fix for https://travis-ci.org/scriptotek/otsrdflib/jobs/152446727
 - python setup.py install
+- pip install Pygments collective.checkdocs
 
 script:
 - python setup.py test
+- python setup.py checkdocs
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
