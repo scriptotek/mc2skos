@@ -24,7 +24,7 @@ records (serialized as MARCXML) to
 `SKOS <http://www.w3.org/2004/02/skos/>`_ concepts.
 
 Developed to support the
-project "`Felles terminologi for klassifikasjon med Dewey <http://www.ub.uio.no/om/prosjekter/deweymapping/index.html>`_",
+project "`Felles terminologi for klassifikasjon med Dewey <https://www.duo.uio.no/handle/10852/39834>`_",
 it has only been tested with Dewey Decimal Classification (DDC) records.
 `Issues <https://github.com/scriptotek/mc2skos/issues>`_ and
 suggestions for generalizations and improvements are welcome!
