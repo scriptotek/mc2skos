@@ -119,8 +119,8 @@ components, we use RDF lists. Example:
     <http://dewey.info/class/001.30973/e23/> a skos:Concept ;
         mads:componentList (
             <http://dewey.info/class/001.3/e23/>
-            <http://dewey.info/class/T1--09/e23/>
-            <http://dewey.info/class/T2--73/e23/>
+            <http://dewey.info/class/1--09/e23/>
+            <http://dewey.info/class/2--73/e23/>
         ) ;
         skos:notation "001.30973" .
 
