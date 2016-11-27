@@ -36,7 +36,7 @@ Using `Pip <http://pip.readthedocs.org/en/latest/installing.html>`_:
 
 .. code-block:: console
 
-    $ pip install -U git+https://github.com/scriptotek/mc2skos.git
+    $ pip install -U mc2skos
 
 * Works with both Python 2.x and 3.x. See `Travis <https://travis-ci.org/scriptotek/mc2skos>`_
   for details on tested Python versions.
