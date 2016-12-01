@@ -8,12 +8,15 @@
 import sys
 import re
 import time
+import json
 from lxml import etree
 from iso639 import languages
 import argparse
 from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
-from rdflib import URIRef, RDFS, Literal, Graph, BNode
+from rdflib import URIRef, RDFS, Literal, Graph, BNode, plugin
+from rdflib.serializer import Serializer
 from otsrdflib import OrderedTurtleSerializer
+import pkg_resources
 
 import logging
 import logging.handlers
@@ -664,7 +667,7 @@ def main():
 
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='More verbose output')
     parser.add_argument('-o', '--outformat', dest='outformat', nargs='?',
-                        help='Output serialization format. Any format supported by rdflib. Default: turtle',
+                        help='Output serialization format. Any format supported by rdflib plus jskos. Default: turtle',
                         default='turtle')
 
     parser.add_argument('--uri', dest='base_uri', help='URI template')
@@ -717,13 +720,20 @@ def main():
             # logger.debug('Ignoring invalid record: %s', e)
             pass  # ignore
 
-    # @TODO: Perhaps use OrderedTurtleSerializer if available, but fallback to default Turtle serializer if not?
-    s = OrderedTurtleSerializer(graph)
+    if out_format == 'turtle':
+        # @TODO: Perhaps use OrderedTurtleSerializer if available, but fallback to default Turtle serializer if not?
+        s = OrderedTurtleSerializer(graph)
 
-    s.sorters = [
-        ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
-        ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
-    ]
+        s.sorters = [
+            ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
+            ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
+        ]
 
-    s.serialize(open(out_file, 'wb'))
+        s.serialize(open(out_file, 'wb'))
+    elif out_format == 'jskos':
+        s = pkg_resources.resource_stream(__name__, 'jskos-context.json')
+        context = json.load(s)
+        f = open(out_file, 'wb')
+        f.write(graph.serialize(format='json-ld', context=context, ident=2))
+
     logger.info('Wrote RDF: %s', out_file)
