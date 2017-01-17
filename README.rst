@@ -103,7 +103,7 @@ MARC21XML                                                    RDF
 ``748`` Index Term-Chronological                            ``skos:altLabel``
 ``750`` Index Term-Topical                                  ``skos:altLabel``
 ``751`` Index Term-Geographic Name                          ``skos:altLabel``
-``754`` Index Term-Uncontrolled                             ``skos:altLabel``
+``753`` Index Term-Uncontrolled                             ``skos:altLabel``
 ``765`` Synthesized Number Components                       ``mads:componentList`` (see below)
 ==========================================================  =====================================
 
