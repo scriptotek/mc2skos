@@ -32,11 +32,12 @@ suggestions for generalizations and improvements are welcome!
 Installation
 ============
 
-Using `Pip <http://pip.readthedocs.org/en/latest/installing.html>`_:
+Releases can be installed from the command line with `pip <https://pip.pypa.io/>`__:
 
 .. code-block:: console
 
-    $ pip install -U mc2skos
+    $ pip install --upgrade mc2skos             # with virtualenv or as root
+    $ pip install --upgrade --user mc2skos      # install to ~/.local
 
 * Works with both Python 2.x and 3.x. See `Travis <https://travis-ci.org/scriptotek/mc2skos>`_
   for details on tested Python versions.
@@ -45,14 +46,22 @@ Using `Pip <http://pip.readthedocs.org/en/latest/installing.html>`_:
 * If lxml fails to install on Unix, install system packages python-dev and libxml2-dev
 * Make sure the Python scripts folder has been added to your PATH.
 
-Usage example
-=============
+To directly use a version from source code repository:
+
+.. code:: console
+
+    $ git clone https://github.com/scriptotek/mc2skos.git
+    $ cd mc2skos
+    $ pip install -e .
+
+Usage
+=====
 
 .. code-block:: console
 
     mc2skos infile.xml outfile.ttl
 
-Run ``mc2skos -h`` for options.
+Run ``mc2skos --help`` or ``mc2skos -h`` for options.
 
 URIs
 ====
