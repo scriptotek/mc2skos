@@ -42,6 +42,7 @@ Using `Pip <http://pip.readthedocs.org/en/latest/installing.html>`_:
   for details on tested Python versions.
 * If lxml fails to install on Windows, try the windows installer
   from `from PyPI <https://pypi.python.org/pypi/lxml/3.4.0>`_.
+* If lxml fails to install on Unix, install system packages python-dev and libxml2-dev
 * Make sure the Python scripts folder has been added to your PATH.
 
 Usage example
