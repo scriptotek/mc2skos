@@ -319,8 +319,9 @@ class Record(object):
         # 748 - Index Term - Chronological (R)
         # 750 - Index Term - Topical (R)
         # 751 - Index Term - Geographic Name (R)
+        # 753 - Index Term - Uncontrolled (R)
         #
-        tags = ['@tag="%s"' % tag for tag in ['700', '710', '711', '730', '748', '750', '751']]
+        tags = ['@tag="%s"' % tag for tag in ['700', '710', '711', '730', '748', '750', '751', '753']]
         for entry in self.record.all('mx:datafield[%s]' % ' or '.join(tags)):
             codes = ['@code="%s"' % code for code in ['a', 'x', 'y', 'z', 'v']]
             term_parts = entry.text('mx:subfield[%s]' % ' or '.join(codes), True)
