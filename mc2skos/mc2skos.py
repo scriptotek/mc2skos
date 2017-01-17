@@ -18,6 +18,8 @@ from otsrdflib import OrderedTurtleSerializer
 import logging
 import logging.handlers
 
+from . import __version__
+
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(message)s')
@@ -662,6 +664,7 @@ def main():
     parser = argparse.ArgumentParser(description='Convert MARC21 Classification to SKOS/RDF')
     parser.add_argument('infile', nargs=1, help='Input XML file')
     parser.add_argument('outfile', nargs='?', help='Output RDF file')
+    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='More verbose output')
     parser.add_argument('-o', '--outformat', dest='outformat', nargs='?',
