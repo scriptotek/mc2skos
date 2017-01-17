@@ -660,11 +660,11 @@ def main():
 
     parser = argparse.ArgumentParser(description='Convert MARC21 Classification to SKOS/RDF')
     parser.add_argument('infile', nargs=1, help='Input XML file')
-    parser.add_argument('outfile', nargs=1, help='Output RDF file')
+    parser.add_argument('outfile', nargs='?', help='Output RDF file')
 
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='More verbose output')
     parser.add_argument('-o', '--outformat', dest='outformat', nargs='?',
-                        help='Output serialization format. Any format supported by rdflib. Default: turtle',
+                        help='Output serialization format. Default: turtle',
                         default='turtle')
 
     parser.add_argument('--uri', dest='base_uri', help='URI template')
@@ -696,8 +696,8 @@ def main():
         console_handler.setLevel(logging.INFO)
 
     in_file = args.infile[0]
-    out_file = args.outfile[0]
-    out_format = args.outformat
+    if args.outformat != 'turtle':  # TODO: support more formats
+        raise ValueError('output format not supported')
 
     options = {
         'base_uri': args.base_uri,
@@ -725,5 +725,8 @@ def main():
         ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
     ]
 
-    s.serialize(open(out_file, 'wb'))
-    logger.info('Wrote RDF: %s', out_file)
+    if args.outfile and args.outfile[0] != '-':
+        s.serialize(open(out_file, 'wb'))
+        logger.info('Wrote RDF: %s', out_file)
+    else:
+        s.serialize(sys.stdout)
