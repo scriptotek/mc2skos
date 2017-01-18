@@ -37,6 +37,9 @@ counts = {}
 default_uri_templates = {
     "ddc": {
         "uri": "http://dewey.info/{collection}/{object}/e{edition}/"
+    },
+    "bkl": {
+        "uri": "http://uri.gbv.de/terminology/bk/{object}"
     }
 }
 
@@ -205,8 +208,10 @@ class Record(object):
         if self.scheme in self.default_uri_templates:
             cfg = self.default_uri_templates[self.scheme]
             self.base_uri = cfg['uri']
-            self.scheme_uri = self.uri('scheme', 'edition')
-            self.table_scheme_uri = self.uri('table', self.table)
+            edition = 'edition' if self.scheme_edition is not None else ''
+            self.scheme_uri = self.uri('scheme', edition)
+            table = self.table if self.table is not None else ''
+            self.table_scheme_uri = self.uri('table', table)
 
         # 253 : Complex See Reference (R)
         # Example:
@@ -424,9 +429,7 @@ class Record(object):
         buf = ''
         is_top_concept = True
 
-        parts = [
-
-        ]
+        parts = []
 
         for sf in element.all('mx:subfield'):
             code = sf.get('code')
@@ -620,7 +623,7 @@ class UnknownClassificationScheme(RuntimeError):
 
 
 def process_record(graph, rec, **kwargs):
-    # Parse a single MARC21 classification record
+    """Convert a single MARC21 classification record to RDF."""
 
     rec = Record(rec, default_uri_templates)
 
@@ -716,7 +719,7 @@ def main():
     t0 = time.time()
     for record in get_records(in_file):
         try:
-            res = process_record(graph, record, **options)
+            process_record(graph, record, **options)
         except InvalidRecordError as e:
             # logger.debug('Ignoring invalid record: %s', e)
             pass  # ignore
