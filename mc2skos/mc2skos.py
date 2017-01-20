@@ -724,6 +724,10 @@ def main():
             # logger.debug('Ignoring invalid record: %s', e)
             pass  # ignore
 
+    if not graph:
+        logger.warn('RDF result is empty!')
+        return
+
     # @TODO: Perhaps use OrderedTurtleSerializer if available, but fallback to default Turtle serializer if not?
     s = OrderedTurtleSerializer(graph)
 
