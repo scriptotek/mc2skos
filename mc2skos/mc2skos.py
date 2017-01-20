@@ -11,8 +11,8 @@ import time
 from lxml import etree
 from iso639 import languages
 import argparse
-from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
-from rdflib import URIRef, RDFS, Literal, Graph, BNode
+from rdflib.namespace import OWL, RDF, SKOS, Namespace
+from rdflib import URIRef, Literal, Graph, BNode
 from otsrdflib import OrderedTurtleSerializer
 
 import logging
@@ -32,11 +32,12 @@ logger.addHandler(console_handler)
 WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
 
-counts = {}
-
 default_uri_templates = {
     "ddc": {
         "uri": "http://dewey.info/{collection}/{object}/e{edition}/"
+    },
+    "bkl": {
+        "uri": "http://uri.gbv.de/terminology/bk/{object}"
     }
 }
 
@@ -205,8 +206,10 @@ class Record(object):
         if self.scheme in self.default_uri_templates:
             cfg = self.default_uri_templates[self.scheme]
             self.base_uri = cfg['uri']
-            self.scheme_uri = self.uri('scheme', 'edition')
-            self.table_scheme_uri = self.uri('table', self.table)
+            edition = 'edition' if self.scheme_edition is not None else ''
+            self.scheme_uri = self.uri('scheme', edition)
+            table = self.table if self.table is not None else ''
+            self.table_scheme_uri = self.uri('table', table)
 
         # 253 : Complex See Reference (R)
         # Example:
@@ -424,9 +427,7 @@ class Record(object):
         buf = ''
         is_top_concept = True
 
-        parts = [
-
-        ]
+        parts = []
 
         for sf in element.all('mx:subfield'):
             code = sf.get('code')
@@ -615,12 +616,8 @@ class Record(object):
             graph.add((b1, RDF.rest, RDF.nil))
 
 
-class UnknownClassificationScheme(RuntimeError):
-    pass
-
-
 def process_record(graph, rec, **kwargs):
-    # Parse a single MARC21 classification record
+    """Convert a single MARC21 classification record to RDF."""
 
     rec = Record(rec, default_uri_templates)
 
@@ -713,13 +710,17 @@ def main():
     }
 
     n = 0
-    t0 = time.time()
     for record in get_records(in_file):
+        n += 1
         try:
-            res = process_record(graph, record, **options)
+            process_record(graph, record, **options)
         except InvalidRecordError as e:
-            # logger.debug('Ignoring invalid record: %s', e)
-            pass  # ignore
+            logger.debug('Ignoring record %d: %s', n, e)
+            pass
+
+    if not graph:
+        logger.warn('RDF result is empty!')
+        return
 
     # @TODO: Perhaps use OrderedTurtleSerializer if available, but fallback to default Turtle serializer if not?
     s = OrderedTurtleSerializer(graph)

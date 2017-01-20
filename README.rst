@@ -25,7 +25,7 @@ records (serialized as MARCXML) to
 
 Developed to support the
 project "`Felles terminologi for klassifikasjon med Dewey <https://www.duo.uio.no/handle/10852/39834>`_",
-it has only been tested with Dewey Decimal Classification (DDC) records.
+for converting Dewey Decimal Classification (DDC) records.
 `Issues <https://github.com/scriptotek/mc2skos/issues>`_ and
 suggestions for generalizations and improvements are welcome!
 
@@ -59,39 +59,52 @@ Usage
 
 .. code-block:: console
 
-    mc2skos infile.xml outfile.ttl
+    mc2skos infile.xml outfile.ttl      # from file to file
+    mc2skos infile.xml > outfile.ttl    # from file to standard output
 
 Run ``mc2skos --help`` or ``mc2skos -h`` for options.
 
 URIs
 ====
 
-For records with ``084 $a == "ddc"``, URIs are generated on the form
-``http://dewey.info/{collection}/{object}/e{edition}/``, where
-``{collection}`` is "class", "table" or "scheme", and ``{edition}`` is
-taken from ``084 $c`` (with language code stripped).
+Concept URIs are generated from an URI template specified with option
+``--uri``.  The following template parameters are recognized:
+
+* ``{collection}`` is "class", "table" or "scheme"
+* ``{object}`` is ... or table number or ??????????
+* ``{edition}`` is taken from ``084 $c`` (with language code stripped)
+
+The following default URI template are used for known concept scheme
+identifiers in ``084 $a``:
+
+* ``ddc``: ``http://dewey.info/{collection}/{object}/e{edition}/`` (DDC)
+* ``bkl``: ``http://uri.gbv.de/terminology/bk/{object}`` (Basisklassifikation)
+
+To add ``skos:inScheme`` statements to all records, an URI template must be
+specified with option ``--scheme`` or it is derived from a known default
+template.
+
+To add an additional ``skos:inScheme`` statement to table records, an URI
+template must be specified with option ``--table_scheme`` or it is derived from
+a known default template.
+
+The following example is generated from a DDC table record:
 
 .. code-block:: turtle
 
     <http://dewey.info/class/6--982/e21/> a skos:Concept ;
         skos:inScheme <http://dewey.info/scheme/edition/e21/>,
-            <http://dewey.info/table/6/e21/> ;
+                      <http://dewey.info/table/6/e21/> ;
         skos:notation "T6--982" ;
         skos:prefLabel "Chibchan and Paezan languages"@en .
 
-To override this, you can specify ``--uri`` to set a URI template for classes and table record,
-``--scheme`` to set a URI to be used with ``skos:inScheme`` for all records, and ``--table_scheme``
-to set a URI template to be used with ``skos:inScheme`` for table records. Note that
-if ``--uri`` is specified, but not ``--scheme``, no ``skos:inScheme`` will be added. Same goes
-with ``--table_scheme``.
 
 Mapping schema
 ==============
 
-Only a small part of the MARC21 Classification
-data model is converted, and the conversion follows a rather
-pragmatic approach, exemplified by the mapping of the 7XX fields
-to skos:altLabel.
+Only a small part of the MARC21 Classification data model is converted, and the
+conversion follows a rather pragmatic approach, exemplified by the mapping of
+the 7XX fields to skos:altLabel.
 
 ==========================================================  =====================================
 MARC21XML                                                    RDF
