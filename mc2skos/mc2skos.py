@@ -711,11 +711,12 @@ def main():
 
     n = 0
     for record in get_records(in_file):
+        n += 1
         try:
             process_record(graph, record, **options)
         except InvalidRecordError as e:
-            # logger.debug('Ignoring invalid record: %s', e)
-            pass  # ignore
+            logger.debug('Ignoring record %d: %s', n, e)
+            pass
 
     if not graph:
         logger.warn('RDF result is empty!')
