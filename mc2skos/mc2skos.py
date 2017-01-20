@@ -14,6 +14,9 @@ import argparse
 from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
 from rdflib import URIRef, RDFS, Literal, Graph, BNode
 from otsrdflib import OrderedTurtleSerializer
+import json
+import rdflib_jsonld.serializer as json_ld
+import pkg_resources
 
 import logging
 import logging.handlers
@@ -667,8 +670,8 @@ def main():
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='More verbose output')
-    parser.add_argument('-o', '--outformat', dest='outformat', nargs='?',
-                        help='Output serialization format. Default: turtle',
+    parser.add_argument('-o', '--outformat', dest='outformat', metavar='FORMAT', nargs='?',
+                        help='Output format: turtle (default), jskos, or ndjson',
                         default='turtle')
 
     parser.add_argument('--uri', dest='base_uri', help='URI template')
@@ -700,7 +703,7 @@ def main():
         console_handler.setLevel(logging.INFO)
 
     in_file = args.infile[0]
-    if args.outformat != 'turtle':  # TODO: support more formats
+    if args.outformat not in ['turtle', 'jskos', 'ndjson']:
         raise ValueError('output format not supported')
 
     options = {
@@ -721,16 +724,34 @@ def main():
             # logger.debug('Ignoring invalid record: %s', e)
             pass  # ignore
 
-    # @TODO: Perhaps use OrderedTurtleSerializer if available, but fallback to default Turtle serializer if not?
-    s = OrderedTurtleSerializer(graph)
-
-    s.sorters = [
-        ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
-        ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
-    ]
-
-    if args.outfile and args.outfile[0] != '-':
-        s.serialize(open(out_file, 'wb'))
-        logger.info('Wrote RDF: %s', out_file)
+    if args.outfile and args.outfile != '-':
+        out_file = open(args.outfile, 'wb')
     else:
-        s.serialize(sys.stdout)
+        out_file = sys.stdout
+
+    if args.outformat == 'turtle':
+        # @TODO: Perhaps use OrderedTurtleSerializer if available, but fallback to default Turtle serializer if not?
+        s = OrderedTurtleSerializer(graph)
+
+        s.sorters = [
+            ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
+            ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
+        ]
+
+        s.serialize(out_file)
+
+    elif args.outformat in ['jskos', 'ndjson']:
+        s = pkg_resources.resource_stream(__name__, 'jskos-context.json')
+        context = json.load(s)
+        jskos = json_ld.from_rdf(graph, context)
+        if args.outformat == 'jskos':
+            jskos['@context'] = u'https://gbv.github.io/jskos/context.json'
+            out_file.write(json.dumps(jskos, sort_keys=True, indent=2))
+        else:
+            for record in jskos['@graph'] if '@graph' in jskos else [jskos]:
+                record['@context'] = u'https://gbv.github.io/jskos/context.json'
+                out_file.write(json.dumps(record, sort_keys=True))
+                out_file.write('\n')
+
+    if out_file != sys.stdout:
+        logger.info('Wrote %s: %s' % (args.outformat, args.outfile))
