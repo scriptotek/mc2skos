@@ -667,8 +667,8 @@ def main():
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='More verbose output')
-    parser.add_argument('-o', '--outformat', dest='outformat', nargs='?',
-                        help='Output serialization format: turtle (default) or jskos',
+    parser.add_argument('-o', '--outformat', dest='outformat', metavar='FORMAT', nargs='?',
+                        help='Output format: turtle (default), jskos, or ndjson',
                         default='turtle')
 
     parser.add_argument('--uri', dest='base_uri', help='URI template')
@@ -700,7 +700,7 @@ def main():
         console_handler.setLevel(logging.INFO)
 
     in_file = args.infile[0]
-    if args.outformat not in ['turtle', 'jskos']:
+    if args.outformat not in ['turtle', 'jskos', 'ndjson']:
         raise ValueError('output format not supported')
 
     options = {
@@ -741,12 +741,18 @@ def main():
 
         s.serialize(out_file)
 
-    elif args.outformat == 'jskos':
+    elif args.outformat in ['jskos', 'ndjson']:
         s = pkg_resources.resource_stream(__name__, 'jskos-context.json')
         context = json.load(s)
         jskos = json_ld.from_rdf(graph, context)
-        jskos['@context'] = u'https://gbv.github.io/jskos/context.json'
-        out_file.write(json.dumps(jskos, sort_keys=True, indent=2))
+        if args.outformat == 'jskos':
+            jskos['@context'] = u'https://gbv.github.io/jskos/context.json'
+            out_file.write(json.dumps(jskos, sort_keys=True, indent=2))
+        else:
+            for record in jskos['@graph'] if '@graph' in jskos else [jskos]:
+                record['@context'] = u'https://gbv.github.io/jskos/context.json'
+                out_file.write(json.dumps(record, sort_keys=True))
+                out_file.write('\n')
 
     if out_file != sys.stdout:
         logger.info('Wrote %s: %s' % (args.outformat, args.outfile))
