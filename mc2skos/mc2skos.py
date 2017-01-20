@@ -11,8 +11,8 @@ import time
 from lxml import etree
 from iso639 import languages
 import argparse
-from rdflib.namespace import OWL, RDF, RDFS, SKOS, Namespace
-from rdflib import URIRef, RDFS, Literal, Graph, BNode
+from rdflib.namespace import OWL, RDF, SKOS, Namespace
+from rdflib import URIRef, Literal, Graph, BNode
 from otsrdflib import OrderedTurtleSerializer
 
 import logging
@@ -31,8 +31,6 @@ logger.addHandler(console_handler)
 
 WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
-
-counts = {}
 
 default_uri_templates = {
     "ddc": {
@@ -618,10 +616,6 @@ class Record(object):
             graph.add((b1, RDF.rest, RDF.nil))
 
 
-class UnknownClassificationScheme(RuntimeError):
-    pass
-
-
 def process_record(graph, rec, **kwargs):
     """Convert a single MARC21 classification record to RDF."""
 
@@ -716,7 +710,6 @@ def main():
     }
 
     n = 0
-    t0 = time.time()
     for record in get_records(in_file):
         try:
             process_record(graph, record, **options)
