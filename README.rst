@@ -71,7 +71,8 @@ Concept URIs are generated from an URI template specified with option
 ``--uri``.  The following template parameters are recognized:
 
 * ``{collection}`` is "class", "table" or "scheme"
-* ``{object}`` is ... or table number or ??????????
+* ``{object}`` is a member of the classification scheme and part of
+  a ``{collection}``, such as a specific class or table.
 * ``{edition}`` is taken from ``084 $c`` (with language code stripped)
 
 The following default URI template are used for known concept scheme
