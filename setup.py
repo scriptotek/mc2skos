@@ -47,5 +47,9 @@ setup(name='mc2skos',
       setup_requires=['rdflib', 'pytest-runner>=2.9'],
       tests_require=['pytest', 'pytest-pep8', 'pytest-cov'],
       packages=['mc2skos'],
-      entry_points={'console_scripts': ['mc2skos=mc2skos.mc2skos:main']}
+      entry_points={'console_scripts': ['mc2skos=mc2skos.mc2skos:main']},
+      package_data={
+          'mc2skos': ['jskos-context.json']
+      },
+      include_package_data=True
       )
