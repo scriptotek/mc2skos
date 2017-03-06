@@ -8,10 +8,11 @@
 import sys
 import re
 import time
+from datetime import datetime
 from lxml import etree
 from iso639 import languages
 import argparse
-from rdflib.namespace import OWL, RDF, SKOS, Namespace
+from rdflib.namespace import OWL, RDF, SKOS, DCTERMS, XSD, Namespace
 from rdflib import URIRef, Literal, Graph, BNode
 from otsrdflib import OrderedTurtleSerializer
 import json
@@ -155,6 +156,8 @@ class Record(object):
     def __init__(self, record, default_uri_templates=None, options=None):
         self.record = Element(record)
 
+        self.created = None
+        self.modified = None
         self.base_uri = None
         self.scheme_uri = None
         self.table_scheme_uri = None
@@ -180,9 +183,14 @@ class Record(object):
         if self.leader[6] != 'w':  # w: classification, z: authority
             raise InvalidRecordError('Record is not a Marc21 Classification record')
 
+        # 005
+        value = self.record.text('mx:controlfield[@tag="005"]')
+        if value is not None:
+            self.modified = datetime.strptime(value, '%Y%m%d%H%M%S.%f')
+
         # 008
         value = self.record.text('mx:controlfield[@tag="008"]')
-        self.record_type, self.number_type, self.display, self.synthesized = self.parse_008(value)
+        self.created, self.record_type, self.number_type, self.display, self.synthesized = self.parse_008(value)
 
         # 040: Record Source
         lang = self.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="b"]') or 'eng'
@@ -372,7 +380,9 @@ class Record(object):
         # Parse the 008 field text
 
         if value is None:
-            return None, None, True, False
+            return None, None, None, True, False
+
+        created = datetime.strptime(value[:6], '%y%m%d')
 
         if value[6] == 'a':
             record_type = Constants.SCHEDULE_RECORD
@@ -418,7 +428,7 @@ class Record(object):
             logger.debug(value[13])
             display = False
 
-        return record_type, number_type, display, synthesized
+        return created, record_type, number_type, display, synthesized
 
     @staticmethod
     def parse_153(element):
@@ -543,6 +553,12 @@ class Record(object):
                 graph.add((uri, SKOS.inScheme, self.scheme_uri))
             if self.record_type == Constants.TABLE_RECORD and self.table_scheme_uri is not None:
                 graph.add((uri, SKOS.inScheme, self.table_scheme_uri))
+
+        if self.created is not None:
+            graph.add((uri, DCTERMS.created, Literal(self.created.strftime('%F'), datatype=XSD.date)))
+
+        if self.modified is not None:
+            graph.add((uri, DCTERMS.modified, Literal(self.modified.strftime('%F'), datatype=XSD.date)))
 
         # Add skos:broader
         if self.parent_notation is not None:
@@ -684,11 +700,9 @@ def main():
 
     args = parser.parse_args()
 
-    DCT = Namespace('http://purl.org/dc/terms/')
-
     graph = Graph()
     nm = graph.namespace_manager
-    nm.bind('dct', DCT)
+    nm.bind('dcterms', DCTERMS)
     nm.bind('skos', SKOS)
     nm.bind('wd', WD)
     nm.bind('mads', MADS)

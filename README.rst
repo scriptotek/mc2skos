@@ -110,6 +110,8 @@ the 7XX fields to skos:altLabel.
 ==========================================================  =====================================
 MARC21XML                                                    RDF
 ==========================================================  =====================================
+``005`` Date and time of latest transaction                 ``dcterms:modified``
+``008[0:6]`` Date entered on file                           ``dcterms:created``
 ``153 $a``, ``$c``, ``$z`` Classification number            ``skos:notation``
 ``153 $j`` Caption                                          ``skos:prefLabel``
 ``153 $e``, ``$f``, ``$z`` Classification number hierarchy  ``skos:broader``
