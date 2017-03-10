@@ -367,11 +367,14 @@ class Record(object):
                 # elif sf.get('code') == 't':    # Digits added from internal subarrangement or add table
                 #     self.components.append(sf.text())
                 elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
-                    tmp = rootno + sf.text()
-                    if len(tmp) > 3:
-                        tmp = tmp[:3] + '.' + tmp[3:]
-                    self.components.append(table + tmp)
-                    table = ''
+                    if sf.text() is None:
+                        logger.warn('Class %s has blank 765 $s subfield. This should be fixed.', self.notation)
+                    else:
+                        tmp = rootno + sf.text()
+                        if len(tmp) > 3:
+                            tmp = tmp[:3] + '.' + tmp[3:]
+                        self.components.append(table + tmp)
+                        table = ''
                 # elif sf.get('code') not in ['9', 'u']:
                 #     print sf.get('code'), sf.text, class_no
 
