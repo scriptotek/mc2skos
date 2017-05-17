@@ -36,15 +36,6 @@ logger.addHandler(console_handler)
 WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
 
-default_uri_templates = {
-    "ddc": {
-        "uri": "http://dewey.info/{collection}/{object}/e{edition}/"
-    },
-    "bkl": {
-        "uri": "http://uri.gbv.de/terminology/bk/{object}"
-    }
-}
-
 
 class Constants(object):
     SCHEDULE_RECORD = 'schedule_record'
@@ -156,7 +147,16 @@ class Element(object):
 
 class Record(object):
 
-    def __init__(self, record, default_uri_templates=None, options=None):
+    default_uri_templates = {
+        'ddc': {
+            'uri': 'http://dewey.info/{collection}/{object}/e{edition}/'
+        },
+        'bkl': {
+            'uri': 'http://uri.gbv.de/terminology/bk/{object}'
+        }
+    }
+
+    def __init__(self, record, options=None):
         options = options or {}
         if isinstance(record, Element):
             self.record = record
@@ -165,10 +165,22 @@ class Record(object):
 
         self.created = None
         self.modified = None
+        self.broader = []
         self.lang = None
+        self.prefLabel = None
+        self.altLabel = []
+        self.definition = []
+        self.editorialNote = []
+        self.components = []
+        self.scopeNote = []
+        self.historyNote = []
+        self.webDeweyExtras = {}
+        self.deprecated = False
+        self.is_top_concept = False
+        self.notation = None
 
-        self.uri = None
-        self.default_uri_templates = default_uri_templates or {}
+        self.uri = None  # Concept URI
+        self.scheme_uris = []  # Concept scheme URI
 
         self.uri_template = options.get('base_uri')
 
@@ -177,7 +189,7 @@ class Record(object):
     def get_uri(self, **kwargs):
         if self.uri_template is None:
             return None
-        return URIRef(self.uri_template.format(**kwargs))
+        return self.uri_template.format(**kwargs)
 
     def get_terms(self, base='1'):
         # X00 - Personal Name (R)
@@ -218,21 +230,19 @@ class Record(object):
         lang = self.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="b"]') or 'eng'
         self.lang = languages.get(part2b=lang).part1
 
+    def is_public(self):
+        return True
+
 
 class ClassificationRecord(Record):
 
-    def __init__(self, record, default_uri_templates=None, options=None):
+    def __init__(self, record, options=None):
         options = options or {}
         self.scheme_edition_numeric = None
-        self.indexterms = []
-        self.components = []
-        self.notes = []
-        self.scheme_uri = None
         self.scheme_uri_template = options.get('scheme_uri')
-        self.table_scheme_uri = None
         self.table_scheme_uri_template = options.get('table_scheme_uri')
 
-        super(ClassificationRecord, self).__init__(record, default_uri_templates, options)
+        super(ClassificationRecord, self).__init__(record, options)
 
     def get_uri(self, **kwargs):
         kwargs['edition'] = self.scheme_edition_numeric
@@ -241,22 +251,22 @@ class ClassificationRecord(Record):
     def generate_uris(self):
         # If URI templates have been provided as options, these takes precedence:
         if self.scheme_uri_template is not None:
-            self.scheme_uri = URIRef(self.scheme_uri_template.format(edition=self.scheme_edition_numeric))
+            self.scheme_uris.append(self.scheme_uri_template.format(edition=self.scheme_edition_numeric))
 
-        if self.table_scheme_uri_template is not None:
-            self.table_scheme_uri = URIRef(self.table_scheme_uri_template.format(edition=self.scheme_edition_numeric, table=self.table))
+        if self.record_type == Constants.TABLE_RECORD and self.table_scheme_uri_template is not None:
+            self.scheme_uris.append(self.table_scheme_uri_template.format(edition=self.scheme_edition_numeric, table=self.table))
 
         # Generate URIs from scheme
         if self.scheme in self.default_uri_templates:
             if self.uri_template is None:
                 cfg = self.default_uri_templates[self.scheme]
                 self.uri_template = cfg['uri']
-            if self.scheme_uri is None:
+            if len(self.scheme_uris) == 0:
+                if self.record_type == Constants.TABLE_RECORD:
+                    table = self.table if self.table is not None else ''
+                    self.scheme_uris.append(self.get_uri(collection='table', object=table))
                 edition = 'edition' if self.scheme_edition is not None else ''
-                self.scheme_uri = self.get_uri(collection='scheme', object=edition)
-            if self.table_scheme_uri is None:
-                table = self.table if self.table is not None else ''
-                self.table_scheme_uri = self.get_uri(collection='table', object=table)
+                self.scheme_uris.append(self.get_uri(collection='scheme', object=edition))
 
         # Record URI
         self.uri = self.get_uri(collection='class', object=self.notation)
@@ -278,10 +288,7 @@ class ClassificationRecord(Record):
         element = self.record.first('mx:datafield[@tag="153"]')
         if element is None:
             raise InvalidRecordError('Record does not have a 153 field')
-        self.table, self.notation, self.is_top_concept, self.parent_notation, self.caption = self.parse_153(element)
-
-        # Now we have enough information to generate the URIs
-        self.generate_uris()
+        self.table, self.notation, self.is_top_concept, parent_notation, self.prefLabel = self.parse_153(element)
 
         if self.record_type is None:
             logger.warn('Record does not have a 008 field, will try to guess type.')
@@ -289,6 +296,13 @@ class ClassificationRecord(Record):
                 self.record_type = Constants.SCHEDULE_RECORD
             else:
                 self.record_type = Constants.TABLE_RECORD
+
+        # Now we have enough information to generate URIs
+        self.generate_uris()
+        if parent_notation is not None:
+            parent_uri = self.get_uri(collection='class', object=parent_notation)
+            if parent_uri is not None:
+                self.broader.append(parent_uri)
 
         # 253 : Complex See Reference (R)
         # Example:
@@ -301,10 +315,7 @@ class ClassificationRecord(Record):
         # </mx:datafield>
         #
         for entry in self.record.all('mx:datafield[@tag="253"]'):
-            self.notes.append({
-                'type': Constants.COMPLEX_SEE_REFERENCE,
-                'content': entry.stringify()
-            })
+            self.editorialNote.append(entry.stringify())  # Constants.COMPLEX_SEE_REFERENCE
 
         # 353 : Complex See Also Reference (R)
         # Example:
@@ -316,10 +327,7 @@ class ClassificationRecord(Record):
         #   <mx:subfield code="9">ess=nsa</mx:subfield>
         # </mx:datafield>
         for entry in self.record.all('mx:datafield[@tag="353"]'):
-            self.notes.append({
-                'type': Constants.COMPLEX_SEE_ALSO_REFERENCE,
-                'content': entry.stringify()
-            })
+            self.editorialNote.append(entry.stringify())  # Constants.COMPLEX_SEE_ALSO_REFERENCE
 
         # 680 : Scope note
         # Example:
@@ -338,15 +346,19 @@ class ClassificationRecord(Record):
         for entry in self.record.all('mx:datafield[@tag="680"]'):
             ess = entry.get_ess_codes()
             if 'ndf' in ess:
-                note_type = Constants.DEFINITION
+                self.definition.append(entry.stringify())  # Constants.DEFINITION
             else:
-                note_type = Constants.SCOPE_NOTE
-            self.notes.append({
-                'type': note_type,
-                'content': entry.stringify(),
-                'ess': ess,
-                'topics': [t.capitalize() for t in entry.text('mx:subfield[@code="t"]', True)]
-            })
+                self.scopeNote.append(entry.stringify())  # Constants.SCOPE_NOTE
+                topics = [t.capitalize() for t in entry.text('mx:subfield[@code="t"]', True)]
+                for topic in topics:
+                    if 'nvn' in ess:
+                        self.webDeweyExtras['variantName'] = self.webDeweyExtras.get('variantName', []) + [topic]
+                    elif 'nch' in ess:
+                        self.webDeweyExtras['classHere'] = self.webDeweyExtras.get('classHere', []) + [topic]
+                    elif 'nin' in ess:
+                        self.webDeweyExtras['including'] = self.webDeweyExtras.get('including', []) + [topic]
+                    elif 'nph' in ess:
+                        self.webDeweyExtras['formerName'] = self.webDeweyExtras.get('formerName', []) + [topic]
 
         # 683 : Application Instruction Note
         # Example:
@@ -359,11 +371,7 @@ class ClassificationRecord(Record):
         # </mx:datafield>
         #
         for entry in self.record.all('mx:datafield[@tag="683"]'):
-            self.notes.append({
-                'type': Constants.APPLICATION_INSTRUCTION_NOTE,
-                'content': entry.stringify(),
-                'ess': entry.get_ess_codes(),
-            })
+            self.editorialNote.append(entry.stringify())  # Constants.APPLICATION_INSTRUCTION_NOTE
 
         # 685 : History note
         # Example:
@@ -375,13 +383,11 @@ class ClassificationRecord(Record):
         #  </mx:datafield>
         #
         for entry in self.record.all('mx:datafield[@tag="685"]'):
-            self.notes.append({
-                'type': Constants.HISTORY_NOTE,
-                'content': entry.stringify(),
-                'ess': entry.get_ess_codes(),
-            })
+            self.historyNote.append(entry.stringify())  # Constants.HISTORY_NOTE
+            if 'ndn' in entry.get_ess_codes():
+                self.deprecated = True
 
-        # 694 : ??? Note : Wrong code for 684 'Auxiliary Instruction Note' ??
+        # 694 : ??? Note : Non-standard code for 684 'Auxiliary Instruction Note' ??
         # Example:
         #   <mx:datafield tag="694" ind2=" " ind1=" ">
         #     <mx:subfield code="i">De fleste verker om seletøy og tilbehør klassifiseres med hester i</mx:subfield>
@@ -390,15 +396,11 @@ class ClassificationRecord(Record):
         #   </mx:datafield>
         #
         for entry in self.record.all('mx:datafield[@tag="694"]'):
-            self.notes.append({
-                'type': Constants.AUXILIARY_INSTRUCTION_NOTE,
-                'content': entry.stringify(),
-                'ess': entry.get_ess_codes(),
-            })
+            self.editorialNote.append(entry.stringify())
 
         # 7XX Index terms
         for heading in self.get_terms('7'):
-            self.indexterms.append({
+            self.altLabel.append({
                 'term': heading['value']
             })
 
@@ -572,129 +574,109 @@ class ClassificationRecord(Record):
 
         return table, notation, is_top_concept, parent_notation, caption
 
-    def add_to_graph(self, graph, options):
-        # Add record to graph
-
-        if self.uri is None:
-            logger.debug('Ignoring %s because: No known concept scheme detected, and no manual URI template given', self.notation)
-            return
-
+    def is_public(self):
         if not self.display and not self.synthesized:
             # This is a record not displayed in standard schedules or tables,
             # and it is not a synthesized number (we want those).
             # It could be e.g. an "add table" number.
             logger.debug('Ignoring %s because: not intended for display', self.notation)
-            return
+            return False
 
         if self.record_type not in [Constants.SCHEDULE_RECORD, Constants.TABLE_RECORD]:
             logger.debug('Ignoring %s because: type %s', self.notation, self.record_type)
-            return
+            return False
 
         include_add_table_numbers = False  # @TODO: Make argparse option
         if self.notation.find(':') != -1 and not include_add_table_numbers:
             logger.debug('Ignoring %s because: add table number', self.notation)
-            return
+            return False
 
-        # logger.debug('Adding: %s', self.uri)
+        return True
 
-        # Strictly, we do not need to explicitly state here that <A> and <B> are instances
-        # of skos:Concept, because such statements are entailed by the definition
-        # of skos:semanticRelation.
-        graph.add((self.uri, RDF.type, SKOS.Concept))
 
-        # Add skos:topConceptOf or skos:inScheme
-        if self.is_top_concept:
-            if self.scheme_uri is not None:
-                logger.info('Marking %s as topConcept', self.notation)
-                graph.add((self.uri, SKOS.topConceptOf, self.scheme_uri))
-            if self.record_type == Constants.TABLE_RECORD and self.table_scheme_uri is not None:
-                graph.add((self.uri, SKOS.topConceptOf, self.table_scheme_uri))
+def add_record_to_graph(graph, record, options):
+    # Add record to graph
+
+    # logger.debug('Adding: %s', record.uri)
+
+    # Strictly, we do not need to explicitly state here that <A> and <B> are instances
+    # of skos:Concept, because such statements are entailed by the definition
+    # of skos:semanticRelation.
+    record_uri = URIRef(record.uri)
+
+    graph.add((record_uri, RDF.type, SKOS.Concept))
+
+    # Add skos:topConceptOf or skos:inScheme
+    for scheme_uri in record.scheme_uris:
+        if record.is_top_concept:
+            graph.add((record_uri, SKOS.topConceptOf, URIRef(scheme_uri)))
         else:
-            if self.scheme_uri is not None:
-                graph.add((self.uri, SKOS.inScheme, self.scheme_uri))
-            if self.record_type == Constants.TABLE_RECORD and self.table_scheme_uri is not None:
-                graph.add((self.uri, SKOS.inScheme, self.table_scheme_uri))
+            graph.add((record_uri, SKOS.inScheme, URIRef(scheme_uri)))
 
-        if self.created is not None:
-            graph.add((self.uri, DCTERMS.created, Literal(self.created.strftime('%F'), datatype=XSD.date)))
+    if record.created is not None:
+        graph.add((record_uri, DCTERMS.created, Literal(record.created.strftime('%F'), datatype=XSD.date)))
 
-        if self.modified is not None:
-            graph.add((self.uri, DCTERMS.modified, Literal(self.modified.strftime('%F'), datatype=XSD.date)))
+    if record.modified is not None:
+        graph.add((record_uri, DCTERMS.modified, Literal(record.modified.strftime('%F'), datatype=XSD.date)))
 
-        # Add skos:broader
-        if self.parent_notation is not None:
-            parent_uri = self.get_uri(collection='class', object=self.parent_notation)
-            graph.add((self.uri, SKOS.broader, parent_uri))
+    # Add classification number as skos:notation
+    if record.notation:
+        if record.record_type == Constants.TABLE_RECORD:  # OBS! Sjekk add tables
+            graph.add((record_uri, SKOS.notation, Literal('T' + record.notation)))
+        else:
+            graph.add((record_uri, SKOS.notation, Literal(record.notation)))
 
-        # Add caption as skos:prefLabel
-        if self.caption:
-            graph.add((self.uri, SKOS.prefLabel, Literal(self.caption, lang=self.lang)))
+    # Add caption as skos:prefLabel
+    if record.prefLabel:
+        graph.add((record_uri, SKOS.prefLabel, Literal(record.prefLabel, lang=record.lang)))
 
-        # Add classification number as skos:notation
-        if self.notation:
-            if self.record_type == Constants.TABLE_RECORD:  # OBS! Sjekk add tables
-                graph.add((self.uri, SKOS.notation, Literal('T' + self.notation)))
-            else:
-                graph.add((self.uri, SKOS.notation, Literal(self.notation)))
+    # Add index terms as skos:altLabel
+    if options.get('include_indexterms'):
+        for label in record.altLabel:
+            graph.add((record_uri, SKOS.altLabel, Literal(label['term'], lang=record.lang)))
 
-        # Add index terms as skos:altLabel
-        if options.get('include_indexterms'):
-            for term in self.indexterms:
-                graph.add((self.uri, SKOS.altLabel, Literal(term['term'], lang=self.lang)))
+    # Add skos:broader
+    for parent_uri in record.broader:
+        graph.add((record_uri, SKOS.broader, URIRef(parent_uri)))
 
-        # Add notes
-        if options.get('include_notes'):
-            for note in self.notes:
-                # Complex see references
-                if note['type'] in [Constants.COMPLEX_SEE_REFERENCE,
-                                    Constants.COMPLEX_SEE_ALSO_REFERENCE,
-                                    Constants.APPLICATION_INSTRUCTION_NOTE]:
-                    graph.add((self.uri, SKOS.editorialNote, Literal(note['content'], lang=self.lang)))
+    # Add notes
+    if options.get('include_notes'):
+        for note in record.definition:
+            graph.add((record_uri, SKOS.definition, Literal(note, lang=record.lang)))
 
-                # Scope notes
-                elif note['type'] == Constants.DEFINITION:
-                    graph.add((self.uri, SKOS.definition, Literal(note['content'], lang=self.lang)))
+        for note in record.editorialNote:
+            graph.add((record_uri, SKOS.editorialNote, Literal(note, lang=record.lang)))
 
-                elif note['type'] == Constants.SCOPE_NOTE:
-                    graph.add((self.uri, SKOS.scopeNote, Literal(note['content'], lang=self.lang)))
+        for note in record.scopeNote:
+            graph.add((record_uri, SKOS.scopeNote, Literal(note, lang=record.lang)))
 
-                    if 'nvn' in note['ess']:
-                        for topic in note['topics']:
-                            graph.add((self.uri, WD.variantName, Literal(topic, lang=self.lang)))
-                    elif 'nch' in note['ess']:
-                        for topic in note['topics']:
-                            graph.add((self.uri, WD.classHere, Literal(topic, lang=self.lang)))
-                    elif 'nin' in note['ess']:
-                        for topic in note['topics']:
-                            graph.add((self.uri, WD.including, Literal(topic, lang=self.lang)))
-                    elif 'nph' in note['ess']:
-                        for topic in note['topics']:
-                            graph.add((self.uri, WD.formerName, Literal(topic, lang=self.lang)))
+        for note in record.historyNote:
+            graph.add((record_uri, SKOS.historyNote, Literal(note, lang=record.lang)))
 
-                # History notes
-                elif note['type'] == Constants.HISTORY_NOTE:
-                    graph.add((self.uri, SKOS.historyNote, Literal(note['content'], lang=self.lang)))
+    # Deprecated?
+    if record.deprecated:
+        graph.add((record_uri, OWL.deprecated, Literal(True)))
 
-        # Deprecated
-        if self.deprecated:
-            graph.add((uri, OWL.deprecated, Literal(True)))
+    # Add synthesized number components
+    if options.get('include_components') and len(record.components) != 0:
+        component = record.components.pop(0)
+        component_uri = URIRef(record.get_uri(collection='class', object=component))
+        b1 = BNode()
+        graph.add((record_uri, MADS.componentList, b1))
+        graph.add((b1, RDF.first, component_uri))
 
-        # Add synthesized number components
-        if options.get('include_components') and len(self.components) != 0:
-            component = self.components.pop(0)
-            component_uri = self.get_uri(collection='class', object=component)
-            b1 = BNode()
-            graph.add((self.uri, MADS.componentList, b1))
-            graph.add((b1, RDF.first, component_uri))
+        for component in record.components:
+            component_uri = record.get_uri(collection='class', object=component)
+            b2 = BNode()
+            graph.add((b1, RDF.rest, b2))
+            graph.add((b2, RDF.first, component_uri))
+            b1 = b2
 
-            for component in self.components:
-                component_uri = self.get_uri(collection='class', object=component)
-                b2 = BNode()
-                graph.add((b1, RDF.rest, b2))
-                graph.add((b2, RDF.first, component_uri))
-                b1 = b2
+        graph.add((b1, RDF.rest, RDF.nil))
 
-            graph.add((b1, RDF.rest, RDF.nil))
+    # Add webDewey extras
+    for key, value in record.webDeweyExtras.items():
+        graph.add((record_uri, WD[key], Literal(value, lang=record.lang)))
 
 
 def process_record(graph, rec, **kwargs):
@@ -705,11 +687,16 @@ def process_record(graph, rec, **kwargs):
     if leader is None:
         raise InvalidRecordError('Record does not have a leader')
     if leader[6] == 'w':  # w: classification, z: authority
-        rec = ClassificationRecord(rec, default_uri_templates, kwargs)
+        rec = ClassificationRecord(rec, kwargs)
     else:
         raise InvalidRecordError('Record is not a Marc21 Classification record')
 
-    rec.add_to_graph(graph, kwargs)
+    if rec.uri is None:
+        logger.debug('Ignoring record because: No known concept scheme detected, and no manual URI template given')
+        return
+
+    if rec.is_public():
+        add_record_to_graph(graph, rec, kwargs)
 
 
 def get_records(in_file):

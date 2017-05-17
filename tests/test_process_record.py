@@ -35,6 +35,10 @@ class TestClassificationRecord(unittest.TestCase):
             <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
                 <mx:leader>00000nw  a2200000n  4500</mx:leader>
                 <mx:controlfield tag="008">100414baabaaaa</mx:controlfield>
+                <mx:datafield tag="084" ind2=" " ind1="0">
+                    <mx:subfield code="a">ddc</mx:subfield>
+                    <mx:subfield code="c">23no</mx:subfield>
+                </mx:datafield>
                 <mx:datafield tag="153" ind2=" " ind1=" ">
                     <mx:subfield code="a">811</mx:subfield>
                     <mx:subfield code="c">818</mx:subfield>
@@ -54,7 +58,8 @@ class TestClassificationRecord(unittest.TestCase):
         assert rec.display is True
         assert rec.synthesized is False
         assert rec.notation == '811-818:2;4'
-        assert rec.parent_notation == '811-818'
+        assert len(rec.broader) == 1
+        assert rec.broader[0] == 'http://dewey.info/class/811-818/e23/'
 
     def testHistoricalAddTableNumber(self):
         rec = ClassificationRecord('''
@@ -280,7 +285,7 @@ class TestClassificationRecord(unittest.TestCase):
         </mx:record>
         ''')
 
-        assert rec.indexterms == [
+        assert rec.altLabel == [
             {'term': 'Analytisk kjemi--organisk kjemi'},
             {'term': 'Kjemisk analyse--organisk kjemi'},
             {'term': 'Organisk kjemi--analytisk kjemi'}]
