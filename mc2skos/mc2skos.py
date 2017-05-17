@@ -80,8 +80,11 @@ class Element(object):
         'marc': 'http://www.loc.gov/MARC21/slim',
     }
 
-    def __init__(self, node):
-        self.node = node
+    def __init__(self, data):
+        if isinstance(data, etree._Element):
+            self.node = data
+        else:
+            self.node = etree.fromstring(data)
 
     def get(self, name):
         return self.node.get(name)
@@ -154,7 +157,10 @@ class Element(object):
 class Record(object):
 
     def __init__(self, record, default_uri_templates=None, options=None):
-        self.record = Element(record)
+        if isinstance(record, Element):
+            self.record = record
+        else:
+            self.record = Element(record)
 
         self.created = None
         self.modified = None

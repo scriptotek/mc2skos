@@ -10,7 +10,7 @@ from rdflib import URIRef, Literal, Graph
 class TestRecord(unittest.TestCase):
 
     def testSimpleNumber(self):
-        rec = Record(etree.fromstring('''
+        rec = Record('''
             <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
               <mx:leader>00000nw  a2200000n  4500</mx:leader>
               <mx:controlfield tag="008">091203aaaaaaaa</mx:controlfield>
@@ -23,7 +23,7 @@ class TestRecord(unittest.TestCase):
                 <mx:subfield code="9">ess=eh</mx:subfield>
               </mx:datafield>
             </mx:record>
-        '''))
+        ''')
 
         assert rec.record_type == Constants.SCHEDULE_RECORD
         assert rec.number_type == Constants.SINGLE_NUMBER
@@ -31,7 +31,7 @@ class TestRecord(unittest.TestCase):
         assert rec.synthesized is False
 
     def testAddTableNumber(self):
-        rec = Record(etree.fromstring('''
+        rec = Record('''
             <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
                 <mx:leader>00000nw  a2200000n  4500</mx:leader>
                 <mx:controlfield tag="008">100414baabaaaa</mx:controlfield>
@@ -47,7 +47,7 @@ class TestRecord(unittest.TestCase):
                     <mx:subfield code="9">ess=rhb</mx:subfield>
                 </mx:datafield>
             </mx:record>
-        '''))
+        ''')
 
         assert rec.record_type == Constants.TABLE_RECORD
         assert rec.number_type == Constants.SINGLE_NUMBER
@@ -57,7 +57,7 @@ class TestRecord(unittest.TestCase):
         assert rec.parent_notation == '811-818'
 
     def testHistoricalAddTableNumber(self):
-        rec = Record(etree.fromstring('''
+        rec = Record('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
             <mx:leader>00000nw  a2200000n  4500</mx:leader>
             <mx:controlfield tag="008">091203baaaaaah</mx:controlfield>
@@ -72,7 +72,7 @@ class TestRecord(unittest.TestCase):
                 <mx:subfield code="9">ess=rhb</mx:subfield>
             </mx:datafield>
         </mx:record>
-        '''))
+        ''')
 
         assert rec.record_type == Constants.TABLE_RECORD
         assert rec.number_type == Constants.SINGLE_NUMBER
@@ -80,7 +80,7 @@ class TestRecord(unittest.TestCase):
         assert rec.synthesized is False
 
     def testSynthesizedNumberSpan(self):
-        rec = Record(etree.fromstring('''
+        rec = Record('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="008">091203abdaaaba</mx:controlfield>
@@ -93,7 +93,7 @@ class TestRecord(unittest.TestCase):
             <mx:subfield code="9">ess=eh</mx:subfield>
           </mx:datafield>
         </mx:record>
-        '''))
+        ''')
 
         assert rec.record_type == Constants.SCHEDULE_RECORD
         assert rec.number_type == Constants.NUMBER_SPAN
@@ -101,7 +101,7 @@ class TestRecord(unittest.TestCase):
         assert rec.synthesized is True
 
     def testHiddenSynthesizedScheduleRecord(self):
-        rec = Record(etree.fromstring('''
+        rec = Record('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="008">091203aaaaaabb</mx:controlfield>
@@ -111,7 +111,7 @@ class TestRecord(unittest.TestCase):
             <mx:subfield code="9">ess=ien</mx:subfield>
           </mx:datafield>
         </mx:record>
-        '''))
+        ''')
 
         assert rec.record_type == Constants.SCHEDULE_RECORD
         assert rec.number_type == Constants.SINGLE_NUMBER
@@ -119,7 +119,7 @@ class TestRecord(unittest.TestCase):
         assert rec.synthesized is True
 
     def testSynthesizedNumberComponents1(self):
-        rec = Record(etree.fromstring('''
+        rec = Record('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00132963</mx:controlfield>
@@ -140,12 +140,12 @@ class TestRecord(unittest.TestCase):
               <mx:subfield code="9">ess=hn</mx:subfield>
             </mx:datafield>
         </mx:record>
-        '''))
+        ''')
 
         assert rec.components == ['306.6', '280.4']
 
     def testSynthesizedNumberComponents2(self):
-        rec = Record(etree.fromstring('''
+        rec = Record('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00123528</mx:controlfield>
@@ -177,13 +177,13 @@ class TestRecord(unittest.TestCase):
               <mx:subfield code="u">299.31</mx:subfield>
             </mx:datafield>
         </mx:record>
-        '''))
+        ''')
 
         assert rec.components == ['299', '5--931', '201.3']
 
     @pytest.mark.skip(reason="add table numbers not yet supported")
     def testSynthesizedNumberComponentsIncludingAddTable(self):
-        rec = Record(etree.fromstring('''
+        rec = Record('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00117858</mx:controlfield>
@@ -239,12 +239,12 @@ class TestRecord(unittest.TestCase):
             <mx:subfield code="9">ps=EO</mx:subfield>
           </mx:datafield>
         </mx:record>
-        '''))
+        ''')
 
         assert rec.components == ['032', '031-039:02', '1--09', '2--93']
 
     def testIndexTerms(self):
-        rec = Record(etree.fromstring('''
+        rec = Record('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00146759</mx:controlfield>
@@ -278,7 +278,7 @@ class TestRecord(unittest.TestCase):
             <mx:subfield code="9">ps=PE</mx:subfield>
           </mx:datafield>
         </mx:record>
-        '''))
+        ''')
 
         assert rec.indexterms == [
             {'term': 'Analytisk kjemi--organisk kjemi'},
@@ -295,42 +295,40 @@ class TestProcessRecord(unittest.TestCase):
     def testRecordWithoutLeader(self):
         g = Graph()
 
-        rec = etree.fromstring('''
+        rec = '''
           <marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
           </marc:record>
-        ''')
+        '''
 
         with pytest.raises(InvalidRecordError):
             process_record(g, rec)
 
     def testRecordWithInvalidLeader(self):
-        g = Graph()
 
         # A Marc21 Authority record
-        rec = etree.fromstring('''
+        rec = '''
           <marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
             <marc:leader>00000nz  a2200000n  4500</marc:leader>
           </marc:record>
-        ''')
+        '''
 
         with pytest.raises(InvalidRecordError):
-            process_record(g, rec)
+            process_record(Graph(), rec)
 
     def testRecordWithout153(self):
         # Not sure if this test should fail or not.
-        g = Graph()
 
-        rec = etree.fromstring('''
+        rec = '''
           <marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
             <marc:leader>00000nw  a2200000n  4500</marc:leader>
           </marc:record>
-        ''')
+        '''
 
         with pytest.raises(InvalidRecordError):
-            process_record(g, rec)
+            process_record(Graph(), rec)
 
     def test153(self):
-        rec = etree.fromstring('''
+        rec = '''
           <marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
             <marc:leader>00000nw  a2200000n  4500</marc:leader>
             <marc:datafield tag="153" ind1=" " ind2=" ">
@@ -341,7 +339,7 @@ class TestProcessRecord(unittest.TestCase):
               <marc:subfield code="j">Theory of communication and control</marc:subfield>
             </marc:datafield>
           </marc:record>
-        ''')
+        '''
         graph = Graph()
         process_record(graph, rec, base_uri='http://test/{object}')
         uri = URIRef(u'http://test/003.5')
@@ -354,7 +352,7 @@ class TestProcessRecord(unittest.TestCase):
         ])
 
     def test_language(self):
-        rec = etree.fromstring('''
+        rec = '''
           <marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
             <marc:leader>00000nw  a2200000n  4500</marc:leader>
             <marc:datafield tag="040" ind2=" " ind1=" ">
@@ -368,7 +366,7 @@ class TestProcessRecord(unittest.TestCase):
               <marc:subfield code="j">Decapoda (tiarmede blekkspruter)</marc:subfield>
             </marc:datafield>
           </marc:record>
-        ''')
+        '''
         graph = Graph()
         process_record(graph, rec, base_uri='http://test/{object}')
         uri = URIRef(u'http://test/564.58')
