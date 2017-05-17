@@ -180,6 +180,35 @@ class Record(object):
                                            object=object,
                                            edition=self.scheme_edition_numeric))
 
+    def get_terms(self, base='1'):
+        # X00 - Personal Name (R)
+        # X10 - Corporate Name (R)
+        # X11 - Meeting Name (R)
+        # X30 - Uniform Title (R)
+        # X48 - Chronological (R)
+        # X50 - Topical (R)
+        # X51 - Geographic Name (R)
+        # X53 - Uncontrolled (R)
+        tags = ['@tag="%s%s"' % (base, tag) for tag in ['00', '10', '11', '30', '48', '50', '51', '53']]
+        for entry in self.record.all('mx:datafield[%s]' % ' or '.join(tags)):
+            codes = ['@code="%s"' % code for code in ['a', 'x', 'y', 'z', 'v']]
+            term_parts = entry.text('mx:subfield[%s]' % ' or '.join(codes), True)
+            cn = entry.text('mx:subfield[@code="0"]')
+            cni = None
+            if cn is not None:
+                cn = cn.split(')')
+                if len(cn) == 2:
+                    cn = cn[1]
+                    cni = cn[0].lstrip('(')
+                else:
+                    cn = cn[0]
+            yield {
+                'value': '--'.join(term_parts),
+                'node': entry,
+                'control_number': cn,
+                'control_number_identifier': cni,
+            }
+
     def parse(self, options):
 
         # Leader
@@ -334,24 +363,11 @@ class Record(object):
                 'ess': entry.get_ess_codes(),
             })
 
-        # 700 - Index Term - Personal Name (R)
-        # 710 - Index Term - Corporate Name (R)
-        # 711 - Index Term - Meeting Name (R)
-        # 730 - Index Term - Uniform Title (R)
-        # 748 - Index Term - Chronological (R)
-        # 750 - Index Term - Topical (R)
-        # 751 - Index Term - Geographic Name (R)
-        # 753 - Index Term - Uncontrolled (R)
-        #
-        tags = ['@tag="%s"' % tag for tag in ['700', '710', '711', '730', '748', '750', '751', '753']]
-        for entry in self.record.all('mx:datafield[%s]' % ' or '.join(tags)):
-            codes = ['@code="%s"' % code for code in ['a', 'x', 'y', 'z', 'v']]
-            term_parts = entry.text('mx:subfield[%s]' % ' or '.join(codes), True)
-            term = '--'.join(term_parts)
-            if len(term) != 0:
-                self.indexterms.append({
-                    'term': term
-                })
+        # 7XX Index terms
+        for heading in self.get_terms('7'):
+            self.indexterms.append({
+                'term': heading['value']
+            })
 
         # 765 : Synthesized Number Components
         for entry in reversed(list(self.record.all('mx:datafield[@tag="765"]'))):
