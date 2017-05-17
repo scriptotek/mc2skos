@@ -20,6 +20,8 @@
 
 Python script for converting
 `MARC 21 Classification <http://www.loc.gov/marc/classification/>`_
+and
+`MARC 21 Authority <http://www.loc.gov/marc/authority/>`_
 records (serialized as MARCXML) to
 `SKOS <http://www.w3.org/2004/02/skos/>`_ concepts.
 
@@ -67,9 +69,10 @@ Run ``mc2skos --help`` or ``mc2skos -h`` for options.
 URIs
 ====
 
-Concept URIs are generated from an URI template specified with option
+Concept URIs can be generated from an URI template specified with option
 ``--uri``.  The following template parameters are recognized:
 
+* ``{control_number}`` is the 001 value
 * ``{collection}`` is "class", "table" or "scheme"
 * ``{object}`` is a member of the classification scheme and part of
   a ``{collection}``, such as a specific class or table.
@@ -100,8 +103,8 @@ The following example is generated from a DDC table record:
         skos:prefLabel "Chibchan and Paezan languages"@en .
 
 
-Mapping schema
-==============
+Mapping schema for MARC21 Classification
+========================================
 
 Only a small part of the MARC21 Classification data model is converted, and the
 conversion follows a rather pragmatic approach, exemplified by the mapping of
@@ -121,7 +124,6 @@ MARC21XML                                                    RDF
 ``680`` Scope Note                                          ``skos:scopeNote``
 ``683`` Application Instruction Note                        ``skos:editorialNote``
 ``685`` History Note                                        ``skos:historyNote``
-``694`` ??? Note                                            ``skos:editorialNote``
 ``700`` Index Term-Personal Name                            ``skos:altLabel``
 ``710`` Index Term-Corporate Name                           ``skos:altLabel``
 ``711`` Index Term-Meeting Name                             ``skos:altLabel``
@@ -221,3 +223,63 @@ MARC21XML                                            RDF
 * ``685`` having ``$9 ess=ndp`` Discontinued partial
 * ``685`` having ``$9 ess=nrp`` Relocation
 * ``689`` having ``$9 ess=nru`` Sist brukt i...
+
+
+Mapping schema for MARC21 Authority
+========================================
+
+Only a small part of the MARC21 Authority data model is converted.
+
+==========================================================  =====================================
+MARC21XML                                                    RDF
+==========================================================  =====================================
+``005`` Date and time of latest transaction                 ``dcterms:modified``
+``008[0:6]`` Date entered on file                           ``dcterms:created``
+``100`` Heading - Personal Name                             ``skos:prefLabel``
+``110`` Heading - Corporate Name                            ``skos:prefLabel``
+``111`` Heading - Meeting Name                              ``skos:prefLabel``
+``130`` Heading - Uniform Title                             ``skos:prefLabel``
+``147`` Heading - Named Event                               ``skos:prefLabel``
+``148`` Heading - Chronological Term                        ``skos:prefLabel``
+``150`` Heading - Topical Term                              ``skos:prefLabel``
+``151`` Heading - Geographic Name                           ``skos:prefLabel``
+``155`` Heading - Genre/Form Term                           ``skos:prefLabel``
+``162`` Heading - Medium of Performance Term                ``skos:prefLabel``
+``400`` See From Tracing - Personal Name                    ``skos:altLabel``
+``410`` See From Tracing - Corporate Name                   ``skos:altLabel``
+``411`` See From Tracing - Meeting Name                     ``skos:altLabel``
+``430`` See From Tracing - Uniform Title                    ``skos:altLabel``
+``447`` See From Tracing - Named Event                      ``skos:altLabel``
+``448`` See From Tracing - Chronological Term               ``skos:altLabel``
+``450`` See From Tracing - Topical Term                     ``skos:altLabel``
+``451`` See From Tracing - Geographic Name                  ``skos:altLabel``
+``455`` See From Tracing - Genre/Form Term                  ``skos:altLabel``
+``462`` See From Tracing - Medium of Performance Term       ``skos:altLabel``
+``500`` See Also From Tracing - Personal Name               ``skos:related`` or `skos:broader`` (see below)
+``510`` See Also From Tracing - Corporate Name              ``skos:related`` or `skos:broader`` (see below)
+``511`` See Also From Tracing - Meeting Name                ``skos:related`` or `skos:broader`` (see below)
+``530`` See Also From Tracing - Uniform Title               ``skos:related`` or `skos:broader`` (see below)
+``547`` See Also From Tracing - Named Event                 ``skos:related`` or `skos:broader`` (see below)
+``548`` See Also From Tracing - Chronological Term          ``skos:related`` or `skos:broader`` (see below)
+``550`` See Also From Tracing - Topical Term                ``skos:related`` or `skos:broader`` (see below)
+``551`` See Also From Tracing - Geographic Name             ``skos:related`` or `skos:broader`` (see below)
+``555`` See Also From Tracing - Genre/Form Term             ``skos:related`` or `skos:broader`` (see below)
+``562`` See Also From Tracing - Medium of Performance Term  ``skos:related`` or `skos:broader`` (see below)
+``667`` Nonpublic General Note                              ``skos:editorialNote``
+``670`` Source Data Found                                   ``skos:note``
+``677`` Definition                                          ``skos:definition``
+``678`` Biographical or Historical Data                     ``skos:note``
+``680`` Public General Note                                 ``skos:note``
+``681`` Subject Example Tracing Note                        ``skos:example``
+``682`` Deleted Heading Information                         ``skos:changeNote``
+``688`` Application History Note                            ``skos:historyNote``
+==========================================================  =====================================
+
+Generating ``skos:related`` and ``skos:broader``
+------------------------------------------------
+
+``skos:related`` and ``skos:broader`` is currently only generated from 5XX fields
+if the fields contain a ``$0`` subfield containing either the control number or the
+URI of the related record.
+
+

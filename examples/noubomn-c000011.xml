@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record type="Authority" xmlns="http://www.loc.gov/MARC21/slim">
+  <leader>00000xz  a2200000n  4500</leader>
+  <controlfield tag="001">REAL000011</controlfield>
+  <controlfield tag="003">NoOU</controlfield>
+  <controlfield tag="005">20160623145459.0</controlfield>
+  <controlfield tag="008">140825|||anz|nbabn          |a|ana|||| d</controlfield>
+  <datafield ind1="7" ind2=" " tag="024">
+    <subfield code="a">http://data.ub.uio.no/realfagstermer/c000011</subfield>
+    <subfield code="2">uri</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="040">
+    <subfield code="a">NoOU</subfield>
+    <subfield code="b">nob</subfield>
+    <subfield code="f">noubomn</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="150">
+    <subfield code="a">Mugg</subfield>
+  </datafield>
+</record>

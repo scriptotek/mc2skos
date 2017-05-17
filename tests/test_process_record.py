@@ -310,10 +310,10 @@ class TestProcessRecord(unittest.TestCase):
 
     def testRecordWithInvalidLeader(self):
 
-        # A Marc21 Authority record
+        # A Marc21 Bibliographic record
         rec = '''
           <marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
-            <marc:leader>00000nz  a2200000n  4500</marc:leader>
+            <marc:leader>00000aa  a2200000n  4500</marc:leader>
           </marc:record>
         '''
 

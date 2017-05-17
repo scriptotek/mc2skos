@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record type="Authority" xmlns="http://www.loc.gov/MARC21/slim">
+  <leader>00000nz  a2200000n  4500</leader>
+  <controlfield tag="001">HUME28807</controlfield>
+  <controlfield tag="003">No-TrBIB</controlfield>
+  <controlfield tag="005">20161209000000.0</controlfield>
+  <controlfield tag="008">161209|||anz|nbabn          |a|ana|||| d</controlfield>
+  <datafield ind1="7" ind2=" " tag="024">
+    <subfield code="a">http://data.ub.uio.no/humord/c28807</subfield>
+    <subfield code="2">uri</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="040">
+    <subfield code="a">No-TrBIB</subfield>
+    <subfield code="b">nob</subfield>
+    <subfield code="f">humord</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="150">
+    <subfield code="a">Undervannsgeologi</subfield>
+    <subfield code="9">rank=preferred</subfield>
+    <subfield code="9">language=nb</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="550">
+    <subfield code="a">Geologi</subfield>
+    <subfield code="w">g</subfield>
+    <subfield code="0">(No-TrBIB)HUME08282</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="680">
+    <subfield code="i">Lukket bemerkning: ubo16</subfield>
+  </datafield>
+</record>

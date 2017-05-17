@@ -25,7 +25,7 @@ import logging.handlers
 from . import __version__
 from .constants import Constants
 from .element import Element
-from .record import InvalidRecordError, ClassificationRecord
+from .record import InvalidRecordError, ClassificationRecord, AuthorityRecord
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -76,18 +76,25 @@ def add_record_to_graph(graph, record, options):
         graph.add((record_uri, SKOS.prefLabel, Literal(record.prefLabel, lang=record.lang)))
 
     # Add index terms as skos:altLabel
-    if options.get('include_indexterms'):
+    if options.get('include_altlabels'):
         for label in record.altLabel:
             graph.add((record_uri, SKOS.altLabel, Literal(label['term'], lang=record.lang)))
 
     # Add skos:broader
-    for parent_uri in record.broader:
-        graph.add((record_uri, SKOS.broader, URIRef(parent_uri)))
+    for uri in record.broader:
+        graph.add((record_uri, SKOS.broader, URIRef(uri)))
+
+    # Add skos:related
+    for uri in record.related:
+        graph.add((record_uri, SKOS.related, URIRef(uri)))
 
     # Add notes
     if options.get('include_notes'):
         for note in record.definition:
             graph.add((record_uri, SKOS.definition, Literal(note, lang=record.lang)))
+
+        for note in record.note:
+            graph.add((record_uri, SKOS.note, Literal(note, lang=record.lang)))
 
         for note in record.editorialNote:
             graph.add((record_uri, SKOS.editorialNote, Literal(note, lang=record.lang)))
@@ -97,6 +104,12 @@ def add_record_to_graph(graph, record, options):
 
         for note in record.historyNote:
             graph.add((record_uri, SKOS.historyNote, Literal(note, lang=record.lang)))
+
+        for note in record.changeNote:
+            graph.add((record_uri, SKOS.changeNote, Literal(note, lang=record.lang)))
+
+        for note in record.example:
+            graph.add((record_uri, SKOS.example, Literal(note, lang=record.lang)))
 
     # Deprecated?
     if record.deprecated:
@@ -114,7 +127,7 @@ def add_record_to_graph(graph, record, options):
             component_uri = record.get_uri(collection='class', object=component)
             b2 = BNode()
             graph.add((b1, RDF.rest, b2))
-            graph.add((b2, RDF.first, component_uri))
+            graph.add((b2, RDF.first, URIRef(component_uri)))
             b1 = b2
 
         graph.add((b1, RDF.rest, RDF.nil))
@@ -125,16 +138,18 @@ def add_record_to_graph(graph, record, options):
 
 
 def process_record(graph, rec, **kwargs):
-    """Convert a single MARC21 classification record to RDF."""
+    """Convert a single MARC21 classification or authority record to RDF."""
 
     rec = Element(rec)
     leader = rec.text('mx:leader')
     if leader is None:
         raise InvalidRecordError('Record does not have a leader')
-    if leader[6] == 'w':  # w: classification, z: authority
+    if leader[6] == 'w':
         rec = ClassificationRecord(rec, kwargs)
+    elif leader[6] == 'z':
+        rec = AuthorityRecord(rec, kwargs)
     else:
-        raise InvalidRecordError('Record is not a Marc21 Classification record')
+        raise InvalidRecordError('Record is not a Marc21 Classification or Authority record')
 
     if rec.uri is None:
         logger.debug('Ignoring record because: No known concept scheme detected, and no manual URI template given')
@@ -177,8 +192,8 @@ def main():
     parser.add_argument('--scheme', dest='scheme_uri', help='SKOS scheme for all records.')
     parser.add_argument('--table_scheme', dest='table_scheme_uri', help='SKOS scheme for table records, use {edition} to specify edition.')
 
-    parser.add_argument('--indexterms', dest='indexterms', action='store_true',
-                        help='Include index terms from 7XX.')
+    parser.add_argument('--altlabels', '--indexterms', dest='altlabels', action='store_true',
+                        help='Include altlabels (from 7XX or 4XX).')
     parser.add_argument('--notes', dest='notes', action='store_true',
                         help='Include note fields.')
     parser.add_argument('--components', dest='components', action='store_true',
@@ -207,7 +222,7 @@ def main():
         'base_uri': args.base_uri,
         'scheme_uri': args.scheme_uri,
         'table_scheme_uri': args.table_scheme_uri,
-        'include_indexterms': args.indexterms,
+        'include_altlabels': args.altlabels,
         'include_notes': args.notes,
         'include_components': args.components
     }

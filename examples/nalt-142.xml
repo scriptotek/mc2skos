@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
+   <marc:leader>01265nz  a2200289n  4500</marc:leader>
+   <marc:controlfield tag="001">142</marc:controlfield>
+   <marc:controlfield tag="003">DNAL</marc:controlfield>
+   <marc:controlfield tag="005">20161208094604.0</marc:controlfield>
+   <marc:controlfield tag="008">161208 neazdnnbabn           a ana      </marc:controlfield>
+   <marc:datafield ind1="7" ind2=" " tag="016">
+      <marc:subfield code="a">nalt00001396</marc:subfield>
+      <marc:subfield code="2">DNAL</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="035">
+      <marc:subfield code="a">(DNAL) nalt00001396</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="040">
+      <marc:subfield code="a">DNAL</marc:subfield>
+      <marc:subfield code="c">DNAL</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="072">
+      <marc:subfield code="a">S Biological Sciences</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="072">
+      <marc:subfield code="a">W Physical and Chemical Sciences</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="150">
+      <marc:subfield code="a">3-methyl-2-oxobutanoate dehydrogenase (lipoamide)</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="450">
+      <marc:subfield code="a">2-oxoisocaproate dehydrogenase</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="450">
+      <marc:subfield code="a">2-oxoisovalerate (lipoate) dehydrogenase</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="450">
+      <marc:subfield code="a">2-oxoisovalerate dehydrogenase (lipoamide)</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="450">
+      <marc:subfield code="a">branched-chain-ketoacid dehydrogenase</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="450">
+      <marc:subfield code="a">branched chain keto acid dehydrogenase</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="450">
+      <marc:subfield code="a">branched chain oxo-acid dehydrogenase</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="450">
+      <marc:subfield code="a">EC 1.2.4.3</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="450">
+      <marc:subfield code="a">EC 1.2.4.4</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="550">
+      <marc:subfield code="a">aldehyde oxidoreductases</marc:subfield>
+      <marc:subfield code="w">g</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="550">
+      <marc:subfield code="a">maple syrup urine disease</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2=" " tag="680">
+      <marc:subfield code="i">A ketone oxidoreductase that catalyzes the overall conversion of alpha-keto acids to acyl-CoA and CO2. The enzyme requires thiamine diphosphate as a cofactor. Defects in genes that code for subunits of the enzyme are a cause of maple syrup urine disease. The enzyme was formerly classified as EC 1.2.4.3.</marc:subfield>
+   </marc:datafield>
+   <marc:datafield ind1=" " ind2="7" tag="750">
+      <marc:subfield code="a">3-metil-2-oxobutanoato deshidrogenasa (lipoamida)</marc:subfield>
+      <marc:subfield code="0">tesa00001396</marc:subfield>
+      <marc:subfield code="2">TESA</marc:subfield>
+   </marc:datafield>
+</marc:record>

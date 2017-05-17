@@ -17,14 +17,7 @@ class InvalidRecordError(RuntimeError):
 
 class Record(object):
 
-    default_uri_templates = {
-        'ddc': {
-            'uri': 'http://dewey.info/{collection}/{object}/e{edition}/'
-        },
-        'bkl': {
-            'uri': 'http://uri.gbv.de/terminology/bk/{object}'
-        }
-    }
+    default_uri_templates = {}
 
     def __init__(self, record, options=None):
         options = options or {}
@@ -33,44 +26,58 @@ class Record(object):
         else:
             self.record = Element(record)
 
+        self.control_number = None
+        self.control_number_identifier = None
         self.created = None
         self.modified = None
         self.broader = []
+        self.related = []
         self.lang = None
         self.prefLabel = None
         self.altLabel = []
         self.definition = []
         self.editorialNote = []
+        self.note = []
         self.components = []
         self.scopeNote = []
         self.historyNote = []
+        self.changeNote = []
+        self.example = []
         self.webDeweyExtras = {}
         self.deprecated = False
         self.is_top_concept = False
         self.notation = None
+        self.scheme = None
 
         self.uri = None  # Concept URI
         self.scheme_uris = []  # Concept scheme URI
 
         self.uri_template = options.get('base_uri')
+        self.scheme_uri_template = options.get('scheme_uri')
 
         self.parse(options or {})
 
     def get_uri(self, **kwargs):
         if self.uri_template is None:
             return None
-        return self.uri_template.format(**kwargs)
+        if callable(self.uri_template):
+            return self.uri_template(kwargs)
+        else:
+            return self.uri_template.format(**kwargs)
 
     def get_terms(self, base='1'):
-        # X00 - Personal Name (R)
-        # X10 - Corporate Name (R)
-        # X11 - Meeting Name (R)
-        # X30 - Uniform Title (R)
-        # X48 - Chronological (R)
-        # X50 - Topical (R)
-        # X51 - Geographic Name (R)
-        # X53 - Uncontrolled (R)
-        tags = ['@tag="%s%s"' % (base, tag) for tag in ['00', '10', '11', '30', '48', '50', '51', '53']]
+        # X00 - Personal Name
+        # X10 - Corporate Name
+        # X11 - Meeting Name
+        # X30 - Uniform Title
+        # X47 - Named Event
+        # X48 - Chronological
+        # X50 - Topical
+        # X51 - Geographic Name
+        # X53 - Uncontrolled
+        # X55 - Genre/Form Term
+        # X62 - Medium of Performance Term
+        tags = ['@tag="%s%s"' % (base, tag) for tag in ['00', '10', '11', '30', '47', '48', '50', '51', '53', '55', '62']]
         for entry in self.record.all('mx:datafield[%s]' % ' or '.join(tags)):
             codes = ['@code="%s"' % code for code in ['a', 'x', 'y', 'z', 'v']]
             term_parts = entry.text('mx:subfield[%s]' % ' or '.join(codes), True)
@@ -91,6 +98,13 @@ class Record(object):
             }
 
     def parse(self, options):
+
+        # 001
+        self.control_number = self.record.text('mx:controlfield[@tag="001"]')
+
+        # 003
+        self.control_number_identifier = self.record.text('mx:controlfield[@tag="003"]')
+
         # 005
         value = self.record.text('mx:controlfield[@tag="005"]')
         if value is not None:
@@ -106,10 +120,18 @@ class Record(object):
 
 class ClassificationRecord(Record):
 
+    default_uri_templates = {
+        'ddc': {
+            'uri': 'http://dewey.info/{collection}/{object}/e{edition}/'
+        },
+        'bkl': {
+            'uri': 'http://uri.gbv.de/terminology/bk/{object}'
+        },
+    }
+
     def __init__(self, record, options=None):
         options = options or {}
         self.scheme_edition_numeric = None
-        self.scheme_uri_template = options.get('scheme_uri')
         self.table_scheme_uri_template = options.get('table_scheme_uri')
 
         super(ClassificationRecord, self).__init__(record, options)
@@ -458,3 +480,139 @@ class ClassificationRecord(Record):
             return False
 
         return True
+
+
+class AuthorityRecord(Record):
+
+    default_uri_templates = {
+        'a': {
+            'uri': 'http://id.loc.gov/authorities/subjects/{control_number}',
+            'scheme': 'http://id.loc.gov/authorities/subjects',
+        },
+        'd': {
+            'uri': 'http://lod.nal.usda.gov/nalt/{control_number}',
+            'scheme': 'http://lod.nal.usda.gov/nalt/',
+        },
+        'usvd': {
+            'uri': lambda x: x['control_number'].replace('USVD', 'http://data.ub.uio.no/usvd/c'),
+            'scheme': 'http://data.ub.uio.no/usvd/',
+        },
+        'humord': {
+            'uri': lambda x: x['control_number'].replace('HUME', 'http://data.ub.uio.no/humord/c'),
+            'scheme': 'http://data.ub.uio.no/humord/',
+        },
+        'noubomn': {
+            'uri': lambda x: x['control_number'].replace('REAL', 'http://data.ub.uio.no/realfagstermer/c'),
+            'scheme': 'http://data.ub.uio.no/realfagstermer/',
+        }
+    }
+
+    def __init__(self, record, options=None):
+        super(AuthorityRecord, self).__init__(record, options)
+
+    def generate_uris(self):
+        # If URI templates have been provided as options, these takes precedence:
+        if self.scheme_uri_template is not None:
+            self.scheme_uris.append(self.scheme_uri_template)
+
+        # Generate URIs from scheme
+        if self.scheme in self.default_uri_templates:
+            cfg = self.default_uri_templates[self.scheme]
+            if self.uri_template is None and cfg.get('uri') is not None:
+                self.uri_template = cfg['uri']
+            if len(self.scheme_uris) == 0 and cfg.get('scheme') is not None:
+                self.scheme_uris.append(cfg.get('scheme'))
+
+        # Record URI
+        self.uri = self.get_uri(control_number=self.control_number)
+
+    def parse(self, options):
+
+        super(AuthorityRecord, self).parse(options)
+
+        leader = self.record.text('mx:leader')
+        if leader[5] in ['d', 'o', 's', 'x']:
+            self.deprecated = True
+
+        # 008
+        field_008 = self.record.text('mx:controlfield[@tag="008"]')
+        if field_008:
+            self.created = datetime.strptime(field_008[:6], '%y%m%d')
+
+        # Scheme / vocabulary code
+        self.scheme = field_008[11]
+        if self.scheme == 'z':
+            self.scheme = self.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="f"]')
+
+        # Now we have enough information to generate URIs
+        self.generate_uris()
+
+        # 1XX Heading
+        for heading in self.get_terms('1'):
+            self.prefLabel = heading['value']
+
+        # 4XX: See From Tracings
+        for heading in self.get_terms('4'):
+            self.altLabel.append({
+                'term': heading['value']
+            })
+
+        # 5XX: See Also From Tracings
+        for heading in self.get_terms('5'):
+            local_id = heading['node'].text('mx:subfield[@code="0"]')
+            if local_id:
+                m = re.match('^\(.+\)(.+)$', local_id)
+                if m:
+                    local_id = m.group(1)
+                if local_id.startswith('http'):
+                    uri = local_id
+                else:
+                    uri = self.get_uri(control_number=local_id)
+                if local_id:
+                    if heading['node'].text('mx:subfield[@code="w"]') == 'g':
+                        self.broader.append(uri)
+                    else:
+                        self.related.append(uri)
+
+        # 667 : Nonpublic General Note
+        # madsrdf:editorialNote
+        for entry in self.record.all('mx:datafield[@tag="667"]'):
+            self.editorialNote.append(entry.stringify())
+
+        # 670 : Source Data Found
+        # Citation for a consulted source in which information is found related in some
+        # manner to the entity represented by the authority record or related entities.
+        for entry in self.record.all('mx:datafield[@tag="670"]'):
+            self.note.append('Source: ' + entry.stringify())
+
+        # 677 : Definition
+        for entry in self.record.all('mx:datafield[@tag="677"]'):
+            self.definition.append(entry.stringify())
+
+        # 678 : Biographical or Historical Data
+        # Summary of the essential biographical, historical, or other information about the 1XX heading
+        # madsrdf:note
+        for entry in self.record.all('mx:datafield[@tag="678"]'):
+            self.note.append(entry.stringify())
+
+        # 680 : Public General Note
+        # madsrdf:note
+        for entry in self.record.all('mx:datafield[@tag="680"]'):
+            self.note.append(entry.stringify())
+
+        # 681 : Subject Example Tracing Note
+        # madsrdf:exampleNote
+        for entry in self.record.all('mx:datafield[@tag="681"]'):
+            self.example.append(entry.stringify())
+
+        # 682 : Deleted Heading Information
+        # Explanation for the deletion of an established heading or subdivision record from an authority file.
+        # madsrdf:changeNote
+        for entry in self.record.all('mx:datafield[@tag="682"]'):
+            self.changeNote.append(entry.stringify())
+
+        # 688 : Application History Note
+        # Information that documents changes in the application of a 1XX heading.
+        # madsrdf:historyNote
+        for entry in self.record.all('mx:datafield[@tag="688"]'):
+            self.historyNote.append(entry.stringify())
