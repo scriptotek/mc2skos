@@ -69,7 +69,18 @@ Run ``mc2skos --help`` or ``mc2skos -h`` for options.
 URIs
 ====
 
-Concept URIs can be generated from an URI template specified with option
+URIs are generated automatically for known concept schemes, identified from
+``084 $a`` for classification records and from ``008[11]`` / ``040 $f`` for
+authority records. To list known concept schemes:
+
+.. code:: console
+
+    $ mc2skos -l
+
+The list is currently quite short, but pull requests for adding additional
+schemes are welcome! See ``default_uri_templates`` in ``record.py``.
+
+URIs can be also be generated on the fly from an URI template specified with option
 ``--uri``.  The following template parameters are recognized:
 
 * ``{control_number}`` is the 001 value
@@ -78,19 +89,14 @@ Concept URIs can be generated from an URI template specified with option
   a ``{collection}``, such as a specific class or table.
 * ``{edition}`` is taken from ``084 $c`` (with language code stripped)
 
-The following default URI template are used for known concept scheme
-identifiers in ``084 $a``:
 
-* ``ddc``: ``http://dewey.info/{collection}/{object}/e{edition}/`` (DDC)
-* ``bkl``: ``http://uri.gbv.de/terminology/bk/{object}`` (Basisklassifikation)
-
-To add ``skos:inScheme`` statements to all records, an URI template must be
-specified with option ``--scheme`` or it is derived from a known default
-template.
+To add ``skos:inScheme`` statements to all records, an URI template can be
+specified with option ``--scheme``. Otherwise, it will be derived from a default
+template if the concept scheme is known.
 
 To add an additional ``skos:inScheme`` statement to table records, an URI
-template must be specified with option ``--table_scheme`` or it is derived from
-a known default template.
+template can be specified with option ``--table_scheme``. Otherwise, it will be
+derived from a default template if the concept scheme is known.
 
 The following example is generated from a DDC table record:
 

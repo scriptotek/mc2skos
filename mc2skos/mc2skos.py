@@ -179,7 +179,7 @@ def get_records(in_file):
 def main():
 
     parser = argparse.ArgumentParser(description='Convert MARC21 Classification to SKOS/RDF')
-    parser.add_argument('infile', nargs=1, help='Input XML file')
+    parser.add_argument('infile', nargs='?', help='Input XML file')
     parser.add_argument('outfile', nargs='?', help='Output RDF file')
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
@@ -199,7 +199,19 @@ def main():
     parser.add_argument('--components', dest='components', action='store_true',
                         help='Include component information from 765.')
 
+    parser.add_argument('-l', '--list-schemes', dest='list_schemes', action='store_true',
+                        help='List default concept schemes.')
+
     args = parser.parse_args()
+
+    if args.list_schemes:
+        print('Classification schemes:')
+        for k, v in ClassificationRecord.default_uri_templates.items():
+            print(' - {}: <{}>'.format(k, v['uri']))
+        print('Authority schemes:')
+        for k, v in AuthorityRecord.default_uri_templates.items():
+            print(' - {}: <{}> / <{}>'.format(k, v.get('scheme'), v.get('uri')))
+        return
 
     graph = Graph()
     nm = graph.namespace_manager
@@ -214,7 +226,10 @@ def main():
     else:
         console_handler.setLevel(logging.INFO)
 
-    in_file = args.infile[0]
+    if args.infile is None:
+        raise ValueError('Filename not specified')
+
+    in_file = args.infile
     if args.outformat not in ['turtle', 'jskos', 'ndjson']:
         raise ValueError('output format not supported')
 
