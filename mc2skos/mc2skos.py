@@ -157,6 +157,7 @@ class Element(object):
 class Record(object):
 
     def __init__(self, record, default_uri_templates=None, options=None):
+        options = options or {}
         if isinstance(record, Element):
             self.record = record
         else:
@@ -166,15 +167,17 @@ class Record(object):
         self.modified = None
         self.lang = None
 
-        self.base_uri = None
         self.uri = None
         self.default_uri_templates = default_uri_templates or {}
+
+        self.uri_template = options.get('base_uri')
+
         self.parse(options or {})
 
     def get_uri(self, **kwargs):
-        if self.base_uri is None:
+        if self.uri_template is None:
             return None
-        return URIRef(self.base_uri.format(**kwargs))
+        return URIRef(self.uri_template.format(**kwargs))
 
     def get_terms(self, base='1'):
         # X00 - Personal Name (R)
@@ -219,18 +222,44 @@ class Record(object):
 class ClassificationRecord(Record):
 
     def __init__(self, record, default_uri_templates=None, options=None):
-        self.scheme_uri = None
-        self.table_scheme_uri = None
+        options = options or {}
         self.scheme_edition_numeric = None
         self.indexterms = []
         self.components = []
         self.notes = []
+        self.scheme_uri = None
+        self.scheme_uri_template = options.get('scheme_uri')
+        self.table_scheme_uri = None
+        self.table_scheme_uri_template = options.get('table_scheme_uri')
 
         super(ClassificationRecord, self).__init__(record, default_uri_templates, options)
 
     def get_uri(self, **kwargs):
         kwargs['edition'] = self.scheme_edition_numeric
         return super(ClassificationRecord, self).get_uri(**kwargs)
+
+    def generate_uris(self):
+        # If URI templates have been provided as options, these takes precedence:
+        if self.scheme_uri_template is not None:
+            self.scheme_uri = URIRef(self.scheme_uri_template.format(edition=self.scheme_edition_numeric))
+
+        if self.table_scheme_uri_template is not None:
+            self.table_scheme_uri = URIRef(self.table_scheme_uri_template.format(edition=self.scheme_edition_numeric, table=self.table))
+
+        # Generate URIs from scheme
+        if self.scheme in self.default_uri_templates:
+            if self.uri_template is None:
+                cfg = self.default_uri_templates[self.scheme]
+                self.uri_template = cfg['uri']
+            if self.scheme_uri is None:
+                edition = 'edition' if self.scheme_edition is not None else ''
+                self.scheme_uri = self.get_uri(collection='scheme', object=edition)
+            if self.table_scheme_uri is None:
+                table = self.table if self.table is not None else ''
+                self.table_scheme_uri = self.get_uri(collection='table', object=table)
+
+        # Record URI
+        self.uri = self.get_uri(collection='class', object=self.notation)
 
     def parse(self, options):
 
@@ -250,7 +279,9 @@ class ClassificationRecord(Record):
         if element is None:
             raise InvalidRecordError('Record does not have a 153 field')
         self.table, self.notation, self.is_top_concept, self.parent_notation, self.caption = self.parse_153(element)
-        self.uri = self.get_uri(collection='class', object=self.notation)
+
+        # Now we have enough information to generate the URIs
+        self.generate_uris()
 
         if self.record_type is None:
             logger.warn('Record does not have a 008 field, will try to guess type.')
@@ -258,15 +289,6 @@ class ClassificationRecord(Record):
                 self.record_type = Constants.SCHEDULE_RECORD
             else:
                 self.record_type = Constants.TABLE_RECORD
-
-        # Generate URI templates from scheme, if scheme is known
-        if self.scheme in self.default_uri_templates:
-            cfg = self.default_uri_templates[self.scheme]
-            self.base_uri = cfg['uri']
-            edition = 'edition' if self.scheme_edition is not None else ''
-            self.scheme_uri = self.get_uri(collection='scheme', object=edition)
-            table = self.table if self.table is not None else ''
-            self.table_scheme_uri = self.get_uri(collection='table', object=table)
 
         # 253 : Complex See Reference (R)
         # Example:
@@ -683,24 +705,9 @@ def process_record(graph, rec, **kwargs):
     if leader is None:
         raise InvalidRecordError('Record does not have a leader')
     if leader[6] == 'w':  # w: classification, z: authority
-        rec = ClassificationRecord(rec, default_uri_templates)
+        rec = ClassificationRecord(rec, default_uri_templates, kwargs)
     else:
         raise InvalidRecordError('Record is not a Marc21 Classification record')
-
-    base_uri = kwargs.get('base_uri')
-
-    scheme_uri = kwargs.get('scheme_uri')
-    if scheme_uri is not None:
-        scheme_uri = URIRef(kwargs.get('scheme_uri').format(edition=rec.scheme_edition_numeric))
-
-    table_scheme_uri = kwargs.get('table_scheme_uri')
-    if table_scheme_uri is not None:
-        table_scheme_uri = URIRef(kwargs.get('table_scheme_uri').format(edition=rec.scheme_edition_numeric, table=rec.table))
-
-    if base_uri is not None and base_uri != '':
-        rec.base_uri = base_uri
-        rec.scheme_uri = scheme_uri
-        rec.table_scheme_uri = table_scheme_uri
 
     rec.add_to_graph(graph, kwargs)
 
