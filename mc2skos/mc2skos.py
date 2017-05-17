@@ -154,7 +154,7 @@ class Element(object):
         return note
 
 
-class ClassificationRecord(object):
+class Record(object):
 
     def __init__(self, record, default_uri_templates=None, options=None):
         if isinstance(record, Element):
@@ -164,18 +164,14 @@ class ClassificationRecord(object):
 
         self.created = None
         self.modified = None
+        self.lang = None
+
         self.base_uri = None
         self.uri = None
-        self.scheme_uri = None
-        self.table_scheme_uri = None
         self.default_uri_templates = default_uri_templates or {}
-        self.notes = []
-        self.indexterms = []
-        self.components = []
         self.parse(options or {})
 
     def get_uri(self, **kwargs):
-        kwargs['edition'] = self.scheme_edition_numeric
         if self.base_uri is None:
             return None
         return URIRef(self.base_uri.format(**kwargs))
@@ -210,19 +206,39 @@ class ClassificationRecord(object):
             }
 
     def parse(self, options):
-
         # 005
         value = self.record.text('mx:controlfield[@tag="005"]')
         if value is not None:
             self.modified = datetime.strptime(value, '%Y%m%d%H%M%S.%f')
 
-        # 008
-        value = self.record.text('mx:controlfield[@tag="008"]')
-        self.created, self.record_type, self.number_type, self.display, self.synthesized, self.deprecated = self.parse_008(value)
-
         # 040: Record Source
         lang = self.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="b"]') or 'eng'
         self.lang = languages.get(part2b=lang).part1
+
+
+class ClassificationRecord(Record):
+
+    def __init__(self, record, default_uri_templates=None, options=None):
+        self.scheme_uri = None
+        self.table_scheme_uri = None
+        self.scheme_edition_numeric = None
+        self.indexterms = []
+        self.components = []
+        self.notes = []
+
+        super(ClassificationRecord, self).__init__(record, default_uri_templates, options)
+
+    def get_uri(self, **kwargs):
+        kwargs['edition'] = self.scheme_edition_numeric
+        return super(ClassificationRecord, self).get_uri(**kwargs)
+
+    def parse(self, options):
+
+        super(ClassificationRecord, self).parse(options)
+
+        # 008
+        value = self.record.text('mx:controlfield[@tag="008"]')
+        self.created, self.record_type, self.number_type, self.display, self.synthesized = self.parse_008(value)
 
         # 084: Classification Scheme and Edition
         self.scheme = self.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="a"]')
