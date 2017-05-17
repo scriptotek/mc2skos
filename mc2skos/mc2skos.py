@@ -165,6 +165,7 @@ class Record(object):
         self.created = None
         self.modified = None
         self.base_uri = None
+        self.uri = None
         self.scheme_uri = None
         self.table_scheme_uri = None
         self.default_uri_templates = default_uri_templates or {}
@@ -173,12 +174,11 @@ class Record(object):
         self.components = []
         self.parse(options or {})
 
-    def uri(self, collection, object):
+    def get_uri(self, **kwargs):
+        kwargs['edition'] = self.scheme_edition_numeric
         if self.base_uri is None:
             return None
-        return URIRef(self.base_uri.format(collection=collection,
-                                           object=object,
-                                           edition=self.scheme_edition_numeric))
+        return URIRef(self.base_uri.format(**kwargs))
 
     def get_terms(self, base='1'):
         # X00 - Personal Name (R)
@@ -241,6 +241,8 @@ class Record(object):
         if element is None:
             raise InvalidRecordError('Record does not have a 153 field')
         self.table, self.notation, self.is_top_concept, self.parent_notation, self.caption = self.parse_153(element)
+        self.uri = self.get_uri(collection='class', object=self.notation)
+
         if self.record_type is None:
             logger.warn('Record does not have a 008 field, will try to guess type.')
             if self.table is None:
@@ -253,9 +255,9 @@ class Record(object):
             cfg = self.default_uri_templates[self.scheme]
             self.base_uri = cfg['uri']
             edition = 'edition' if self.scheme_edition is not None else ''
-            self.scheme_uri = self.uri('scheme', edition)
+            self.scheme_uri = self.get_uri(collection='scheme', object=edition)
             table = self.table if self.table is not None else ''
-            self.table_scheme_uri = self.uri('table', table)
+            self.table_scheme_uri = self.get_uri(collection='table', object=table)
 
         # 253 : Complex See Reference (R)
         # Example:
@@ -542,8 +544,7 @@ class Record(object):
     def add_to_graph(self, graph, options):
         # Add record to graph
 
-        uri = self.uri('class', self.notation)
-        if uri is None:
+        if self.uri is None:
             logger.debug('Ignoring %s because: No known concept scheme detected, and no manual URI template given', self.notation)
             return
 
@@ -563,52 +564,52 @@ class Record(object):
             logger.debug('Ignoring %s because: add table number', self.notation)
             return
 
-        # logger.debug('Adding: %s', uri)
+        # logger.debug('Adding: %s', self.uri)
 
         # Strictly, we do not need to explicitly state here that <A> and <B> are instances
         # of skos:Concept, because such statements are entailed by the definition
         # of skos:semanticRelation.
-        graph.add((uri, RDF.type, SKOS.Concept))
+        graph.add((self.uri, RDF.type, SKOS.Concept))
 
         # Add skos:topConceptOf or skos:inScheme
         if self.is_top_concept:
             if self.scheme_uri is not None:
                 logger.info('Marking %s as topConcept', self.notation)
-                graph.add((uri, SKOS.topConceptOf, self.scheme_uri))
+                graph.add((self.uri, SKOS.topConceptOf, self.scheme_uri))
             if self.record_type == Constants.TABLE_RECORD and self.table_scheme_uri is not None:
-                graph.add((uri, SKOS.topConceptOf, self.table_scheme_uri))
+                graph.add((self.uri, SKOS.topConceptOf, self.table_scheme_uri))
         else:
             if self.scheme_uri is not None:
-                graph.add((uri, SKOS.inScheme, self.scheme_uri))
+                graph.add((self.uri, SKOS.inScheme, self.scheme_uri))
             if self.record_type == Constants.TABLE_RECORD and self.table_scheme_uri is not None:
-                graph.add((uri, SKOS.inScheme, self.table_scheme_uri))
+                graph.add((self.uri, SKOS.inScheme, self.table_scheme_uri))
 
         if self.created is not None:
-            graph.add((uri, DCTERMS.created, Literal(self.created.strftime('%F'), datatype=XSD.date)))
+            graph.add((self.uri, DCTERMS.created, Literal(self.created.strftime('%F'), datatype=XSD.date)))
 
         if self.modified is not None:
-            graph.add((uri, DCTERMS.modified, Literal(self.modified.strftime('%F'), datatype=XSD.date)))
+            graph.add((self.uri, DCTERMS.modified, Literal(self.modified.strftime('%F'), datatype=XSD.date)))
 
         # Add skos:broader
         if self.parent_notation is not None:
-            parent_uri = self.uri('class', self.parent_notation)
-            graph.add((uri, SKOS.broader, parent_uri))
+            parent_uri = self.get_uri(collection='class', object=self.parent_notation)
+            graph.add((self.uri, SKOS.broader, parent_uri))
 
         # Add caption as skos:prefLabel
         if self.caption:
-            graph.add((uri, SKOS.prefLabel, Literal(self.caption, lang=self.lang)))
+            graph.add((self.uri, SKOS.prefLabel, Literal(self.caption, lang=self.lang)))
 
         # Add classification number as skos:notation
         if self.notation:
             if self.record_type == Constants.TABLE_RECORD:  # OBS! Sjekk add tables
-                graph.add((uri, SKOS.notation, Literal('T' + self.notation)))
+                graph.add((self.uri, SKOS.notation, Literal('T' + self.notation)))
             else:
-                graph.add((uri, SKOS.notation, Literal(self.notation)))
+                graph.add((self.uri, SKOS.notation, Literal(self.notation)))
 
         # Add index terms as skos:altLabel
         if options.get('include_indexterms'):
             for term in self.indexterms:
-                graph.add((uri, SKOS.altLabel, Literal(term['term'], lang=self.lang)))
+                graph.add((self.uri, SKOS.altLabel, Literal(term['term'], lang=self.lang)))
 
         # Add notes
         if options.get('include_notes'):
@@ -617,31 +618,31 @@ class Record(object):
                 if note['type'] in [Constants.COMPLEX_SEE_REFERENCE,
                                     Constants.COMPLEX_SEE_ALSO_REFERENCE,
                                     Constants.APPLICATION_INSTRUCTION_NOTE]:
-                    graph.add((uri, SKOS.editorialNote, Literal(note['content'], lang=self.lang)))
+                    graph.add((self.uri, SKOS.editorialNote, Literal(note['content'], lang=self.lang)))
 
                 # Scope notes
                 elif note['type'] == Constants.DEFINITION:
-                    graph.add((uri, SKOS.definition, Literal(note['content'], lang=self.lang)))
+                    graph.add((self.uri, SKOS.definition, Literal(note['content'], lang=self.lang)))
 
                 elif note['type'] == Constants.SCOPE_NOTE:
-                    graph.add((uri, SKOS.scopeNote, Literal(note['content'], lang=self.lang)))
+                    graph.add((self.uri, SKOS.scopeNote, Literal(note['content'], lang=self.lang)))
 
                     if 'nvn' in note['ess']:
                         for topic in note['topics']:
-                            graph.add((uri, WD.variantName, Literal(topic, lang=self.lang)))
+                            graph.add((self.uri, WD.variantName, Literal(topic, lang=self.lang)))
                     elif 'nch' in note['ess']:
                         for topic in note['topics']:
-                            graph.add((uri, WD.classHere, Literal(topic, lang=self.lang)))
+                            graph.add((self.uri, WD.classHere, Literal(topic, lang=self.lang)))
                     elif 'nin' in note['ess']:
                         for topic in note['topics']:
-                            graph.add((uri, WD.including, Literal(topic, lang=self.lang)))
+                            graph.add((self.uri, WD.including, Literal(topic, lang=self.lang)))
                     elif 'nph' in note['ess']:
                         for topic in note['topics']:
-                            graph.add((uri, WD.formerName, Literal(topic, lang=self.lang)))
+                            graph.add((self.uri, WD.formerName, Literal(topic, lang=self.lang)))
 
                 # History notes
                 elif note['type'] == Constants.HISTORY_NOTE:
-                    graph.add((uri, SKOS.historyNote, Literal(note['content'], lang=self.lang)))
+                    graph.add((self.uri, SKOS.historyNote, Literal(note['content'], lang=self.lang)))
 
         # Deprecated
         if self.deprecated:
@@ -650,13 +651,13 @@ class Record(object):
         # Add synthesized number components
         if options.get('include_components') and len(self.components) != 0:
             component = self.components.pop(0)
-            component_uri = self.uri('class', component)
+            component_uri = self.get_uri(collection='class', object=component)
             b1 = BNode()
-            graph.add((uri, MADS.componentList, b1))
+            graph.add((self.uri, MADS.componentList, b1))
             graph.add((b1, RDF.first, component_uri))
 
             for component in self.components:
-                component_uri = self.uri('class', component)
+                component_uri = self.get_uri(collection='class', object=component)
                 b2 = BNode()
                 graph.add((b1, RDF.rest, b2))
                 graph.add((b2, RDF.first, component_uri))
