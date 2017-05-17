@@ -154,7 +154,7 @@ class Element(object):
         return note
 
 
-class Record(object):
+class ClassificationRecord(object):
 
     def __init__(self, record, default_uri_templates=None, options=None):
         if isinstance(record, Element):
@@ -210,13 +210,6 @@ class Record(object):
             }
 
     def parse(self, options):
-
-        # Leader
-        self.leader = self.record.text('mx:leader')
-        if self.leader is None:
-            raise InvalidRecordError('Record does not have a leader')
-        if self.leader[6] != 'w':  # w: classification, z: authority
-            raise InvalidRecordError('Record is not a Marc21 Classification record')
 
         # 005
         value = self.record.text('mx:controlfield[@tag="005"]')
@@ -669,7 +662,14 @@ class Record(object):
 def process_record(graph, rec, **kwargs):
     """Convert a single MARC21 classification record to RDF."""
 
-    rec = Record(rec, default_uri_templates)
+    rec = Element(rec)
+    leader = rec.text('mx:leader')
+    if leader is None:
+        raise InvalidRecordError('Record does not have a leader')
+    if leader[6] == 'w':  # w: classification, z: authority
+        rec = ClassificationRecord(rec, default_uri_templates)
+    else:
+        raise InvalidRecordError('Record is not a Marc21 Classification record')
 
     base_uri = kwargs.get('base_uri')
 

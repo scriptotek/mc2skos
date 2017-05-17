@@ -2,7 +2,7 @@
 import unittest
 import pytest
 from lxml import etree
-from mc2skos.mc2skos import Record, Element
+from mc2skos.mc2skos import ClassificationRecord, Element
 
 
 class TestParse153(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestParse153(unittest.TestCase):
             </marc:datafield>
         ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert notation == '003.5'
         assert parent_notation == '003'
@@ -43,7 +43,7 @@ class TestParse153(unittest.TestCase):
 
         ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table == '3B'
         assert notation == '3B--81-89:02'
@@ -65,7 +65,7 @@ class TestParse153(unittest.TestCase):
             </mx:datafield>
         ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table is None
         assert notation == '820.1-828:4;1'
@@ -86,7 +86,7 @@ class TestParse153(unittest.TestCase):
             </marc:datafield>
         ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table == '6'
         assert notation == '6--9839'
@@ -117,7 +117,7 @@ class TestParse153(unittest.TestCase):
               </mx:datafield>
         ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table == '1'
         assert notation == '1--0926'
@@ -148,7 +148,7 @@ class TestParse153(unittest.TestCase):
               </mx:datafield>
         ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table is None
         assert notation == '469.9'
@@ -163,7 +163,7 @@ class TestParse153(unittest.TestCase):
             </mx:datafield>
         ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table is None
         assert notation == '973'
@@ -178,7 +178,7 @@ class TestParse153(unittest.TestCase):
               </mx:datafield>
         ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table is None
         assert notation == '001.4092'

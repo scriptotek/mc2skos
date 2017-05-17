@@ -2,15 +2,15 @@
 import unittest
 import pytest
 from lxml import etree
-from mc2skos.mc2skos import process_record, Record, Constants, InvalidRecordError
+from mc2skos.mc2skos import process_record, ClassificationRecord, Constants, InvalidRecordError
 from rdflib.namespace import RDF, SKOS, Namespace
 from rdflib import URIRef, Literal, Graph
 
 
-class TestRecord(unittest.TestCase):
+class TestClassificationRecord(unittest.TestCase):
 
     def testSimpleNumber(self):
-        rec = Record('''
+        rec = ClassificationRecord('''
             <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
               <mx:leader>00000nw  a2200000n  4500</mx:leader>
               <mx:controlfield tag="008">091203aaaaaaaa</mx:controlfield>
@@ -31,7 +31,7 @@ class TestRecord(unittest.TestCase):
         assert rec.synthesized is False
 
     def testAddTableNumber(self):
-        rec = Record('''
+        rec = ClassificationRecord('''
             <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
                 <mx:leader>00000nw  a2200000n  4500</mx:leader>
                 <mx:controlfield tag="008">100414baabaaaa</mx:controlfield>
@@ -57,7 +57,7 @@ class TestRecord(unittest.TestCase):
         assert rec.parent_notation == '811-818'
 
     def testHistoricalAddTableNumber(self):
-        rec = Record('''
+        rec = ClassificationRecord('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
             <mx:leader>00000nw  a2200000n  4500</mx:leader>
             <mx:controlfield tag="008">091203baaaaaah</mx:controlfield>
@@ -80,7 +80,7 @@ class TestRecord(unittest.TestCase):
         assert rec.synthesized is False
 
     def testSynthesizedNumberSpan(self):
-        rec = Record('''
+        rec = ClassificationRecord('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="008">091203abdaaaba</mx:controlfield>
@@ -101,7 +101,7 @@ class TestRecord(unittest.TestCase):
         assert rec.synthesized is True
 
     def testHiddenSynthesizedScheduleRecord(self):
-        rec = Record('''
+        rec = ClassificationRecord('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="008">091203aaaaaabb</mx:controlfield>
@@ -119,7 +119,7 @@ class TestRecord(unittest.TestCase):
         assert rec.synthesized is True
 
     def testSynthesizedNumberComponents1(self):
-        rec = Record('''
+        rec = ClassificationRecord('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00132963</mx:controlfield>
@@ -145,7 +145,7 @@ class TestRecord(unittest.TestCase):
         assert rec.components == ['306.6', '280.4']
 
     def testSynthesizedNumberComponents2(self):
-        rec = Record('''
+        rec = ClassificationRecord('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00123528</mx:controlfield>
@@ -183,7 +183,7 @@ class TestRecord(unittest.TestCase):
 
     @pytest.mark.skip(reason="add table numbers not yet supported")
     def testSynthesizedNumberComponentsIncludingAddTable(self):
-        rec = Record('''
+        rec = ClassificationRecord('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00117858</mx:controlfield>
@@ -244,7 +244,7 @@ class TestRecord(unittest.TestCase):
         assert rec.components == ['032', '031-039:02', '1--09', '2--93']
 
     def testIndexTerms(self):
-        rec = Record('''
+        rec = ClassificationRecord('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00146759</mx:controlfield>
