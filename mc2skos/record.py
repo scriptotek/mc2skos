@@ -169,7 +169,7 @@ class ClassificationRecord(Record):
 
         # 008
         value = self.record.text('mx:controlfield[@tag="008"]')
-        self.created, self.record_type, self.number_type, self.display, self.synthesized = self.parse_008(value)
+        self.created, self.record_type, self.number_type, self.display, self.synthesized, self.deprecated = self.parse_008(value)
 
         # 084: Classification Scheme and Edition
         self.scheme = self.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="a"]')
@@ -276,8 +276,6 @@ class ClassificationRecord(Record):
         #
         for entry in self.record.all('mx:datafield[@tag="685"]'):
             self.historyNote.append(entry.stringify())  # Constants.HISTORY_NOTE
-            if 'ndn' in entry.get_ess_codes():
-                self.deprecated = True
 
         # 694 : ??? Note : Non-standard code for 684 'Auxiliary Instruction Note' ??
         # Example:
@@ -332,7 +330,7 @@ class ClassificationRecord(Record):
         # Parse the 008 field text
 
         if value is None:
-            return None, None, None, True, False
+            return None, None, None, True, False, False
 
         created = datetime.strptime(value[:6], '%y%m%d')
 
@@ -363,6 +361,10 @@ class ClassificationRecord(Record):
         else:
             number_type = Constants.UNKNOWN
 
+        deprecated = False
+        if value[8] == 'd' or value[8] == 'e':
+            deprecated = True
+
         if value[12] == 'b':
             synthesized = True
         else:
@@ -380,7 +382,7 @@ class ClassificationRecord(Record):
             logger.debug(value[13])
             display = False
 
-        return created, record_type, number_type, display, synthesized
+        return created, record_type, number_type, display, synthesized, deprecated
 
     @staticmethod
     def parse_153(element):
