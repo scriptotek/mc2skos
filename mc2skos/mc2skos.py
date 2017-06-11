@@ -190,7 +190,7 @@ class Record(object):
 
         # 008
         value = self.record.text('mx:controlfield[@tag="008"]')
-        self.created, self.record_type, self.number_type, self.display, self.synthesized = self.parse_008(value)
+        self.created, self.record_type, self.number_type, self.display, self.synthesized, self.deprecated = self.parse_008(value)
 
         # 040: Record Source
         lang = self.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="b"]') or 'eng'
@@ -383,7 +383,7 @@ class Record(object):
         # Parse the 008 field text
 
         if value is None:
-            return None, None, None, True, False
+            return None, None, None, True, False, False
 
         created = datetime.strptime(value[:6], '%y%m%d')
 
@@ -414,6 +414,10 @@ class Record(object):
         else:
             number_type = Constants.UNKNOWN
 
+        deprecated = False
+        if value[8] == 'd' or value[8] == 'e':
+            deprecated = True
+
         if value[12] == 'b':
             synthesized = True
         else:
@@ -431,7 +435,7 @@ class Record(object):
             logger.debug(value[13])
             display = False
 
-        return created, record_type, number_type, display, synthesized
+        return created, record_type, number_type, display, synthesized, deprecated
 
     @staticmethod
     def parse_153(element):
@@ -617,8 +621,9 @@ class Record(object):
                 elif note['type'] == Constants.HISTORY_NOTE:
                     graph.add((uri, SKOS.historyNote, Literal(note['content'], lang=self.lang)))
 
-                if note['type'] == Constants.HISTORY_NOTE and 'ndn' in note['ess']:
-                    graph.add((uri, OWL.deprecated, Literal(True)))
+        # Deprecated
+        if self.deprecated:
+            graph.add((uri, OWL.deprecated, Literal(True)))
 
         # Add synthesized number components
         if options.get('include_components') and len(self.components) != 0:

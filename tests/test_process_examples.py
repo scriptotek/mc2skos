@@ -7,7 +7,7 @@ import glob
 import re
 from lxml import etree
 from mc2skos.mc2skos import process_record
-from rdflib.namespace import RDF, SKOS, DCTERMS, Namespace
+from rdflib.namespace import RDF, SKOS, OWL, DCTERMS, Namespace
 from rdflib import URIRef, Literal, Graph
 
 
@@ -40,6 +40,7 @@ def examples(prefix, pattern):
 def check_rdf(graph, expect, rdf_file):
     graph.namespace_manager.bind('skos', SKOS)
     graph.namespace_manager.bind('dcterms', DCTERMS)
+    graph.namespace_manager.bind('owl', OWL)
 
     if os.path.isfile(rdf_file):
         expect.parse(rdf_file, format='turtle')
