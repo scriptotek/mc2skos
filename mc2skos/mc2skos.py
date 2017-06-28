@@ -25,7 +25,7 @@ import logging.handlers
 from . import __version__
 from .constants import Constants
 from .element import Element
-from .record import InvalidRecordError, ClassificationRecord, AuthorityRecord
+from .record import InvalidRecordError, ClassificationRecord, AuthorityRecord, CONFIG
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -218,10 +218,10 @@ def main():
 
     if args.list_schemes:
         print('Classification schemes:')
-        for k, v in ClassificationRecord.default_uri_templates.items():
+        for k, v in CONFIG['classification_schemes'].items():
             print(' - {}: <{}>'.format(k, v['uri']))
         print('Authority schemes:')
-        for k, v in AuthorityRecord.default_uri_templates.items():
+        for k, v in CONFIG['subject_schemes'].items():
             print(' - {}: <{}> / <{}>'.format(k, v.get('scheme'), v.get('uri')))
         return
 
