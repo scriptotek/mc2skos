@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marcxml:record xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:marcxml="http://www.loc.gov/MARC21/slim" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:madsrdf="http://www.loc.gov/mads/rdf/v1#" xmlns:ri="http://id.loc.gov/ontologies/RecordInfo#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mets="http://www.loc.gov/METS/">
+      <marcxml:leader>01293nz  a2200193n  4500</marcxml:leader>
+      <marcxml:controlfield tag="001">sh2009007258</marcxml:controlfield>
+      <marcxml:controlfield tag="003">DLC</marcxml:controlfield>
+      <marcxml:controlfield tag="005">20090903084342.0</marcxml:controlfield>
+      <marcxml:controlfield tag="008">090903|| anannbabn          |a ana     c</marcxml:controlfield>
+      <marcxml:datafield tag="010" ind1=" " ind2=" ">
+    <marcxml:subfield code="a">sh2009007258</marcxml:subfield>
+  </marcxml:datafield>
+      <marcxml:datafield tag="040" ind1=" " ind2=" ">
+    <marcxml:subfield code="a">WaU</marcxml:subfield>
+    <marcxml:subfield code="b">eng</marcxml:subfield>
+    <marcxml:subfield code="c">DLC</marcxml:subfield>
+  </marcxml:datafield>
+      <marcxml:datafield tag="151" ind1=" " ind2=" ">
+    <marcxml:subfield code="a">Valley Forge National Historical Park (Pa.)</marcxml:subfield>
+  </marcxml:datafield>
+      <marcxml:datafield tag="451" ind1=" " ind2=" ">
+    <marcxml:subfield code="a">Valley Forge State Park (Pa.)</marcxml:subfield>
+  </marcxml:datafield>
+      <marcxml:datafield tag="550" ind1=" " ind2=" ">
+    <marcxml:subfield code="w">g</marcxml:subfield>
+    <marcxml:subfield code="a">Historic sites</marcxml:subfield>
+    <marcxml:subfield code="z">Pennsylvania</marcxml:subfield>
+  </marcxml:datafield>
+      <marcxml:datafield tag="550" ind1=" " ind2=" ">
+    <marcxml:subfield code="w">g</marcxml:subfield>
+    <marcxml:subfield code="a">National parks and reserves</marcxml:subfield>
+    <marcxml:subfield code="z">Pennsylvania</marcxml:subfield>
+  </marcxml:datafield>
+      <marcxml:datafield tag="670" ind1=" " ind2=" ">
+    <marcxml:subfield code="a">Work cat.: Sloto, R.A. Hydrogeology and ground-water quality of Valley Forge National Historical Park, Montgomery County, Pennsylvania, 1996.</marcxml:subfield>
+  </marcxml:datafield>
+      <marcxml:datafield tag="670" ind1=" " ind2=" ">
+    <marcxml:subfield code="a">Wikipedia, July 27, 2009</marcxml:subfield>
+    <marcxml:subfield code="b">(Valley Forge National Historical Park is the site where the Continental Army spent the winter of 1777-1778 near Valley Forge, Pa., during the American Revolutionary War. Originally Valley Forge State Park, it became a national park in 1976; Valley Forge was established as the first state park of Pa. in 1893 by the Valley Forge Park Commission; in 1976, Pennsylvania gave the park as a gift to the nation for the Bicentennial)</marcxml:subfield>
+  </marcxml:datafield>
+      <marcxml:datafield tag="670" ind1=" " ind2=" ">
+    <marcxml:subfield code="a">GNIS, July 27, 2009</marcxml:subfield>
+    <marcxml:subfield code="b">(Valley Forge National Historical Park, park, variant name: Valley Forge State Park, Montgomery Co., Pa., 40°06ʹ00ʺN 075°26ʹ42ʺW)</marcxml:subfield>
+  </marcxml:datafield>
+      <marcxml:datafield tag="781" ind1=" " ind2="0">
+    <marcxml:subfield code="z">Pennsylvania</marcxml:subfield>
+    <marcxml:subfield code="z">Valley Forge National Historical Park</marcxml:subfield>
+  </marcxml:datafield>
+    </marcxml:record>

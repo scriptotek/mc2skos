@@ -1,0 +1,18 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://id.loc.gov/authorities/subjects/sh2009007258> a skos:Concept ;
+    dcterms:created "2009-09-03"^^xsd:date ;
+    dcterms:modified "2009-09-03"^^xsd:date ;
+    skos:altLabel "Valley Forge State Park (Pa.)"@en ;
+    skos:inScheme <http://id.loc.gov/authorities/subjects> ;
+    skos:note "Source: GNIS, July 27, 2009"@en,
+        "Source: Wikipedia, July 27, 2009"@en,
+        "Source: Work cat.: Sloto, R.A. Hydrogeology and ground-water quality of Valley Forge National Historical Park, Montgomery County, Pennsylvania, 1996."@en ;
+    skos:prefLabel "Valley Forge National Historical Park (Pa.)"@en .
+

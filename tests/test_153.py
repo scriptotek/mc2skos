@@ -2,13 +2,13 @@
 import unittest
 import pytest
 from lxml import etree
-from mc2skos.mc2skos import Record, Element
+from mc2skos.mc2skos import ClassificationRecord, Element
 
 
 class TestParse153(unittest.TestCase):
 
     def testSimpleClass(self):
-        element = Element(etree.fromstring('''
+        element = Element('''
             <marc:datafield tag="153" ind1=" " ind2=" " xmlns:marc="http://www.loc.gov/MARC21/slim">
               <marc:subfield code="a">003.5</marc:subfield>
               <marc:subfield code="e">003</marc:subfield>
@@ -16,9 +16,9 @@ class TestParse153(unittest.TestCase):
               <marc:subfield code="h">Systems</marc:subfield>
               <marc:subfield code="j">Theory of communication and control</marc:subfield>
             </marc:datafield>
-        '''))
+        ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert notation == '003.5'
         assert parent_notation == '003'
@@ -26,7 +26,7 @@ class TestParse153(unittest.TestCase):
         assert caption == 'Theory of communication and control'
 
     def testTableAddTableEntry(self):
-        element = Element(etree.fromstring('''
+        element = Element('''
             <mx:datafield tag="153" ind2=" " ind1=" " xmlns:mx="http://www.loc.gov/MARC21/slim">
                 <mx:subfield code="z">3B</mx:subfield>
                 <mx:subfield code="a">81</mx:subfield>
@@ -41,9 +41,9 @@ class TestParse153(unittest.TestCase):
                 <mx:subfield code="9">ess=reh</mx:subfield>
             </mx:datafield>
 
-        '''))
+        ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table == '3B'
         assert notation == '3B--81-89:02'
@@ -52,7 +52,7 @@ class TestParse153(unittest.TestCase):
         assert caption == u'Anekdoter, epigrammer, graffiti, vitser, vittigheter, sitater, gåter, tungekrøllere'
 
     def testAddTableEntry(self):
-        element = Element(etree.fromstring('''
+        element = Element('''
             <mx:datafield tag="153" ind2=" " ind1=" " xmlns:mx="http://www.loc.gov/MARC21/slim">
                 <mx:subfield code="a">820.1</mx:subfield>
                 <mx:subfield code="c">828</mx:subfield>
@@ -63,9 +63,9 @@ class TestParse153(unittest.TestCase):
                 <mx:subfield code="9">ess=reb</mx:subfield>
                 <mx:subfield code="9">ess=rhb</mx:subfield>
             </mx:datafield>
-        '''))
+        ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table is None
         assert notation == '820.1-828:4;1'
@@ -74,7 +74,7 @@ class TestParse153(unittest.TestCase):
         assert caption == u'Early period to 1858'
 
     def testTableEntryOldStyle(self):
-        element = Element(etree.fromstring('''
+        element = Element('''
             <marc:datafield tag="153" ind1=" " ind2=" " xmlns:marc="http://www.loc.gov/MARC21/slim">
                 <marc:subfield code="z">6</marc:subfield>
                 <marc:subfield code="a">9839</marc:subfield>
@@ -84,9 +84,9 @@ class TestParse153(unittest.TestCase):
                 <marc:subfield code="h">Quechuan (Kechuan), Aymaran, Tucanoan, Tupí, Arawakan languages</marc:subfield>
                 <marc:subfield code="j">Arawakan languages</marc:subfield>
             </marc:datafield>
-        '''))
+        ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table == '6'
         assert notation == '6--9839'
@@ -96,7 +96,7 @@ class TestParse153(unittest.TestCase):
 
     def testComplexTableEntryWithUndocumentStuff(self):
         # Test that none of the extra stuff (after $f) leaks into the notation
-        element = Element(etree.fromstring('''
+        element = Element('''
             <mx:datafield tag="153" ind2=" " ind1=" " xmlns:mx="http://www.loc.gov/MARC21/slim">
                 <mx:subfield code="z">1</mx:subfield>
                 <mx:subfield code="a">0926</mx:subfield>
@@ -115,9 +115,9 @@ class TestParse153(unittest.TestCase):
                 <mx:subfield code="9">ess=eh</mx:subfield>
                 <mx:subfield code="9">ess=nrl</mx:subfield>
               </mx:datafield>
-        '''))
+        ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table == '1'
         assert notation == '1--0926'
@@ -130,7 +130,7 @@ class TestParse153(unittest.TestCase):
         # This illustrates the importance of the order of the elements.
         # If $c followed $a, it would be part of the notation for this class, but since
         # it follows $x, it's not.
-        element = Element(etree.fromstring('''
+        element = Element('''
             <mx:datafield tag="153" ind2=" " ind1=" " xmlns:mx="http://www.loc.gov/MARC21/slim">
                 <mx:subfield code="a">469.9</mx:subfield>
                 <mx:subfield code="e">469</mx:subfield>
@@ -146,9 +146,9 @@ class TestParse153(unittest.TestCase):
                 <mx:subfield code="9">ess=eh</mx:subfield>
                 <mx:subfield code="9">ess=nrl</mx:subfield>
               </mx:datafield>
-        '''))
+        ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table is None
         assert notation == '469.9'
@@ -156,29 +156,29 @@ class TestParse153(unittest.TestCase):
         assert caption == 'Galisisk'
 
     def testStandardSubdivisionInfo(self):
-        element = Element(etree.fromstring('''
+        element = Element('''
             <mx:datafield tag="153" ind2=" " ind1=" " xmlns:mx="http://www.loc.gov/MARC21/slim">
                 <mx:subfield code="a">973</mx:subfield>
                 <mx:subfield code="9">ess=si1</mx:subfield>
             </mx:datafield>
-        '''))
+        ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table is None
         assert notation == '973'
         assert caption is None
 
     def testSynthesizedNumber(self):
-        element = Element(etree.fromstring('''
+        element = Element('''
               <mx:datafield tag="153" ind2=" " ind1=" " xmlns:mx="http://www.loc.gov/MARC21/slim">
                 <mx:subfield code="a">001.4092</mx:subfield>
                 <mx:subfield code="e">001.4</mx:subfield>
                 <mx:subfield code="9">ess=ien</mx:subfield>
               </mx:datafield>
-        '''))
+        ''')
 
-        table, notation, is_top_concept, parent_notation, caption = Record.parse_153(element)
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table is None
         assert notation == '001.4092'

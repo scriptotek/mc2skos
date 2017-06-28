@@ -20,14 +20,19 @@
 
 Python script for converting
 `MARC 21 Classification <http://www.loc.gov/marc/classification/>`_
+and
+`MARC 21 Authority <http://www.loc.gov/marc/authority/>`_
 records (serialized as MARCXML) to
 `SKOS <http://www.w3.org/2004/02/skos/>`_ concepts.
 
-Developed to support the
+Initially developed to support the
 project "`Felles terminologi for klassifikasjon med Dewey <https://www.duo.uio.no/handle/10852/39834>`_",
 for converting Dewey Decimal Classification (DDC) records.
 `Issues <https://github.com/scriptotek/mc2skos/issues>`_ and
 suggestions for generalizations and improvements are welcome!
+
+See `mapping schema for MARC21 Classification <#mapping-schema-for-marc21-classification>`_
+and `for MARC21 Authority <#mapping-schema-for-marc21-authority)>`_ below.
 
 Installation
 ============
@@ -67,27 +72,34 @@ Run ``mc2skos --help`` or ``mc2skos -h`` for options.
 URIs
 ====
 
-Concept URIs are generated from an URI template specified with option
+URIs are generated automatically for known concept schemes, identified from
+``084 $a`` for classification records and from ``008[11]`` / ``040 $f`` for
+authority records. To list known concept schemes:
+
+.. code:: console
+
+    $ mc2skos -l
+
+The list is currently quite short, but pull requests for adding additional
+schemes are welcome! See ``default_uri_templates`` in ``record.py``.
+
+URIs can be also be generated on the fly from an URI template specified with option
 ``--uri``.  The following template parameters are recognized:
 
+* ``{control_number}`` is the 001 value
 * ``{collection}`` is "class", "table" or "scheme"
 * ``{object}`` is a member of the classification scheme and part of
   a ``{collection}``, such as a specific class or table.
 * ``{edition}`` is taken from ``084 $c`` (with language code stripped)
 
-The following default URI template are used for known concept scheme
-identifiers in ``084 $a``:
 
-* ``ddc``: ``http://dewey.info/{collection}/{object}/e{edition}/`` (DDC)
-* ``bkl``: ``http://uri.gbv.de/terminology/bk/{object}`` (Basisklassifikation)
-
-To add ``skos:inScheme`` statements to all records, an URI template must be
-specified with option ``--scheme`` or it is derived from a known default
-template.
+To add ``skos:inScheme`` statements to all records, an URI template can be
+specified with option ``--scheme``. Otherwise, it will be derived from a default
+template if the concept scheme is known.
 
 To add an additional ``skos:inScheme`` statement to table records, an URI
-template must be specified with option ``--table_scheme`` or it is derived from
-a known default template.
+template can be specified with option ``--table_scheme``. Otherwise, it will be
+derived from a default template if the concept scheme is known.
 
 The following example is generated from a DDC table record:
 
@@ -100,8 +112,8 @@ The following example is generated from a DDC table record:
         skos:prefLabel "Chibchan and Paezan languages"@en .
 
 
-Mapping schema
-==============
+Mapping schema for MARC21 Classification
+========================================
 
 Only a small part of the MARC21 Classification data model is converted, and the
 conversion follows a rather pragmatic approach, exemplified by the mapping of
@@ -110,6 +122,7 @@ the 7XX fields to skos:altLabel.
 ==========================================================  =====================================
 MARC21XML                                                    RDF
 ==========================================================  =====================================
+``001`` Control Number                                      ``dcterms:identifier``
 ``005`` Date and time of latest transaction                 ``dcterms:modified``
 ``008[0:6]`` Date entered on file                           ``dcterms:created``
 ``008[8]="d" or "e"`` Classification validity               ``owl:deprecated``
@@ -121,7 +134,6 @@ MARC21XML                                                    RDF
 ``680`` Scope Note                                          ``skos:scopeNote``
 ``683`` Application Instruction Note                        ``skos:editorialNote``
 ``685`` History Note                                        ``skos:historyNote``
-``694`` ??? Note                                            ``skos:editorialNote``
 ``700`` Index Term-Personal Name                            ``skos:altLabel``
 ``710`` Index Term-Corporate Name                           ``skos:altLabel``
 ``711`` Index Term-Meeting Name                             ``skos:altLabel``
@@ -221,3 +233,40 @@ MARC21XML                                            RDF
 * ``685`` having ``$9 ess=ndp`` Discontinued partial
 * ``685`` having ``$9 ess=nrp`` Relocation
 * ``689`` having ``$9 ess=nru`` Sist brukt i...
+
+
+Mapping schema for MARC21 Authority
+========================================
+
+Only a small part of the MARC21 Authority data model is converted.
+
+==========================================================  =====================================
+MARC21XML                                                    RDF
+==========================================================  =====================================
+``001`` Control Number                                      ``dcterms:identifier``
+``005`` Date and time of latest transaction                 ``dcterms:modified``
+``008[0:6]`` Date entered on file                           ``dcterms:created``
+``065`` Other Classification Number                         ``skos:exactMatch``  (see below)
+``080`` Universal Decimal Classification Number             ``skos:exactMatch``  (see below)
+``083`` Dewey Decimal Classification Number                 ``skos:exactMatch``  (see below)
+``1XX`` Headings                                            ``skos:prefLabel``
+``4XX`` See From Tracings                                   ``skos:altLabel``
+``5XX`` See Also From Tracings                              ``skos:related`` or `skos:broader`` (see below)
+``667`` Nonpublic General Note                              ``skos:editorialNote``
+``670`` Source Data Found                                   ``skos:note``
+``677`` Definition                                          ``skos:definition``
+``678`` Biographical or Historical Data                     ``skos:note``
+``680`` Public General Note                                 ``skos:note``
+``681`` Subject Example Tracing Note                        ``skos:example``
+``682`` Deleted Heading Information                         ``skos:changeNote``
+``688`` Application History Note                            ``skos:historyNote``
+==========================================================  =====================================
+
+Notes:
+
+*  Mappings are generated for 065, 080 and 083 only if an URI pattern for the
+   classification scheme has been defined in the config.
+
+* ``skos:related`` and ``skos:broader`` is currently only generated from 5XX fields
+  if the fields contain a ``$0`` subfield containing either the control number or the
+  URI of the related record.

@@ -29,18 +29,18 @@ class MarcFile:
         return graph
 
 
-def examples(prefix, pattern):
-
-    pattern = '^(examples/%s%s)\.xml$' % (prefix, pattern)
-    files = glob.glob('examples/%s*.xml' % prefix)
+def examples(pattern):
+    pattern = '^(examples/%s)\.xml$' % (pattern)
+    files = glob.glob('examples/*.xml')
+    files = filter(lambda x: re.match(pattern, x), files)
 
     return [(MarcFile(f), re.match(pattern, f)) for f in files]
 
 
 def check_rdf(graph, expect, rdf_file):
     graph.namespace_manager.bind('skos', SKOS)
-    graph.namespace_manager.bind('dcterms', DCTERMS)
     graph.namespace_manager.bind('owl', OWL)
+    graph.namespace_manager.bind('dcterms', DCTERMS)
 
     if os.path.isfile(rdf_file):
         expect.parse(rdf_file, format='turtle')
@@ -54,8 +54,7 @@ def check_rdf(graph, expect, rdf_file):
 
 
 @pytest.mark.parametrize('marc_file',
-                         examples('ddc',
-                                  '(?P<edition>\d{2})(?P<lang>[a-z]+)-'
+                         examples('ddc(?P<edition>\d{2})(?P<lang>[a-z]+)-'
                                   '(?P<notation>((?P<table>\d+)--)?[\d.]+-?[\d.]*)'))
 def test_ddc_example(marc_file):
     marc, match = tuple(marc_file)
@@ -76,7 +75,7 @@ def test_ddc_example(marc_file):
     check_rdf(graph, expect, rdf_file)
 
 
-@pytest.mark.parametrize('marc_file', examples('bk', '-(?P<notation>[0-9.]+)'))
+@pytest.mark.parametrize('marc_file', examples('bk-(?P<notation>[0-9.]+)'))
 def test_bk_example(marc_file):
     marc, match = tuple(marc_file)
 
@@ -87,9 +86,34 @@ def test_bk_example(marc_file):
     uri = URIRef(u'http://uri.gbv.de/terminology/bk/' + notation)
     expect.add((uri, RDF.type, SKOS.Concept))
 
-    graph = marc.processed_records(include_indexterms=True)
+    graph = marc.processed_records(include_altlabels=True, include_notes=True)
     check_rdf(graph, expect, rdf_file)
 
+vocabularies = {
+    'lcsh': 'http://id.loc.gov/authorities/subjects/',
+    'noubomn': 'http://data.ub.uio.no/realfagstermer/',
+    'noubojur': 'http://data.ub.uio.no/lskjema/',
+    'humord': 'http://data.ub.uio.no/humord/',
+    'nalt': 'http://lod.nal.usda.gov/nalt/',
+}
+
+
+@pytest.mark.parametrize('marc_file', examples('(?P<vocabulary>' + '|'.join(vocabularies.keys()) + ')-(?P<control_number>.+)'))
+def test_authority_example(marc_file):
+    marc, match = tuple(marc_file)
+
+    vocabulary = match.group('vocabulary')
+    control_number = match.group('control_number')
+    rdf_file = match.group(1) + '.ttl'
+
+    uri_base = vocabularies[vocabulary]
+
+    expect = Graph()
+    uri = URIRef(uri_base + control_number)
+    expect.add((uri, RDF.type, SKOS.Concept))
+
+    graph = marc.processed_records(include_altlabels=True, include_notes=True)
+    check_rdf(graph, expect, rdf_file)
 
 if __name__ == '__main__':
     unittest.main()
