@@ -92,6 +92,7 @@ def test_bk_example(marc_file):
 vocabularies = {
     'lcsh': 'http://id.loc.gov/authorities/subjects/',
     'noubomn': 'http://data.ub.uio.no/realfagstermer/',
+    'noubojur': 'http://data.ub.uio.no/lskjema/',
     'humord': 'http://data.ub.uio.no/humord/',
     'nalt': 'http://lod.nal.usda.gov/nalt/',
 }

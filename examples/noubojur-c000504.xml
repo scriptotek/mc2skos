@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record type="Authority" xmlns="http://www.loc.gov/MARC21/slim">
+  <leader>00000nz  a2200000n  4500</leader>
+  <controlfield tag="001">UJUR504</controlfield>
+  <controlfield tag="003">NoOU</controlfield>
+  <controlfield tag="005">20150310100734.0</controlfield>
+  <controlfield tag="008">150310|||anz|naabn          |a|ana|||| d</controlfield>
+  <datafield ind1=" " ind2=" " tag="040">
+    <subfield code="a">NoOU</subfield>
+    <subfield code="b">nob</subfield>
+    <subfield code="f">noubojur</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="065">
+    <subfield code="a">L 773.7</subfield>
+    <subfield code="2">utklklass</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="150">
+    <subfield code="a">årsregnskapslover - kommentarer</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="667">
+    <subfield code="a">(bruk også 762.1)</subfield>
+  </datafield>
+</record>
