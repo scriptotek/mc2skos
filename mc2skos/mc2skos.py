@@ -71,6 +71,10 @@ def add_record_to_graph(graph, record, options):
         else:
             graph.add((record_uri, SKOS.notation, Literal(record.notation)))
 
+    # Add local control number as dcterms:identifier
+    if record.control_number:
+        graph.add((record_uri, DCTERMS.identifier, Literal(record.control_number)))
+
     # Add caption as skos:prefLabel
     if record.prefLabel:
         graph.add((record_uri, SKOS.prefLabel, Literal(record.prefLabel, lang=record.lang)))

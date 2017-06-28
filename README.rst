@@ -119,6 +119,7 @@ the 7XX fields to skos:altLabel.
 ==========================================================  =====================================
 MARC21XML                                                    RDF
 ==========================================================  =====================================
+``001`` Control Number                                      ``dcterms:identifier``
 ``005`` Date and time of latest transaction                 ``dcterms:modified``
 ``008[0:6]`` Date entered on file                           ``dcterms:created``
 ``008[8]="d" or "e"`` Classification validity               ``owl:deprecated``
@@ -239,6 +240,7 @@ Only a small part of the MARC21 Authority data model is converted.
 ==========================================================  =====================================
 MARC21XML                                                    RDF
 ==========================================================  =====================================
+``001`` Control Number                                      ``dcterms:identifier``
 ``005`` Date and time of latest transaction                 ``dcterms:modified``
 ``008[0:6]`` Date entered on file                           ``dcterms:created``
 ``100`` Heading - Personal Name                             ``skos:prefLabel``
