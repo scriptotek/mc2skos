@@ -11,13 +11,57 @@ from .element import Element
 logger = logging.getLogger(__name__)
 
 
+CONFIG = {
+    'classification_schemes': {
+        'ddc': {
+            'uri': 'http://dewey.info/{collection}/{object}/e{edition}/'
+        },
+        'bkl': {
+            'uri': 'http://uri.gbv.de/terminology/bk/{object}'
+        },
+        'utklklass': {
+            'uri': lambda x: x['object'].replace('L ', 'http://data.ub.uio.no/lklass/L'),
+            'scheme': 'http://data.ub.uio.no/lklass/',
+        },
+    },
+    'subject_schemes': {
+        'a': {
+            'uri': 'http://id.loc.gov/authorities/subjects/{control_number}',
+            'scheme': 'http://id.loc.gov/authorities/subjects',
+        },
+        'd': {
+            'uri': 'http://lod.nal.usda.gov/nalt/{control_number}',
+            'scheme': 'http://lod.nal.usda.gov/nalt/',
+        },
+        'usvd': {
+            'uri': lambda x: x['control_number'].replace('USVD', 'http://data.ub.uio.no/usvd/c'),
+            'scheme': 'http://data.ub.uio.no/usvd/',
+        },
+        'humord': {
+            'uri': lambda x: x['control_number'].replace('HUME', 'http://data.ub.uio.no/humord/c'),
+            'scheme': 'http://data.ub.uio.no/humord/',
+        },
+        'noubojur': {
+            'uri': lambda x: 'http://data.ub.uio.no/lskjema/c%06d' % int(x['control_number'][4:]),
+            'scheme': 'http://data.ub.uio.no/lskjema/',
+        },
+        'noubomn': {
+            'uri': lambda x: x['control_number'].replace('REAL', 'http://data.ub.uio.no/realfagstermer/c'),
+            'scheme': 'http://data.ub.uio.no/realfagstermer/',
+        },
+        'noubomr': {
+            'uri': lambda x: x['control_number'].replace('SMR', 'http://data.ub.uio.no/mrtermer/c'),
+            'scheme': 'http://data.ub.uio.no/mrtermer/',
+        },
+    },
+}
+
+
 class InvalidRecordError(RuntimeError):
     pass
 
 
 class Record(object):
-
-    default_uri_templates = {}
 
     def __init__(self, record, options=None):
         options = options or {}
@@ -120,15 +164,6 @@ class Record(object):
 
 class ClassificationRecord(Record):
 
-    default_uri_templates = {
-        'ddc': {
-            'uri': 'http://dewey.info/{collection}/{object}/e{edition}/'
-        },
-        'bkl': {
-            'uri': 'http://uri.gbv.de/terminology/bk/{object}'
-        },
-    }
-
     def __init__(self, record, options=None):
         options = options or {}
         self.scheme_edition_numeric = None
@@ -149,9 +184,9 @@ class ClassificationRecord(Record):
             self.scheme_uris.append(self.table_scheme_uri_template.format(edition=self.scheme_edition_numeric, table=self.table))
 
         # Generate URIs from scheme
-        if self.scheme in self.default_uri_templates:
+        if self.scheme in CONFIG['classification_schemes']:
             if self.uri_template is None:
-                cfg = self.default_uri_templates[self.scheme]
+                cfg = CONFIG['classification_schemes'][self.scheme]
                 self.uri_template = cfg['uri']
             if len(self.scheme_uris) == 0:
                 if self.record_type == Constants.TABLE_RECORD:
@@ -486,29 +521,6 @@ class ClassificationRecord(Record):
 
 class AuthorityRecord(Record):
 
-    default_uri_templates = {
-        'a': {
-            'uri': 'http://id.loc.gov/authorities/subjects/{control_number}',
-            'scheme': 'http://id.loc.gov/authorities/subjects',
-        },
-        'd': {
-            'uri': 'http://lod.nal.usda.gov/nalt/{control_number}',
-            'scheme': 'http://lod.nal.usda.gov/nalt/',
-        },
-        'usvd': {
-            'uri': lambda x: x['control_number'].replace('USVD', 'http://data.ub.uio.no/usvd/c'),
-            'scheme': 'http://data.ub.uio.no/usvd/',
-        },
-        'humord': {
-            'uri': lambda x: x['control_number'].replace('HUME', 'http://data.ub.uio.no/humord/c'),
-            'scheme': 'http://data.ub.uio.no/humord/',
-        },
-        'noubomn': {
-            'uri': lambda x: x['control_number'].replace('REAL', 'http://data.ub.uio.no/realfagstermer/c'),
-            'scheme': 'http://data.ub.uio.no/realfagstermer/',
-        }
-    }
-
     def __init__(self, record, options=None):
         super(AuthorityRecord, self).__init__(record, options)
 
@@ -518,8 +530,8 @@ class AuthorityRecord(Record):
             self.scheme_uris.append(self.scheme_uri_template)
 
         # Generate URIs from scheme
-        if self.scheme in self.default_uri_templates:
-            cfg = self.default_uri_templates[self.scheme]
+        if self.scheme in CONFIG['subject_schemes']:
+            cfg = CONFIG['subject_schemes'][self.scheme]
             if self.uri_template is None and cfg.get('uri') is not None:
                 self.uri_template = cfg['uri']
             if len(self.scheme_uris) == 0 and cfg.get('scheme') is not None:
