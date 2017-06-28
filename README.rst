@@ -243,36 +243,9 @@ MARC21XML                                                    RDF
 ``001`` Control Number                                      ``dcterms:identifier``
 ``005`` Date and time of latest transaction                 ``dcterms:modified``
 ``008[0:6]`` Date entered on file                           ``dcterms:created``
-``100`` Heading - Personal Name                             ``skos:prefLabel``
-``110`` Heading - Corporate Name                            ``skos:prefLabel``
-``111`` Heading - Meeting Name                              ``skos:prefLabel``
-``130`` Heading - Uniform Title                             ``skos:prefLabel``
-``147`` Heading - Named Event                               ``skos:prefLabel``
-``148`` Heading - Chronological Term                        ``skos:prefLabel``
-``150`` Heading - Topical Term                              ``skos:prefLabel``
-``151`` Heading - Geographic Name                           ``skos:prefLabel``
-``155`` Heading - Genre/Form Term                           ``skos:prefLabel``
-``162`` Heading - Medium of Performance Term                ``skos:prefLabel``
-``400`` See From Tracing - Personal Name                    ``skos:altLabel``
-``410`` See From Tracing - Corporate Name                   ``skos:altLabel``
-``411`` See From Tracing - Meeting Name                     ``skos:altLabel``
-``430`` See From Tracing - Uniform Title                    ``skos:altLabel``
-``447`` See From Tracing - Named Event                      ``skos:altLabel``
-``448`` See From Tracing - Chronological Term               ``skos:altLabel``
-``450`` See From Tracing - Topical Term                     ``skos:altLabel``
-``451`` See From Tracing - Geographic Name                  ``skos:altLabel``
-``455`` See From Tracing - Genre/Form Term                  ``skos:altLabel``
-``462`` See From Tracing - Medium of Performance Term       ``skos:altLabel``
-``500`` See Also From Tracing - Personal Name               ``skos:related`` or `skos:broader`` (see below)
-``510`` See Also From Tracing - Corporate Name              ``skos:related`` or `skos:broader`` (see below)
-``511`` See Also From Tracing - Meeting Name                ``skos:related`` or `skos:broader`` (see below)
-``530`` See Also From Tracing - Uniform Title               ``skos:related`` or `skos:broader`` (see below)
-``547`` See Also From Tracing - Named Event                 ``skos:related`` or `skos:broader`` (see below)
-``548`` See Also From Tracing - Chronological Term          ``skos:related`` or `skos:broader`` (see below)
-``550`` See Also From Tracing - Topical Term                ``skos:related`` or `skos:broader`` (see below)
-``551`` See Also From Tracing - Geographic Name             ``skos:related`` or `skos:broader`` (see below)
-``555`` See Also From Tracing - Genre/Form Term             ``skos:related`` or `skos:broader`` (see below)
-``562`` See Also From Tracing - Medium of Performance Term  ``skos:related`` or `skos:broader`` (see below)
+``1XX`` Headings                                            ``skos:prefLabel``
+``4XX`` See From Tracings                                   ``skos:altLabel``
+``5XX`` See Also From Tracings                              ``skos:related`` or `skos:broader`` (see below)
 ``667`` Nonpublic General Note                              ``skos:editorialNote``
 ``670`` Source Data Found                                   ``skos:note``
 ``677`` Definition                                          ``skos:definition``
@@ -283,11 +256,8 @@ MARC21XML                                                    RDF
 ``688`` Application History Note                            ``skos:historyNote``
 ==========================================================  =====================================
 
-Generating ``skos:related`` and ``skos:broader``
-------------------------------------------------
+Notes:
 
-``skos:related`` and ``skos:broader`` is currently only generated from 5XX fields
-if the fields contain a ``$0`` subfield containing either the control number or the
-URI of the related record.
-
-
+* ``skos:related`` and ``skos:broader`` is currently only generated from 5XX fields
+  if the fields contain a ``$0`` subfield containing either the control number or the
+  URI of the related record.
