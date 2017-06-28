@@ -197,6 +197,9 @@ def main():
                         help='Output format: turtle (default), jskos, or ndjson',
                         default='turtle')
 
+    parser.add_argument('--include', dest='include', help='RDF file to loaded into the graph' +
+                        '(e.g. to define a concept scheme). Must be the same format as {outformat}.')
+
     parser.add_argument('--uri', dest='base_uri', help='URI template')
     parser.add_argument('--scheme', dest='scheme_uri', help='SKOS scheme for all records.')
     parser.add_argument('--table_scheme', dest='table_scheme_uri', help='SKOS scheme for table records, use {edition} to specify edition.')
@@ -222,7 +225,17 @@ def main():
             print(' - {}: <{}> / <{}>'.format(k, v.get('scheme'), v.get('uri')))
         return
 
+    supported_formats = ['turtle', 'jskos', 'ndjson']
+    if args.outformat not in supported_formats:
+        raise ValueError("Format not supported, must be one of '%s'." % "', '".join(supported_formats))
+
     graph = Graph()
+    if args.include:
+        if args.outformat == 'turtle':
+            graph.load(args.include, format='turtle')
+        else:
+            graph.load(args.include, format='json-ld')
+
     nm = graph.namespace_manager
     nm.bind('dcterms', DCTERMS)
     nm.bind('skos', SKOS)
@@ -239,8 +252,6 @@ def main():
         raise ValueError('Filename not specified')
 
     in_file = args.infile
-    if args.outformat not in ['turtle', 'jskos', 'ndjson']:
-        raise ValueError('output format not supported')
 
     options = {
         'base_uri': args.base_uri,
