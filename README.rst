@@ -243,6 +243,9 @@ MARC21XML                                                    RDF
 ``001`` Control Number                                      ``dcterms:identifier``
 ``005`` Date and time of latest transaction                 ``dcterms:modified``
 ``008[0:6]`` Date entered on file                           ``dcterms:created``
+``065`` Other Classification Number                         ``skos:exactMatch``  (see below)
+``080`` Universal Decimal Classification Number             ``skos:exactMatch``  (see below)
+``083`` Dewey Decimal Classification Number                 ``skos:exactMatch``  (see below)
 ``1XX`` Headings                                            ``skos:prefLabel``
 ``4XX`` See From Tracings                                   ``skos:altLabel``
 ``5XX`` See Also From Tracings                              ``skos:related`` or `skos:broader`` (see below)
@@ -257,6 +260,9 @@ MARC21XML                                                    RDF
 ==========================================================  =====================================
 
 Notes:
+
+*  Mappings are generated for 065, 080 and 083 only if an URI pattern for the
+   classification scheme has been defined in the config.
 
 * ``skos:related`` and ``skos:broader`` is currently only generated from 5XX fields
   if the fields contain a ``$0`` subfield containing either the control number or the

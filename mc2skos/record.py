@@ -87,6 +87,7 @@ class Record(object):
         self.historyNote = []
         self.changeNote = []
         self.example = []
+        self.classificationNumbers = []
         self.webDeweyExtras = {}
         self.deprecated = False
         self.is_top_concept = False
@@ -540,6 +541,26 @@ class AuthorityRecord(Record):
         # Record URI
         self.uri = self.get_uri(control_number=self.control_number)
 
+    @staticmethod
+    def get_class_number(el):
+        number_start = el.text('mx:subfield[@code="a"]')
+        number_end = el.text('mx:subfield[@code="b"]')
+        if number_end is not None:
+            return '{}-{}'.format(number_start, number_end)
+        else:
+            return number_start
+
+    @staticmethod
+    def append_class_uri(class_obj):
+        if class_obj.get('scheme') in CONFIG['classification_schemes']:
+            uri_tpl = CONFIG['classification_schemes'][class_obj['scheme']]['uri']
+            if callable(uri_tpl):
+                class_obj['uri'] = uri_tpl(class_obj)
+            else:
+                class_obj['uri'] = uri_tpl.format(**class_obj)
+
+        return class_obj
+
     def parse(self, options):
 
         super(AuthorityRecord, self).parse(options)
@@ -560,6 +581,32 @@ class AuthorityRecord(Record):
 
         # Now we have enough information to generate URIs
         self.generate_uris()
+
+        # 065: Other Classification Number
+        el = self.record.first('mx:datafield[@tag="065"]')
+        if el is not None:
+            self.classificationNumbers.append(self.append_class_uri({
+                'object': self.get_class_number(el),
+                'scheme': el.text('mx:subfield[@code="2"]'),
+            }))
+
+        # 080: Universal Decimal Classification Number
+        el = self.record.first('mx:datafield[@tag="080"]')
+        if el is not None:
+            self.classificationNumbers.append(self.append_class_uri({
+                'object': self.get_class_number(el),
+                'scheme': 'udc',
+                'edition': el.text('mx:subfield[@code="2"]'),
+            }))
+
+        # 083: Dewey Decimal Classification Number
+        el = self.record.first('mx:datafield[@tag="083"]')
+        if el is not None:
+            self.classificationNumbers.append(self.append_class_uri({
+                'object': self.get_class_number(el),
+                'scheme': 'ddc',
+                'edition': el.text('mx:subfield[@code="2"]'),
+            }))
 
         # 1XX Heading
         for heading in self.get_terms('1'):

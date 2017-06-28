@@ -92,6 +92,11 @@ def add_record_to_graph(graph, record, options):
     for uri in record.related:
         graph.add((record_uri, SKOS.related, URIRef(uri)))
 
+    # Add skos:exactMatch
+    for classno in record.classificationNumbers:
+        if classno.get('uri') is not None:
+            graph.add((record_uri, SKOS.exactMatch, URIRef(classno['uri'])))
+
     # Add notes
     if options.get('include_notes'):
         for note in record.definition:
