@@ -219,7 +219,7 @@ class ClassificationRecord(Record):
         self.table, self.notation, self.is_top_concept, parent_notation, self.prefLabel = self.parse_153(element)
 
         if self.record_type is None:
-            logger.warn('Record does not have a 008 field, will try to guess type.')
+            logger.warning('Record does not have a 008 field, will try to guess type.')
             if self.table is None:
                 self.record_type = Constants.SCHEDULE_RECORD
             else:
@@ -351,7 +351,7 @@ class ClassificationRecord(Record):
                 #     self.components.append(sf.text())
                 elif sf.get('code') == 's':  # Digits added from classification number in schedule or external table
                     if sf.text() is None:
-                        logger.warn('Class %s has blank 765 $s subfield. This should be fixed.', self.notation)
+                        logger.warning('Class %s has blank 765 $s subfield. This should be fixed.', self.notation)
                     else:
                         tmp = rootno + sf.text()
                         if len(tmp) > 3:
@@ -385,7 +385,7 @@ class ClassificationRecord(Record):
         elif value[6] == '1':  # @TODO: Find out what this means! It's not documented
             record_type = Constants.SCHEDULE_RECORD
         else:
-            logger.warn('Unknown value: %s', value[6])
+            logger.warning('Unknown value: %s', value[6])
             record_type = Constants.UNKNOWN
 
         if value[7] == 'a':
