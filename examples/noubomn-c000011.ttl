@@ -13,6 +13,7 @@
     owl:deprecated true ;
     skos:closeMatch <http://id.loc.gov/authorities/subjects/sh85086566> ;
     skos:exactMatch <http://data.ub.uio.no/humord/c08221>,
+        <http://dbpedia.org/page/Mold>,
         <http://www.wikidata.org/entity/Q159341> ;
     skos:inScheme <http://data.ub.uio.no/realfagstermer/> ;
     skos:prefLabel "Mugg"@nb .

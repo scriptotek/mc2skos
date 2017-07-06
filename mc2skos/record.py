@@ -758,40 +758,43 @@ class AuthorityRecord(Record):
 
         # 7XX: Heading Linking Entries
         for heading in self.get_terms('7'):
-            sf_4 = heading['node'].text('mx:subfield[@code="4"]')
-            sf_0 = heading['node'].text('mx:subfield[@code="0"]')
+            relation = None
+            for sf in heading['node'].all('mx:subfield'):
+                if sf.get('code') == '4':
+                    if is_uri(sf.text()):
+                        relation = URIRef(sf.text())
+                    else:
+                        relation = {
+                            '=EQ': SKOS.exactMatch,
+                            '~EQ': SKOS.closeMatch,
+                            'BM': SKOS.broadMatch,
+                            'NM': SKOS.narrowMatch,
+                            'RM': SKOS.relatedMatch,
+                        }.get(sf.text())  # None if no match
 
-            if sf_4 is not None and is_uri(sf_4):
-                relation = URIRef(sf_4)
-            else:
-                relation = {
-                    '=EQ': SKOS.exactMatch,
-                    '~EQ': SKOS.closeMatch,
-                    'BM': SKOS.broadMatch,
-                    'NM': SKOS.narrowMatch,
-                    'RM': SKOS.relatedMatch,
-                }.get(sf_4)
+                elif sf.get('code') == '0':
+                    # Note: Default value might change in the future
+                    relation = relation if relation else SKOS.closeMatch
 
-            relation = relation or SKOS.closeMatch  # default
-            if is_uri(sf_0):
-                self.relations.append({
-                    'uri': sf_0,
-                    'relation': relation,
-                })
-            else:
-                scheme_code = {
-                    '0': 'a',  # Library of Congress Subject Headings
-                    '1': 'b',  # LC subject headings for children's literature
-                    '2': 'c',  # Medical Subject Headings
-                    '3': 'd',  # National Agricultural Library subject authority file
-                    '4': 'n',  # Source not specified
-                    '5': 'k',  # Canadian Subject Headings
-                    '6': 'v',  # Répertoire de vedettes-matière
-                    '7': heading['node'].text('mx:subfield[@code="2"]'),  # Source specified in subfield $2
-                }.get(heading['node'].get('ind2'))
+                    if is_uri(sf.text()):
+                        self.relations.append({
+                            'uri': sf.text(),
+                            'relation': relation,
+                        })
+                    else:
+                        scheme_code = {
+                            '0': 'a',  # Library of Congress Subject Headings
+                            '1': 'b',  # LC subject headings for children's literature
+                            '2': 'c',  # Medical Subject Headings
+                            '3': 'd',  # National Agricultural Library subject authority file
+                            '4': 'n',  # Source not specified
+                            '5': 'k',  # Canadian Subject Headings
+                            '6': 'v',  # Répertoire de vedettes-matière
+                            '7': heading['node'].text('mx:subfield[@code="2"]'),  # Source specified in subfield $2
+                        }.get(heading['node'].get('ind2'))
 
-                self.append_relation(
-                    ConceptScheme(scheme_code, AuthorityRecord),
-                    relation,
-                    control_number=sf_0
-                )
+                        self.append_relation(
+                            ConceptScheme(scheme_code, AuthorityRecord),
+                            relation,
+                            control_number=sf.text()
+                        )

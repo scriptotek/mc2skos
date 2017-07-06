@@ -273,11 +273,13 @@ Notes:
   The relationship type is ``skos:broader`` if ``$w=g``, ``skos:narrower`` if ``$w=h``,
   and ``skos:related`` otherwise.
   If ``$w=r`` and ``$4`` contains an URI, that URI is used as the relationship type.
+  Note that ``$4`` must precede ``$0`` (since both subfields can be repeated).
 
-*  Mappings/relationships are generated for 7XX headings if the fields contain a ``$0``
-   subfield containing either the control number or the URI of the related record.
-   If ``$0`` contains a control number, an URI pattern for the vocabulary
-   (found in indicator 2 or ``$2``) must be defined in mc2skos.record.CONFIG.
-   If ``$4`` contains an URI, that URI is used as the relationship type.
-   Otherwise, if ``$4`` contains one of the ISO 25964 relations, the corresponding
-   SKOS relation is used. Otherwise, the default value ``skos:closeMatch`` is used.
+* Mappings/relationships are generated for 7XX headings if the fields contain a ``$0``
+  subfield containing either the control number or the URI of the related record.
+  If ``$0`` contains a control number, an URI pattern for the vocabulary
+  (found in indicator 2 or ``$2``) must be defined in mc2skos.record.CONFIG.
+  If ``$4`` contains an URI, that URI is used as the relationship type.
+  Otherwise, if ``$4`` contains one of the ISO 25964 relations, the corresponding
+  SKOS relation is used. Otherwise, the default value ``skos:closeMatch`` is used.
+  Note that ``$4`` must precede ``$0`` (since both subfields can be repeated).
