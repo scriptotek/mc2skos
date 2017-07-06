@@ -50,6 +50,10 @@ CONFIG = {
 }
 
 
+def is_uri(value):
+    return value.startswith('http://') or value.startswith('https://')
+
+
 class InvalidRecordError(RuntimeError):
     pass
 
@@ -159,8 +163,6 @@ class Record(object):
         self.control_number_identifier = None
         self.created = None
         self.modified = None
-        self.broader = []
-        self.related = []
         self.lang = None
         self.prefLabel = None
         self.altLabel = []
@@ -172,7 +174,7 @@ class Record(object):
         self.historyNote = []
         self.changeNote = []
         self.example = []
-        self.mappings = []
+        self.relations = []
         self.webDeweyExtras = {}
         self.deprecated = False
         self.is_top_concept = False
@@ -288,7 +290,10 @@ class ClassificationRecord(Record):
         if parent_notation is not None:
             parent_uri = self.scheme.get_uri(collection='class', object=parent_notation)
             if parent_uri is not None:
-                self.broader.append(parent_uri)
+                self.relations.append({
+                    'uri': parent_uri,
+                    'relation': SKOS.broader
+                })
 
         # 253 : Complex See Reference (R)
         # Example:
@@ -617,10 +622,10 @@ class AuthorityRecord(Record):
 
         return class_obj
 
-    def append_mapping(self, scheme, relation, **kwargs):
+    def append_relation(self, scheme, relation, **kwargs):
         uri = scheme.get_uri(**kwargs)
         if uri:
-            self.mappings.append({
+            self.relations.append({
                 'uri': uri,
                 'relation': relation,
             })
@@ -644,7 +649,7 @@ class AuthorityRecord(Record):
         # 065: Other Classification Number
         el = self.record.first('mx:datafield[@tag="065"]')
         if el is not None:
-            self.append_mapping(
+            self.append_relation(
                 ConceptScheme(el.text('mx:subfield[@code="2"]'), ClassificationRecord),
                 SKOS.exactMatch,
                 object=self.get_class_number(el)
@@ -653,7 +658,7 @@ class AuthorityRecord(Record):
         # 080: Universal Decimal Classification Number
         el = self.record.first('mx:datafield[@tag="080"]')
         if el is not None:
-            self.append_mapping(
+            self.append_relation(
                 ConceptScheme('udc', ClassificationRecord),
                 SKOS.exactMatch,
                 object=self.get_class_number(el)
@@ -662,7 +667,7 @@ class AuthorityRecord(Record):
         # 083: Dewey Decimal Classification Number
         el = self.record.first('mx:datafield[@tag="083"]')
         if el is not None:
-            self.append_mapping(
+            self.append_relation(
                 ConceptScheme('ddc', ClassificationRecord, edition=el.text('mx:subfield[@code="2"]')),
                 SKOS.exactMatch,
                 object=self.get_class_number(el)
@@ -682,18 +687,30 @@ class AuthorityRecord(Record):
         for heading in self.get_terms('5'):
             local_id = heading['node'].text('mx:subfield[@code="0"]')
             if local_id:
-                m = re.match('^\(.+\)(.+)$', local_id)
-                if m:
-                    local_id = m.group(1)
-                if local_id.startswith('http'):
-                    uri = local_id
-                else:
-                    uri = self.scheme.get_uri(control_number=local_id)
                 if local_id:
-                    if heading['node'].text('mx:subfield[@code="w"]') == 'g':
-                        self.broader.append(uri)
+                    sf_w = heading['node'].text('mx:subfield[@code="w"]')
+                    sf_4 = heading['node'].text('mx:subfield[@code="4"]')
+
+                    if sf_w == 'g':
+                        relation = SKOS.broader
+                    elif sf_w == 'h':
+                        relation = SKOS.narrower
+                    elif sf_w == 'r' and is_uri(sf_4):
+                        relation = sf_4
                     else:
-                        self.related.append(uri)
+                        relation = SKOS.related
+
+                    if is_uri(local_id):
+                        self.relations.append({
+                            'uri': uri,
+                            'relation': relation,
+                        })
+                    else:
+                        self.append_relation(
+                            self.scheme,
+                            relation,
+                            control_number=local_id
+                        )
 
         # 667 : Nonpublic General Note
         # madsrdf:editorialNote

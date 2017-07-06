@@ -240,9 +240,9 @@ Mapping schema for MARC21 Authority
 
 Only a small part of the MARC21 Authority data model is converted.
 
-==========================================================  =====================================
+==========================================================  ===================================================================
 MARC21XML                                                    RDF
-==========================================================  =====================================
+==========================================================  ===================================================================
 ``001`` Control Number                                      ``dcterms:identifier``
 ``005`` Date and time of latest transaction                 ``dcterms:modified``
 ``008[0:6]`` Date entered on file                           ``dcterms:created``
@@ -251,7 +251,7 @@ MARC21XML                                                    RDF
 ``083`` Dewey Decimal Classification Number                 ``skos:exactMatch``  (see below)
 ``1XX`` Headings                                            ``skos:prefLabel``
 ``4XX`` See From Tracings                                   ``skos:altLabel``
-``5XX`` See Also From Tracings                              ``skos:related`` or `skos:broader`` (see below)
+``5XX`` See Also From Tracings                              ``skos:related``, ``skos:broader`` or ``skos:narrower`` (see below)
 ``667`` Nonpublic General Note                              ``skos:editorialNote``
 ``670`` Source Data Found                                   ``skos:note``
 ``677`` Definition                                          ``skos:definition``
@@ -260,13 +260,15 @@ MARC21XML                                                    RDF
 ``681`` Subject Example Tracing Note                        ``skos:example``
 ``682`` Deleted Heading Information                         ``skos:changeNote``
 ``688`` Application History Note                            ``skos:historyNote``
-==========================================================  =====================================
+==========================================================  ===================================================================
 
 Notes:
 
 *  Mappings are generated for 065, 080 and 083 only if an URI pattern for the
    classification scheme has been defined in the config.
 
-* ``skos:related`` and ``skos:broader`` is currently only generated from 5XX fields
-  if the fields contain a ``$0`` subfield containing either the control number or the
-  URI of the related record.
+* SKOS relations are generated from 5XX fields if the fields contain a ``$0``
+  subfield containing either the control number or the URI of the related record.
+  The relationship type is ``skos:broader`` if ``$w=g``, ``skos:narrower`` if ``$w=h``,
+  and ``skos:related`` otherwise.
+  If  ``$w=r`` and ``$4`` contains an URI, that URI is used as the relationship type.

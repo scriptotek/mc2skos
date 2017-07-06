@@ -58,8 +58,9 @@ class TestClassificationRecord(unittest.TestCase):
         assert rec.display is True
         assert rec.synthesized is False
         assert rec.notation == '811-818:2;4'
-        assert len(rec.broader) == 1
-        assert rec.broader[0] == 'http://dewey.info/class/811-818/e23/'
+        assert len(rec.relations) == 1
+        assert rec.relations[0]['uri'] == 'http://dewey.info/class/811-818/e23/'
+        assert rec.relations[0]['relation'] == SKOS.broader
 
     def testHistoricalAddTableNumber(self):
         rec = ClassificationRecord('''

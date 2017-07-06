@@ -84,18 +84,10 @@ def add_record_to_graph(graph, record, options):
         for label in record.altLabel:
             graph.add((record_uri, SKOS.altLabel, Literal(label['term'], lang=record.lang)))
 
-    # Add skos:broader
-    for uri in record.broader:
-        graph.add((record_uri, SKOS.broader, URIRef(uri)))
-
-    # Add skos:related
-    for uri in record.related:
-        graph.add((record_uri, SKOS.related, URIRef(uri)))
-
-    # Add mappings
-    for mapping in record.mappings:
-        if mapping.get('uri') is not None:
-            graph.add((record_uri, mapping.get('relation'), URIRef(mapping['uri'])))
+    # Add relations (SKOS:broader, SKOS:narrower, SKOS:xxxMatch, etc.)
+    for relation in record.relations:
+        if relation.get('uri') is not None:
+            graph.add((record_uri, relation.get('relation'), URIRef(relation['uri'])))
 
     # Add notes
     if options.get('include_notes'):
