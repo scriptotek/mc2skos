@@ -14,43 +14,43 @@ logger = logging.getLogger(__name__)
 CONFIG = {
     'classification_schemes': {
         'ddc': {
-            'uri': 'http://dewey.info/{collection}/{object}/e{edition}/'
+            'concept': 'http://dewey.info/{collection}/{object}/e{edition}/'
         },
         'bkl': {
-            'uri': 'http://uri.gbv.de/terminology/bk/{object}'
+            'concept': 'http://uri.gbv.de/terminology/bk/{object}'
         },
         'utklklass': {
-            'uri': lambda x: x['object'].replace('L ', 'http://data.ub.uio.no/lklass/L'),
+            'concept': lambda x: x['object'].replace('L ', 'http://data.ub.uio.no/lklass/L'),
             'scheme': 'http://data.ub.uio.no/lklass/',
         },
     },
     'subject_schemes': {
         'a': {
-            'uri': 'http://id.loc.gov/authorities/subjects/{control_number}',
+            'concept': 'http://id.loc.gov/authorities/subjects/{control_number}',
             'scheme': 'http://id.loc.gov/authorities/subjects',
         },
         'd': {
-            'uri': 'http://lod.nal.usda.gov/nalt/{control_number}',
+            'concept': 'http://lod.nal.usda.gov/nalt/{control_number}',
             'scheme': 'http://lod.nal.usda.gov/nalt/',
         },
         'usvd': {
-            'uri': lambda x: x['control_number'].replace('USVD', 'http://data.ub.uio.no/usvd/c'),
+            'concept': lambda x: x['control_number'].replace('USVD', 'http://data.ub.uio.no/usvd/c'),
             'scheme': 'http://data.ub.uio.no/usvd/',
         },
         'humord': {
-            'uri': lambda x: x['control_number'].replace('HUME', 'http://data.ub.uio.no/humord/c'),
+            'concept': lambda x: x['control_number'].replace('HUME', 'http://data.ub.uio.no/humord/c'),
             'scheme': 'http://data.ub.uio.no/humord/',
         },
         'noubojur': {
-            'uri': lambda x: 'http://data.ub.uio.no/lskjema/c%06d' % int(x['control_number'][4:]),
+            'concept': lambda x: 'http://data.ub.uio.no/lskjema/c%06d' % int(x['control_number'][4:]),
             'scheme': 'http://data.ub.uio.no/lskjema/',
         },
         'noubomn': {
-            'uri': lambda x: x['control_number'].replace('REAL', 'http://data.ub.uio.no/realfagstermer/c'),
+            'concept': lambda x: x['control_number'].replace('REAL', 'http://data.ub.uio.no/realfagstermer/c'),
             'scheme': 'http://data.ub.uio.no/realfagstermer/',
         },
         'noubomr': {
-            'uri': lambda x: x['control_number'].replace('SMR', 'http://data.ub.uio.no/mrtermer/c'),
+            'concept': lambda x: x['control_number'].replace('SMR', 'http://data.ub.uio.no/mrtermer/c'),
             'scheme': 'http://data.ub.uio.no/mrtermer/',
         },
     },
@@ -188,7 +188,7 @@ class ClassificationRecord(Record):
         if self.scheme in CONFIG['classification_schemes']:
             if self.uri_template is None:
                 cfg = CONFIG['classification_schemes'][self.scheme]
-                self.uri_template = cfg['uri']
+                self.uri_template = cfg['concept']
             if len(self.scheme_uris) == 0:
                 if self.record_type == Constants.TABLE_RECORD:
                     table = self.table if self.table is not None else ''
@@ -533,8 +533,8 @@ class AuthorityRecord(Record):
         # Generate URIs from scheme
         if self.scheme in CONFIG['subject_schemes']:
             cfg = CONFIG['subject_schemes'][self.scheme]
-            if self.uri_template is None and cfg.get('uri') is not None:
-                self.uri_template = cfg['uri']
+            if self.uri_template is None and cfg.get('concept') is not None:
+                self.uri_template = cfg['concept']
             if len(self.scheme_uris) == 0 and cfg.get('scheme') is not None:
                 self.scheme_uris.append(cfg.get('scheme'))
 
@@ -553,7 +553,7 @@ class AuthorityRecord(Record):
     @staticmethod
     def append_class_uri(class_obj):
         if class_obj.get('scheme') in CONFIG['classification_schemes']:
-            uri_tpl = CONFIG['classification_schemes'][class_obj['scheme']]['uri']
+            uri_tpl = CONFIG['classification_schemes'][class_obj['scheme']]['concept']
             if callable(uri_tpl):
                 class_obj['uri'] = uri_tpl(class_obj)
             else:
