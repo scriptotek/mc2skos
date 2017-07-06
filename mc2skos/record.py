@@ -4,23 +4,19 @@ import re
 from datetime import datetime
 import logging
 from iso639 import languages
+from rdflib.namespace import SKOS
 
 from .constants import Constants
 from .element import Element
 
 logger = logging.getLogger(__name__)
 
-
 CONFIG = {
     'classification_schemes': {
-        'ddc': {
-            'concept': 'http://dewey.info/{collection}/{object}/e{edition}/'
-        },
-        'bkl': {
-            'concept': 'http://uri.gbv.de/terminology/bk/{object}'
-        },
+        'ddc': 'http://dewey.info/{collection}/{object}/e{edition}/',
+        'bkl': 'http://uri.gbv.de/terminology/bk/{object}',
         'utklklass': {
-            'concept': lambda x: x['object'].replace('L ', 'http://data.ub.uio.no/lklass/L'),
+            'concept': 'http://data.ub.uio.no/lklass/L{object[2:]}',
             'scheme': 'http://data.ub.uio.no/lklass/',
         },
     },
@@ -29,28 +25,25 @@ CONFIG = {
             'concept': 'http://id.loc.gov/authorities/subjects/{control_number}',
             'scheme': 'http://id.loc.gov/authorities/subjects',
         },
-        'd': {
-            'concept': 'http://lod.nal.usda.gov/nalt/{control_number}',
-            'scheme': 'http://lod.nal.usda.gov/nalt/',
-        },
+        'd': 'http://lod.nal.usda.gov/nalt/{control_number}',
         'usvd': {
-            'concept': lambda x: x['control_number'].replace('USVD', 'http://data.ub.uio.no/usvd/c'),
+            'concept': 'http://data.ub.uio.no/usvd/c{control_number[4:]}',
             'scheme': 'http://data.ub.uio.no/usvd/',
         },
         'humord': {
-            'concept': lambda x: x['control_number'].replace('HUME', 'http://data.ub.uio.no/humord/c'),
+            'concept': 'http://data.ub.uio.no/humord/c{control_number[4:]}',
             'scheme': 'http://data.ub.uio.no/humord/',
         },
         'noubojur': {
-            'concept': lambda x: 'http://data.ub.uio.no/lskjema/c%06d' % int(x['control_number'][4:]),
+            'concept': 'http://data.ub.uio.no/lskjema/c{control_number[4:]:06d}',
             'scheme': 'http://data.ub.uio.no/lskjema/',
         },
         'noubomn': {
-            'concept': lambda x: x['control_number'].replace('REAL', 'http://data.ub.uio.no/realfagstermer/c'),
+            'concept': 'http://data.ub.uio.no/realfagstermer/c{control_number[4:]}',
             'scheme': 'http://data.ub.uio.no/realfagstermer/',
         },
         'noubomr': {
-            'concept': lambda x: x['control_number'].replace('SMR', 'http://data.ub.uio.no/mrtermer/c'),
+            'concept': 'http://data.ub.uio.no/mrtermer/c{control_number[3:]}',
             'scheme': 'http://data.ub.uio.no/mrtermer/',
         },
     },
@@ -58,6 +51,98 @@ CONFIG = {
 
 
 class InvalidRecordError(RuntimeError):
+    pass
+
+
+class ConceptScheme(object):
+
+    def __init__(self, code=None, concept_type=None, edition=None, options=None):
+        self.code = code
+        self.edition = edition
+        self.edition_numeric = re.sub('[^0-9]', '', edition or '')
+        self.config = {}
+
+        if concept_type is not None:
+            config = CONFIG[{
+                AuthorityRecord: 'subject_schemes',
+                ClassificationRecord: 'classification_schemes',
+            }.get(concept_type)]
+            if code in config:
+                self.config = config[code]
+
+        options = options or {}
+        if options.get('base_uri'):
+            self.config = {
+                'concept': options.get('base_uri'),
+                'scheme': options.get('scheme_uri'),
+            }
+
+    @staticmethod
+    def from_record(record, options):
+
+        if isinstance(record, AuthorityRecord):
+            field_008 = record.record.text('mx:controlfield[@tag="008"]')
+            if field_008:
+                scheme_code = field_008[11]
+                if scheme_code == 'z':
+                    scheme_code = record.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="f"]')
+
+                if scheme_code:
+                    return ConceptScheme(scheme_code, AuthorityRecord, options=options)
+
+        if isinstance(record, ClassificationRecord):
+            scheme_code = record.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="a"]')
+            scheme_edition = record.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="c"]')
+            if scheme_code:
+                return ConceptScheme(scheme_code, ClassificationRecord, edition=scheme_edition, options=options)
+
+        return UnknownConceptScheme(options=options)
+
+    def get_uri(self, uri_type='concept', **kwargs):
+        kwargs['edition'] = self.edition_numeric
+        if uri_type == 'scheme':
+            kwargs['control_number'] = ''
+
+        if 'control_number' in kwargs:
+            # Remove organization prefix in parenthesis:
+            kwargs['control_number'] = re.sub('^\(.+\)(.+)$', '\\1', kwargs['control_number'])
+
+        if self.config is None:
+            return
+
+        if isinstance(self.config, basestring):
+            uri_template = self.config
+        else:
+            if uri_type not in self.config:
+                return None
+            uri_template = self.config[uri_type]
+
+        if not uri_template:
+            return None
+
+        # Process field[start:end]
+
+        def process_formatter(matches):
+            start = int(matches.group('start')) if matches.group('start') else None
+            end = int(matches.group('end')) if matches.group('end') else None
+            value = kwargs[matches.group('param')][start:end]
+            formatter_str = '{0' + matches.group('formatter') + '}' if matches.group('formatter') else '{0}'
+            if 'd' in formatter_str:
+                value = int(value)
+            elif 'f' in formatter_str:
+                value = float(value)
+
+            return formatter_str.format(value)
+
+        uri_template = re.sub(
+            '\{(?P<param>[a-z_]+)(?:\[(?P<start>\d+)?:(?P<end>\d+)?\])?(?P<formatter>[:!][^\}]+)?\}',
+            process_formatter,
+            uri_template
+        )
+        return uri_template.format(**kwargs)
+
+
+class UnknownConceptScheme(ConceptScheme):
     pass
 
 
@@ -87,28 +172,17 @@ class Record(object):
         self.historyNote = []
         self.changeNote = []
         self.example = []
-        self.classificationNumbers = []
+        self.mappings = []
         self.webDeweyExtras = {}
         self.deprecated = False
         self.is_top_concept = False
         self.notation = None
-        self.scheme = None
+        self.scheme = ConceptScheme.from_record(self, options)
 
         self.uri = None  # Concept URI
         self.scheme_uris = []  # Concept scheme URI
 
-        self.uri_template = options.get('base_uri')
-        self.scheme_uri_template = options.get('scheme_uri')
-
         self.parse(options or {})
-
-    def get_uri(self, **kwargs):
-        if self.uri_template is None:
-            return None
-        if callable(self.uri_template):
-            return self.uri_template(kwargs)
-        else:
-            return self.uri_template.format(**kwargs)
 
     def get_terms(self, base='1'):
         # X00 - Personal Name
@@ -167,37 +241,26 @@ class ClassificationRecord(Record):
 
     def __init__(self, record, options=None):
         options = options or {}
-        self.scheme_edition_numeric = None
-        self.table_scheme_uri_template = options.get('table_scheme_uri')
 
         super(ClassificationRecord, self).__init__(record, options)
 
-    def get_uri(self, **kwargs):
-        kwargs['edition'] = self.scheme_edition_numeric
-        return super(ClassificationRecord, self).get_uri(**kwargs)
-
     def generate_uris(self):
-        # If URI templates have been provided as options, these takes precedence:
-        if self.scheme_uri_template is not None:
-            self.scheme_uris.append(self.scheme_uri_template.format(edition=self.scheme_edition_numeric))
-
-        if self.record_type == Constants.TABLE_RECORD and self.table_scheme_uri_template is not None:
-            self.scheme_uris.append(self.table_scheme_uri_template.format(edition=self.scheme_edition_numeric, table=self.table))
-
         # Generate URIs from scheme
-        if self.scheme in CONFIG['classification_schemes']:
-            if self.uri_template is None:
-                cfg = CONFIG['classification_schemes'][self.scheme]
-                self.uri_template = cfg['concept']
-            if len(self.scheme_uris) == 0:
-                if self.record_type == Constants.TABLE_RECORD:
-                    table = self.table if self.table is not None else ''
-                    self.scheme_uris.append(self.get_uri(collection='table', object=table))
-                edition = 'edition' if self.scheme_edition is not None else ''
-                self.scheme_uris.append(self.get_uri(collection='scheme', object=edition))
+        self.scheme_uris = []
+
+        if self.record_type == Constants.TABLE_RECORD:
+            table = self.table if self.table is not None else ''
+            uri = self.scheme.get_uri(uri_type='scheme', collection='table', object=table)
+            if uri:
+                self.scheme_uris.append(uri)
+
+        obj = 'edition' if self.scheme.edition is not None else ''
+        uri = self.scheme.get_uri(uri_type='scheme', collection='scheme', object=obj)
+        if uri:
+            self.scheme_uris.append(uri)
 
         # Record URI
-        self.uri = self.get_uri(collection='class', object=self.notation)
+        self.uri = self.scheme.get_uri(collection='class', object=self.notation)
 
     def parse(self, options):
 
@@ -206,11 +269,6 @@ class ClassificationRecord(Record):
         # 008
         value = self.record.text('mx:controlfield[@tag="008"]')
         self.created, self.record_type, self.number_type, self.display, self.synthesized, self.deprecated = self.parse_008(value)
-
-        # 084: Classification Scheme and Edition
-        self.scheme = self.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="a"]')
-        self.scheme_edition = self.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="c"]')
-        self.scheme_edition_numeric = re.sub('[^0-9]', '', self.scheme_edition or '')
 
         # 153: Classification number
         element = self.record.first('mx:datafield[@tag="153"]')
@@ -228,7 +286,7 @@ class ClassificationRecord(Record):
         # Now we have enough information to generate URIs
         self.generate_uris()
         if parent_notation is not None:
-            parent_uri = self.get_uri(collection='class', object=parent_notation)
+            parent_uri = self.scheme.get_uri(collection='class', object=parent_notation)
             if parent_uri is not None:
                 self.broader.append(parent_uri)
 
@@ -526,20 +584,15 @@ class AuthorityRecord(Record):
         super(AuthorityRecord, self).__init__(record, options)
 
     def generate_uris(self):
-        # If URI templates have been provided as options, these takes precedence:
-        if self.scheme_uri_template is not None:
-            self.scheme_uris.append(self.scheme_uri_template)
-
         # Generate URIs from scheme
-        if self.scheme in CONFIG['subject_schemes']:
-            cfg = CONFIG['subject_schemes'][self.scheme]
-            if self.uri_template is None and cfg.get('concept') is not None:
-                self.uri_template = cfg['concept']
-            if len(self.scheme_uris) == 0 and cfg.get('scheme') is not None:
-                self.scheme_uris.append(cfg.get('scheme'))
+        self.scheme_uris = []
+
+        scheme_uri = self.scheme.get_uri(uri_type='scheme')
+        if scheme_uri:
+            self.scheme_uris.append(scheme_uri)
 
         # Record URI
-        self.uri = self.get_uri(control_number=self.control_number)
+        self.uri = self.scheme.get_uri(control_number=self.control_number)
 
     @staticmethod
     def get_class_number(el):
@@ -552,18 +605,32 @@ class AuthorityRecord(Record):
 
     @staticmethod
     def append_class_uri(class_obj):
-        if class_obj.get('scheme') in CONFIG['classification_schemes']:
-            uri_tpl = CONFIG['classification_schemes'][class_obj['scheme']]['concept']
-            if callable(uri_tpl):
-                class_obj['uri'] = uri_tpl(class_obj)
-            else:
-                class_obj['uri'] = uri_tpl.format(**class_obj)
+        scheme = ConceptScheme(class_obj.get('scheme'))
+        class_obj['uri'] = scheme.get_uri(**class_obj)
+
+        # if class_obj.get('scheme') in CONFIG['classification_schemes']:
+        #     uri_tpl = CONFIG['classification_schemes'][class_obj['scheme']]['concept']
+        #     if callable(uri_tpl):
+        #         class_obj['uri'] = uri_tpl(class_obj)
+        #     else:
+        #         class_obj['uri'] = uri_tpl.format(**class_obj)
 
         return class_obj
+
+    def append_mapping(self, scheme, relation, **kwargs):
+        uri = scheme.get_uri(**kwargs)
+        if uri:
+            self.mappings.append({
+                'uri': uri,
+                'relation': relation,
+            })
 
     def parse(self, options):
 
         super(AuthorityRecord, self).parse(options)
+
+        # Now we have enough information to generate URIs
+        self.generate_uris()
 
         leader = self.record.text('mx:leader')
         if leader[5] in ['d', 'o', 's', 'x']:
@@ -574,39 +641,32 @@ class AuthorityRecord(Record):
         if field_008:
             self.created = datetime.strptime(field_008[:6], '%y%m%d')
 
-        # Scheme / vocabulary code
-        self.scheme = field_008[11]
-        if self.scheme == 'z':
-            self.scheme = self.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="f"]')
-
-        # Now we have enough information to generate URIs
-        self.generate_uris()
-
         # 065: Other Classification Number
         el = self.record.first('mx:datafield[@tag="065"]')
         if el is not None:
-            self.classificationNumbers.append(self.append_class_uri({
-                'object': self.get_class_number(el),
-                'scheme': el.text('mx:subfield[@code="2"]'),
-            }))
+            self.append_mapping(
+                ConceptScheme(el.text('mx:subfield[@code="2"]'), ClassificationRecord),
+                SKOS.exactMatch,
+                object=self.get_class_number(el)
+            )
 
         # 080: Universal Decimal Classification Number
         el = self.record.first('mx:datafield[@tag="080"]')
         if el is not None:
-            self.classificationNumbers.append(self.append_class_uri({
-                'object': self.get_class_number(el),
-                'scheme': 'udc',
-                'edition': el.text('mx:subfield[@code="2"]'),
-            }))
+            self.append_mapping(
+                ConceptScheme('udc', ClassificationRecord),
+                SKOS.exactMatch,
+                object=self.get_class_number(el)
+            )
 
         # 083: Dewey Decimal Classification Number
         el = self.record.first('mx:datafield[@tag="083"]')
         if el is not None:
-            self.classificationNumbers.append(self.append_class_uri({
-                'object': self.get_class_number(el),
-                'scheme': 'ddc',
-                'edition': el.text('mx:subfield[@code="2"]'),
-            }))
+            self.append_mapping(
+                ConceptScheme('ddc', ClassificationRecord, edition=el.text('mx:subfield[@code="2"]')),
+                SKOS.exactMatch,
+                object=self.get_class_number(el)
+            )
 
         # 1XX Heading
         for heading in self.get_terms('1'):
@@ -628,7 +688,7 @@ class AuthorityRecord(Record):
                 if local_id.startswith('http'):
                     uri = local_id
                 else:
-                    uri = self.get_uri(control_number=local_id)
+                    uri = self.scheme.get_uri(control_number=local_id)
                 if local_id:
                     if heading['node'].text('mx:subfield[@code="w"]') == 'g':
                         self.broader.append(uri)
