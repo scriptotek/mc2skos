@@ -142,8 +142,9 @@ def add_record_to_graph(graph, record, options):
         graph.add((b1, RDF.rest, RDF.nil))
 
     # Add webDewey extras
-    for key, value in record.webDeweyExtras.items():
-        graph.add((record_uri, WD[key], Literal(value, lang=record.lang)))
+    for key, values in record.webDeweyExtras.items():
+        for value in values:
+            graph.add((record_uri, WD[key], Literal(value, lang=record.lang)))
 
 
 def process_record(graph, rec, **kwargs):
