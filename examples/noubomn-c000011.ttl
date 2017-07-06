@@ -8,6 +8,7 @@
 
 <http://data.ub.uio.no/realfagstermer/c000011> a skos:Concept ;
     dcterms:created "2014-08-25"^^xsd:date ;
+    dcterms:identifier "REAL000011" ;
     dcterms:modified "2016-06-23"^^xsd:date ;
     owl:deprecated true ;
     skos:inScheme <http://data.ub.uio.no/realfagstermer/> ;

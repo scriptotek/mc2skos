@@ -1,4 +1,6 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ns1: <http://data.ub.uio.no/webdewey-terms#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -6,7 +8,11 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://dewey.info/class/001/e23/> a skos:Concept ;
+    ns1:classHere "Idéer fra flere områder"@nb,
+        "Tverrfaglig tilnærming til kunnskap"@nb ;
+    ns1:including "Tverrfaglige verker om spesialister"@nb ;
     dcterms:created "2009-12-03"^^xsd:date ;
+    dcterms:identifier "ocd00116591" ;
     dcterms:modified "2015-09-29"^^xsd:date ;
     skos:broader <http://dewey.info/class/00/e23/> ;
     skos:inScheme <http://dewey.info/scheme/edition/e23/> ;

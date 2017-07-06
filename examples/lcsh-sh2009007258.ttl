@@ -8,6 +8,7 @@
 
 <http://id.loc.gov/authorities/subjects/sh2009007258> a skos:Concept ;
     dcterms:created "2009-09-03"^^xsd:date ;
+    dcterms:identifier "sh2009007258" ;
     dcterms:modified "2009-09-03"^^xsd:date ;
     skos:altLabel "Valley Forge State Park (Pa.)"@en ;
     skos:inScheme <http://id.loc.gov/authorities/subjects> ;

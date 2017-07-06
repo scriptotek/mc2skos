@@ -8,6 +8,7 @@
 
 <http://lod.nal.usda.gov/nalt/142> a skos:Concept ;
     dcterms:created "2016-12-08"^^xsd:date ;
+    dcterms:identifier "142" ;
     dcterms:modified "2016-12-08"^^xsd:date ;
     skos:altLabel "2-oxoisocaproate dehydrogenase"@en,
         "2-oxoisovalerate (lipoate) dehydrogenase"@en,

@@ -8,6 +8,7 @@
 
 <http://data.ub.uio.no/humord/c28807> a skos:Concept ;
     dcterms:created "2016-12-09"^^xsd:date ;
+    dcterms:identifier "HUME28807" ;
     dcterms:modified "2016-12-09"^^xsd:date ;
     skos:broader <http://data.ub.uio.no/humord/c08282> ;
     skos:inScheme <http://data.ub.uio.no/humord/> ;
