@@ -260,6 +260,7 @@ MARC21XML                                                    RDF
 ``681`` Subject Example Tracing Note                        ``skos:example``
 ``682`` Deleted Heading Information                         ``skos:changeNote``
 ``688`` Application History Note                            ``skos:historyNote``
+``7XX`` Heading Linking Entries                             ``skos:xxxMatch``  (see below)
 ==========================================================  ===================================================================
 
 Notes:
@@ -268,7 +269,15 @@ Notes:
    classification scheme has been defined in the config.
 
 * SKOS relations are generated from 5XX fields if the fields contain a ``$0``
-  subfield containing either the control number or the URI of the related record.
+  subfield containing either a control number or an URI for the related record.
   The relationship type is ``skos:broader`` if ``$w=g``, ``skos:narrower`` if ``$w=h``,
   and ``skos:related`` otherwise.
-  If  ``$w=r`` and ``$4`` contains an URI, that URI is used as the relationship type.
+  If ``$w=r`` and ``$4`` contains an URI, that URI is used as the relationship type.
+
+*  Mappings/relationships are generated for 7XX headings if the fields contain a ``$0``
+   subfield containing either the control number or the URI of the related record.
+   If ``$0`` contains a control number, an URI pattern for the vocabulary
+   (found in indicator 2 or ``$2``) must be defined in mc2skos.record.CONFIG.
+   If ``$4`` contains an URI, that URI is used as the relationship type.
+   Otherwise, if ``$4`` contains one of the ISO 25964 relations, the corresponding
+   SKOS relation is used. Otherwise, the default value ``skos:closeMatch`` is used.

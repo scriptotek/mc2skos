@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 import logging
 from iso639 import languages
+from rdflib import URIRef
 from rdflib.namespace import SKOS
 
 from .constants import Constants
@@ -696,7 +697,7 @@ class AuthorityRecord(Record):
                     elif sf_w == 'h':
                         relation = SKOS.narrower
                     elif sf_w == 'r' and is_uri(sf_4):
-                        relation = sf_4
+                        relation = URIRef(sf_4)
                     else:
                         relation = SKOS.related
 
@@ -754,3 +755,43 @@ class AuthorityRecord(Record):
         # madsrdf:historyNote
         for entry in self.record.all('mx:datafield[@tag="688"]'):
             self.historyNote.append(entry.stringify())
+
+        # 7XX: Heading Linking Entries
+        for heading in self.get_terms('7'):
+            sf_4 = heading['node'].text('mx:subfield[@code="4"]')
+            sf_0 = heading['node'].text('mx:subfield[@code="0"]')
+
+            if sf_4 is not None and is_uri(sf_4):
+                relation = URIRef(sf_4)
+            else:
+                relation = {
+                    '=EQ': SKOS.exactMatch,
+                    '~EQ': SKOS.closeMatch,
+                    'BM': SKOS.broadMatch,
+                    'NM': SKOS.narrowMatch,
+                    'RM': SKOS.relatedMatch,
+                }.get(sf_4)
+
+            relation = relation or SKOS.closeMatch  # default
+            if is_uri(sf_0):
+                self.relations.append({
+                    'uri': sf_0,
+                    'relation': relation,
+                })
+            else:
+                scheme_code = {
+                    '0': 'a',  # Library of Congress Subject Headings
+                    '1': 'b',  # LC subject headings for children's literature
+                    '2': 'c',  # Medical Subject Headings
+                    '3': 'd',  # National Agricultural Library subject authority file
+                    '4': 'n',  # Source not specified
+                    '5': 'k',  # Canadian Subject Headings
+                    '6': 'v',  # Répertoire de vedettes-matière
+                    '7': heading['node'].text('mx:subfield[@code="2"]'),  # Source specified in subfield $2
+                }.get(heading['node'].get('ind2'))
+
+                self.append_relation(
+                    ConceptScheme(scheme_code, AuthorityRecord),
+                    relation,
+                    control_number=sf_0
+                )

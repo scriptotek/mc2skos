@@ -17,4 +17,19 @@
   <datafield ind1=" " ind2=" " tag="150">
     <subfield code="a">Mugg</subfield>
   </datafield>
+  <datafield ind1=" " ind2="7" tag="750">
+    <subfield code="a">Muggsopp</subfield>
+    <subfield code="0">(No-TrBIB)HUME08221</subfield>
+    <subfield code="2">humord</subfield>
+    <subfield code="4">=EQ</subfield>
+  </datafield>
+  <datafield ind1=" " ind2="7" tag="750">
+    <subfield code="a">muggsopp</subfield>
+    <subfield code="0">http://www.wikidata.org/entity/Q159341</subfield>
+    <subfield code="4">http://www.w3.org/2004/02/skos/core#exactMatch</subfield>
+  </datafield>
+  <datafield ind1=" " ind2="0" tag="750">
+    <subfield code="a">Molds (Fungi)</subfield>
+    <subfield code="0">sh85086566</subfield>
+  </datafield>
 </record>
