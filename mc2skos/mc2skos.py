@@ -153,8 +153,12 @@ def process_record(graph, rec, **kwargs):
         raise InvalidRecordError('Record does not have a leader',
                                  control_number=rec.text('mx:controlfield[@tag="001"]'))
     if leader[6] == 'w':
+        if kwargs.get('skip_classification'):
+            return
         rec = ClassificationRecord(rec, kwargs)
     elif leader[6] == 'z':
+        if kwargs.get('skip_authority'):
+            return
         rec = AuthorityRecord(rec, kwargs)
     else:
         raise InvalidRecordError('Record is not a Marc21 Classification or Authority record',
@@ -225,6 +229,10 @@ def main():
                         help='Include note fields.')
     parser.add_argument('--components', dest='components', action='store_true',
                         help='Include component information from 765.')
+    parser.add_argument('--skip-classification', dest='skip_classification', action='store_true',
+                        help='Skip classification records')
+    parser.add_argument('--skip-authority', dest='skip_authority', action='store_true',
+                        help='Skip authority records')
 
     parser.add_argument('-l', '--list-schemes', dest='list_schemes', action='store_true',
                         help='List default concept schemes.')
@@ -273,7 +281,9 @@ def main():
         'scheme_uri': args.scheme_uri,
         'include_altlabels': args.altlabels,
         'include_notes': args.notes,
-        'include_components': args.components
+        'include_components': args.components,
+        'skip_classification': args.skip_classification,
+        'skip_authority': args.skip_authority,
     }
 
     process_records(get_records(in_file), graph, options)
