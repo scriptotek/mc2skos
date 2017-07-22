@@ -119,16 +119,16 @@ def add_record_to_graph(graph, record, options):
     # Add synthesized number components
     if options.get('include_components') and len(record.components) != 0:
         component = record.components.pop(0)
-        component_uri = URIRef(record.get_uri(collection='class', object=component))
+        component_uri = URIRef(record.scheme.get_uri(collection='class', object=component))
         b1 = BNode()
         graph.add((record_uri, MADS.componentList, b1))
         graph.add((b1, RDF.first, component_uri))
 
         for component in record.components:
-            component_uri = record.get_uri(collection='class', object=component)
+            component_uri = URIRef(record.scheme.get_uri(collection='class', object=component))
             b2 = BNode()
             graph.add((b1, RDF.rest, b2))
-            graph.add((b2, RDF.first, URIRef(component_uri)))
+            graph.add((b2, RDF.first, component_uri))
             b1 = b2
 
         graph.add((b1, RDF.rest, RDF.nil))

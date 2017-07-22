@@ -4,7 +4,7 @@ import pytest
 from lxml import etree
 from mc2skos.mc2skos import process_record, ClassificationRecord, Constants, InvalidRecordError
 from rdflib.namespace import RDF, SKOS, Namespace
-from rdflib import URIRef, Literal, Graph
+from rdflib import URIRef, Literal, Graph, BNode
 
 
 class TestClassificationRecord(unittest.TestCase):
@@ -379,6 +379,48 @@ class TestProcessRecord(unittest.TestCase):
 
         assert graph.preferredLabel(uri)[0][0] == SKOS.prefLabel
         assert graph.preferredLabel(uri)[0][1].language == 'nb'
+
+    def testSynthesizedNumberComponents(self):
+        rec = '''
+        <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
+          <mx:leader>00000nw  a2200000n  4500</mx:leader>
+          <mx:controlfield tag="001">ocd00132963</mx:controlfield>
+          <mx:controlfield tag="008">100204aaaaaabb</mx:controlfield>
+          <mx:datafield tag="084" ind2=" " ind1="0">
+            <mx:subfield code="a">ddc</mx:subfield>
+            <mx:subfield code="c">23no</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="153" ind2=" " ind1=" ">
+            <mx:subfield code="a">306.6804</mx:subfield>
+            <mx:subfield code="e">306.63</mx:subfield>
+            <mx:subfield code="f">306.69</mx:subfield>
+            <mx:subfield code="9">ess=ien</mx:subfield>
+          </mx:datafield>
+          <mx:datafield tag="765" ind2=" " ind1="0">
+            <mx:subfield code="b">306.6</mx:subfield>
+            <mx:subfield code="a">306.63</mx:subfield>
+            <mx:subfield code="c">306.69</mx:subfield>
+            <mx:subfield code="r">2</mx:subfield>
+            <mx:subfield code="s">804</mx:subfield>
+            <mx:subfield code="u">306.6804</mx:subfield>
+            <mx:subfield code="9">ess=hn</mx:subfield>
+          </mx:datafield>
+        </mx:record>
+        '''
+
+        graph = Graph()
+        process_record(graph, rec, include_components=True)
+
+        components = [n[0] for n in graph.query('''
+            PREFIX mads: <http://www.loc.gov/mads/rdf/v1#>
+            SELECT ?comp WHERE {
+              <http://dewey.info/class/306.6804/e23/> mads:componentList/rdf:rest*/rdf:first ?comp
+            }
+        ''')]
+
+        assert len(components) == 2
+        assert components == [URIRef(u'http://dewey.info/class/306.6/e23/'),
+                              URIRef(u'http://dewey.info/class/280.4/e23/')]
 
 if __name__ == '__main__':
     unittest.main()
