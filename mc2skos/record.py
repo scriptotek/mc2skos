@@ -63,7 +63,10 @@ def is_str(obj):
 
 
 class InvalidRecordError(RuntimeError):
-    pass
+
+    def __init__(self, msg, control_number=None):
+        super(InvalidRecordError, self).__init__(msg)
+        self.control_number = control_number
 
 
 class ConceptScheme(object):
@@ -286,7 +289,7 @@ class ClassificationRecord(Record):
         # 153: Classification number
         element = self.record.first('mx:datafield[@tag="153"]')
         if element is None:
-            raise InvalidRecordError('Record does not have a 153 field')
+            raise InvalidRecordError('153 field is missing', control_number=self.control_number)
         self.table, self.notation, self.is_top_concept, parent_notation, self.prefLabel = self.parse_153(element)
 
         if self.record_type is None:

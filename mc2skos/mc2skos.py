@@ -150,13 +150,15 @@ def process_record(graph, rec, **kwargs):
     rec = Element(rec)
     leader = rec.text('mx:leader')
     if leader is None:
-        raise InvalidRecordError('Record does not have a leader')
+        raise InvalidRecordError('Record does not have a leader',
+                                 control_number=rec.text('mx:controlfield[@tag="001"]'))
     if leader[6] == 'w':
         rec = ClassificationRecord(rec, kwargs)
     elif leader[6] == 'z':
         rec = AuthorityRecord(rec, kwargs)
     else:
-        raise InvalidRecordError('Record is not a Marc21 Classification or Authority record')
+        raise InvalidRecordError('Record is not a Marc21 Classification or Authority record',
+                                 control_number=rec.text('mx:controlfield[@tag="001"]'))
 
     if rec.uri is None:
         raise UnknownSchemeError()
@@ -172,11 +174,11 @@ def process_records(records, graph, options):
         try:
             process_record(graph, record, **options)
         except InvalidRecordError as e:
-            logger.warning('Ignoring record %d: %s', n, e)
-            pass
+            record_id = e.control_number or '#%d' % n
+            logger.warning('Ignoring record %s: %s', record_id, e)
         except UnknownSchemeError as e:
-            logger.warning('Ignoring record %d: %s', n, e)
-            pass
+            record_id = e.control_number or '#%d' % n
+            logger.warning('Ignoring record %s: %s', record_id, e)
 
     return graph
 
