@@ -6,7 +6,7 @@ import sys
 import glob
 import re
 from lxml import etree
-from mc2skos.mc2skos import process_record
+from mc2skos.mc2skos import process_record, process_records
 from rdflib.namespace import RDF, SKOS, OWL, DCTERMS, Namespace
 from rdflib import URIRef, Literal, Graph
 
@@ -24,9 +24,7 @@ class MarcFile:
 
     def processed_records(self, **options):
         graph = Graph()
-        for record in self.records():
-            process_record(graph, record, **options)
-        return graph
+        return process_records(self.records(), graph, options)
 
 
 def examples(pattern):

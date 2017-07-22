@@ -39,6 +39,12 @@ WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
 
 
+class UnknownSchemeError(RuntimeError):
+
+    def __init__(self):
+        super(UnknownSchemeError, self).__init__('Cannot generate URIs for unknown classification scheme or subject vocabulary.')
+
+
 def add_record_to_graph(graph, record, options):
     # Add record to graph
 
@@ -141,7 +147,6 @@ def add_record_to_graph(graph, record, options):
 
 def process_record(graph, rec, **kwargs):
     """Convert a single MARC21 classification or authority record to RDF."""
-
     rec = Element(rec)
     leader = rec.text('mx:leader')
     if leader is None:
@@ -154,11 +159,26 @@ def process_record(graph, rec, **kwargs):
         raise InvalidRecordError('Record is not a Marc21 Classification or Authority record')
 
     if rec.uri is None:
-        logger.debug('Ignoring record because: No known concept scheme detected, and no manual URI template given')
-        return
+        raise UnknownSchemeError()
 
     if rec.is_public():
         add_record_to_graph(graph, rec, kwargs)
+
+
+def process_records(records, graph, options):
+    n = 0
+    for record in records:
+        n += 1
+        try:
+            process_record(graph, record, **options)
+        except InvalidRecordError as e:
+            logger.warning('Ignoring record %d: %s', n, e)
+            pass
+        except UnknownSchemeError as e:
+            logger.warning('Ignoring record %d: %s', n, e)
+            pass
+
+    return graph
 
 
 def get_records(in_file):
@@ -254,14 +274,7 @@ def main():
         'include_components': args.components
     }
 
-    n = 0
-    for record in get_records(in_file):
-        n += 1
-        try:
-            process_record(graph, record, **options)
-        except InvalidRecordError as e:
-            logger.debug('Ignoring record %d: %s', n, e)
-            pass
+    process_records(get_records(in_file), graph, options)
 
     if not graph:
         logger.warn('RDF result is empty!')

@@ -422,5 +422,6 @@ class TestProcessRecord(unittest.TestCase):
         assert components == [URIRef(u'http://dewey.info/class/306.6/e23/'),
                               URIRef(u'http://dewey.info/class/280.4/e23/')]
 
+
 if __name__ == '__main__':
     unittest.main()
