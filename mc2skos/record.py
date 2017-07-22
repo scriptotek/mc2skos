@@ -237,7 +237,10 @@ class Record(object):
         # 005
         value = self.record.text('mx:controlfield[@tag="005"]')
         if value is not None:
-            self.modified = datetime.strptime(value, '%Y%m%d%H%M%S.%f')
+            try:
+                self.modified = datetime.strptime(value, '%Y%m%d%H%M%S.%f')
+            except ValueError:
+                logger.warning('Record %s: Ignoring invalid date in 005 field: %s', self.control_number, value)
 
         # 040: Record Source
         lang = self.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="b"]') or 'eng'
