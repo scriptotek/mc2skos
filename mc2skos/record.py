@@ -678,6 +678,7 @@ class AuthorityRecord(Record):
             self.append_relation(
                 ConceptScheme('ddc', ClassificationRecord, edition=el.text('mx:subfield[@code="2"]')),
                 SKOS.exactMatch,
+                collection='class',
                 object=self.get_class_number(el)
             )
 

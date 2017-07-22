@@ -14,6 +14,11 @@
     <subfield code="b">nob</subfield>
     <subfield code="f">humord</subfield>
   </datafield>
+  <datafield tag="083" ind2="4" ind1="0">
+    <subfield code="a">584.92</subfield>
+    <subfield code="2">23no</subfield>
+    <subfield code="4">=EQ</subfield>
+  </datafield>
   <datafield ind1=" " ind2=" " tag="150">
     <subfield code="a">Undervannsgeologi</subfield>
     <subfield code="9">rank=preferred</subfield>

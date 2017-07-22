@@ -11,6 +11,7 @@
     dcterms:identifier "HUME28807" ;
     dcterms:modified "2016-12-09"^^xsd:date ;
     skos:broader <http://data.ub.uio.no/humord/c08282> ;
+    skos:exactMatch <http://dewey.info/class/584.92/e23/> ;
     skos:inScheme <http://data.ub.uio.no/humord/> ;
     skos:note "Lukket bemerkning: ubo16"@nb ;
     skos:prefLabel "Undervannsgeologi"@nb .
