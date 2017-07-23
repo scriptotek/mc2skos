@@ -25,7 +25,7 @@ import logging.handlers
 from . import __version__
 from .constants import Constants
 from .element import Element
-from .record import InvalidRecordError, ClassificationRecord, AuthorityRecord, CONFIG
+from .record import InvalidRecordError, ClassificationRecord, AuthorityRecord, CONFIG, ConceptScheme
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -241,11 +241,13 @@ def main():
 
     if args.list_schemes:
         print('Classification schemes:')
-        for k, v in CONFIG['classification_schemes'].items():
-            print(' - {}: <{}>'.format(k, v['uri']))
-        print('Authority schemes:')
-        for k, v in CONFIG['subject_schemes'].items():
-            print(' - {}: <{}> / <{}>'.format(k, v.get('scheme'), v.get('uri')))
+        for k in CONFIG['classification_schemes'].keys():
+            scheme = ConceptScheme(k, ClassificationRecord)
+            print('- %s' % scheme)
+        print('Authority vocabularies:')
+        for k in CONFIG['subject_schemes'].keys():
+            scheme = ConceptScheme(k, AuthorityRecord)
+            print('- %s' % scheme)
         return
 
     supported_formats = ['turtle', 'jskos', 'ndjson']

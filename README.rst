@@ -80,8 +80,9 @@ authority records. To list known concept schemes:
 
     $ mc2skos -l
 
-The list is currently quite short, but pull requests for adding additional
-schemes are welcome! See ``default_uri_templates`` in ``record.py``.
+To add more vocabularies, you can edit
+`vocabularies.yml <https://github.com/scriptotek/mc2skos/blob/master/mc2skos/vocabularies.yml>`_.
+Pull requests for adding more vocabularies are very welcome!
 
 URIs can be also be generated on the fly from an URI template specified with option
 ``--uri``.  The following template parameters are recognized:

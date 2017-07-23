@@ -1,0 +1,27 @@
+---
+classification_schemes:
+    ddc: http://dewey.info/{collection}/{object}/e{edition}/
+    bkl: http://uri.gbv.de/terminology/bk/{object}
+    utklklass:
+        concept: http://data.ub.uio.no/lklass/L{object[2:]}
+        scheme: http://data.ub.uio.no/lklass/
+subject_schemes:
+    a:
+        concept: http://id.loc.gov/authorities/subjects/{control_number}
+        scheme: http://id.loc.gov/authorities/subjects
+    d: http://lod.nal.usda.gov/nalt/{control_number}
+    usvd:
+        concept: http://data.ub.uio.no/usvd/c{control_number[4:]}
+        scheme: http://data.ub.uio.no/usvd/
+    humord:
+        concept: http://data.ub.uio.no/humord/c{control_number[4:]}
+        scheme: http://data.ub.uio.no/humord/
+    noubojur:
+        concept: http://data.ub.uio.no/lskjema/c{control_number[4:]:06d}
+        scheme: http://data.ub.uio.no/lskjema/
+    noubomn:
+        concept: http://data.ub.uio.no/realfagstermer/c{control_number[4:]}
+        scheme: http://data.ub.uio.no/realfagstermer/
+    noubomr:
+        concept: http://data.ub.uio.no/mrtermer/c{control_number[3:]}
+        scheme: http://data.ub.uio.no/mrtermer/

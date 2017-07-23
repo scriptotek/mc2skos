@@ -6,49 +6,18 @@ import logging
 from iso639 import languages
 from rdflib import URIRef
 from rdflib.namespace import SKOS
+from future.utils import python_2_unicode_compatible
+import yaml
+import pkg_resources
 
 from .constants import Constants
 from .element import Element
 
 logger = logging.getLogger(__name__)
 
-CONFIG = {
-    'classification_schemes': {
-        'ddc': 'http://dewey.info/{collection}/{object}/e{edition}/',
-        'bkl': 'http://uri.gbv.de/terminology/bk/{object}',
-        'utklklass': {
-            'concept': 'http://data.ub.uio.no/lklass/L{object[2:]}',
-            'scheme': 'http://data.ub.uio.no/lklass/',
-        },
-    },
-    'subject_schemes': {
-        'a': {
-            'concept': 'http://id.loc.gov/authorities/subjects/{control_number}',
-            'scheme': 'http://id.loc.gov/authorities/subjects',
-        },
-        'd': 'http://lod.nal.usda.gov/nalt/{control_number}',
-        'usvd': {
-            'concept': 'http://data.ub.uio.no/usvd/c{control_number[4:]}',
-            'scheme': 'http://data.ub.uio.no/usvd/',
-        },
-        'humord': {
-            'concept': 'http://data.ub.uio.no/humord/c{control_number[4:]}',
-            'scheme': 'http://data.ub.uio.no/humord/',
-        },
-        'noubojur': {
-            'concept': 'http://data.ub.uio.no/lskjema/c{control_number[4:]:06d}',
-            'scheme': 'http://data.ub.uio.no/lskjema/',
-        },
-        'noubomn': {
-            'concept': 'http://data.ub.uio.no/realfagstermer/c{control_number[4:]}',
-            'scheme': 'http://data.ub.uio.no/realfagstermer/',
-        },
-        'noubomr': {
-            'concept': 'http://data.ub.uio.no/mrtermer/c{control_number[3:]}',
-            'scheme': 'http://data.ub.uio.no/mrtermer/',
-        },
-    },
-}
+
+with pkg_resources.resource_stream(__name__, 'vocabularies.yml') as f:
+    CONFIG = yaml.load(f)
 
 
 def is_uri(value):
@@ -69,6 +38,7 @@ class InvalidRecordError(RuntimeError):
         self.control_number = control_number
 
 
+@python_2_unicode_compatible
 class ConceptScheme(object):
 
     def __init__(self, code=None, concept_type=None, edition=None, options=None):
@@ -77,13 +47,20 @@ class ConceptScheme(object):
         self.edition_numeric = re.sub('[^0-9]', '', edition or '')
         self.config = {}
 
-        if concept_type is not None:
-            config = CONFIG[{
-                AuthorityRecord: 'subject_schemes',
-                ClassificationRecord: 'classification_schemes',
-            }.get(concept_type)]
-            if code in config:
-                self.config = config[code]
+        cfg = CONFIG[{
+            AuthorityRecord: 'subject_schemes',
+            ClassificationRecord: 'classification_schemes',
+        }.get(concept_type)]
+
+        if cfg is not None and code in cfg:
+            # The subject scheme / authority vocabulary is known
+            if is_str(cfg[code]):
+                self.config = {
+                    'concept': cfg[code],
+                    'scheme': cfg[code],
+                }
+            else:
+                self.config = cfg[code]
 
         options = options or {}
         if options.get('base_uri'):
@@ -91,6 +68,12 @@ class ConceptScheme(object):
                 'concept': options.get('base_uri'),
                 'scheme': options.get('scheme_uri'),
             }
+
+        if self.config.get('concept') is None:
+            logger.warning('Cannot generate URIs for this concept scheme. An URI template must be defined either in config or as command line argument.')
+
+    def __repr__(self):
+        return u'%s: %s' % (self.code, repr(self.config))
 
     @staticmethod
     def from_record(record, options):
@@ -122,15 +105,9 @@ class ConceptScheme(object):
             # Remove organization prefix in parenthesis:
             kwargs['control_number'] = re.sub('^\(.+\)(.+)$', '\\1', kwargs['control_number'])
 
-        if self.config is None:
-            return
-
-        if is_str(self.config):
-            uri_template = self.config
-        else:
-            if uri_type not in self.config:
-                return None
-            uri_template = self.config[uri_type]
+        if uri_type not in self.config:
+            return None
+        uri_template = self.config[uri_type]
 
         if not uri_template:
             return None
