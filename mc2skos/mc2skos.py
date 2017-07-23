@@ -25,7 +25,7 @@ import logging.handlers
 from . import __version__
 from .constants import Constants
 from .element import Element
-from .record import InvalidRecordError, ClassificationRecord, AuthorityRecord, CONFIG, ConceptScheme
+from .record import InvalidRecordError, UnknownSchemeError, ClassificationRecord, AuthorityRecord, CONFIG, ConceptScheme
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -37,12 +37,6 @@ logger.addHandler(console_handler)
 
 WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
-
-
-class UnknownSchemeError(RuntimeError):
-
-    def __init__(self):
-        super(UnknownSchemeError, self).__init__('Cannot generate URIs for unknown classification scheme or subject vocabulary.')
 
 
 def add_record_to_graph(graph, record, options):
@@ -147,25 +141,22 @@ def add_record_to_graph(graph, record, options):
 
 def process_record(graph, rec, **kwargs):
     """Convert a single MARC21 classification or authority record to RDF."""
-    rec = Element(rec)
-    leader = rec.text('mx:leader')
+    el = Element(rec)
+    leader = el.text('mx:leader')
     if leader is None:
         raise InvalidRecordError('Record does not have a leader',
-                                 control_number=rec.text('mx:controlfield[@tag="001"]'))
+                                 control_number=el.text('mx:controlfield[@tag="001"]'))
     if leader[6] == 'w':
         if kwargs.get('skip_classification'):
             return
-        rec = ClassificationRecord(rec, kwargs)
+        rec = ClassificationRecord(el, kwargs)
     elif leader[6] == 'z':
         if kwargs.get('skip_authority'):
             return
-        rec = AuthorityRecord(rec, kwargs)
+        rec = AuthorityRecord(el, kwargs)
     else:
         raise InvalidRecordError('Record is not a Marc21 Classification or Authority record',
-                                 control_number=rec.text('mx:controlfield[@tag="001"]'))
-
-    if rec.uri is None:
-        raise UnknownSchemeError()
+                                 control_number=el.text('mx:controlfield[@tag="001"]'))
 
     if rec.is_public():
         add_record_to_graph(graph, rec, kwargs)
@@ -178,9 +169,6 @@ def process_records(records, graph, options):
         try:
             process_record(graph, record, **options)
         except InvalidRecordError as e:
-            record_id = e.control_number or '#%d' % n
-            logger.warning('Ignoring record %s: %s', record_id, e)
-        except UnknownSchemeError as e:
             record_id = e.control_number or '#%d' % n
             logger.warning('Ignoring record %s: %s', record_id, e)
 

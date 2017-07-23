@@ -14,6 +14,11 @@ class TestClassificationRecord(unittest.TestCase):
             <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
               <mx:leader>00000nw  a2200000n  4500</mx:leader>
               <mx:controlfield tag="008">091203aaaaaaaa</mx:controlfield>
+              <mx:datafield tag="084" ind2=" " ind1="0">
+                <mx:subfield code="a">ddc</mx:subfield>
+                <mx:subfield code="c">23no</mx:subfield>
+                <mx:subfield code="e">nob</mx:subfield>
+              </mx:datafield>
               <mx:datafield tag="153" ind2=" " ind1=" ">
                 <mx:subfield code="a">152</mx:subfield>
                 <mx:subfield code="e">152</mx:subfield>
@@ -67,6 +72,11 @@ class TestClassificationRecord(unittest.TestCase):
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
             <mx:leader>00000nw  a2200000n  4500</mx:leader>
             <mx:controlfield tag="008">091203baaaaaah</mx:controlfield>
+            <mx:datafield tag="084" ind2=" " ind1="0">
+                <mx:subfield code="a">ddc</mx:subfield>
+                <mx:subfield code="c">23no</mx:subfield>
+                <mx:subfield code="e">nob</mx:subfield>
+            </mx:datafield>
             <mx:datafield tag="153" ind2=" " ind1=" ">
                 <mx:subfield code="a">820.1</mx:subfield>
                 <mx:subfield code="c">828</mx:subfield>
@@ -90,6 +100,11 @@ class TestClassificationRecord(unittest.TestCase):
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="008">091203abdaaaba</mx:controlfield>
+          <mx:datafield tag="084" ind2=" " ind1="0">
+            <mx:subfield code="a">ddc</mx:subfield>
+            <mx:subfield code="c">23no</mx:subfield>
+            <mx:subfield code="e">nob</mx:subfield>
+          </mx:datafield>
           <mx:datafield tag="153" ind2=" " ind1=" ">
             <mx:subfield code="a">133.01</mx:subfield>
             <mx:subfield code="c">133.09</mx:subfield>
@@ -111,6 +126,11 @@ class TestClassificationRecord(unittest.TestCase):
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="008">091203aaaaaabb</mx:controlfield>
+          <mx:datafield tag="084" ind2=" " ind1="0">
+            <mx:subfield code="a">ddc</mx:subfield>
+            <mx:subfield code="c">23no</mx:subfield>
+            <mx:subfield code="e">nob</mx:subfield>
+          </mx:datafield>
           <mx:datafield tag="153" ind2=" " ind1=" ">
             <mx:subfield code="a">025.1712</mx:subfield>
             <mx:subfield code="e">025.17</mx:subfield>
@@ -130,6 +150,11 @@ class TestClassificationRecord(unittest.TestCase):
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00132963</mx:controlfield>
           <mx:controlfield tag="008">100204aaaaaabb</mx:controlfield>
+          <mx:datafield tag="084" ind2=" " ind1="0">
+            <mx:subfield code="a">ddc</mx:subfield>
+            <mx:subfield code="c">23no</mx:subfield>
+            <mx:subfield code="e">nob</mx:subfield>
+          </mx:datafield>
           <mx:datafield tag="153" ind2=" " ind1=" ">
             <mx:subfield code="a">306.6804</mx:subfield>
             <mx:subfield code="e">306.63</mx:subfield>
@@ -156,6 +181,11 @@ class TestClassificationRecord(unittest.TestCase):
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00123528</mx:controlfield>
           <mx:controlfield tag="008">091203aaaaaabb</mx:controlfield>
+          <mx:datafield tag="084" ind2=" " ind1="0">
+            <mx:subfield code="a">ddc</mx:subfield>
+            <mx:subfield code="c">23no</mx:subfield>
+            <mx:subfield code="e">nob</mx:subfield>
+          </mx:datafield>
           <mx:datafield tag="153" ind2=" " ind1=" ">
             <mx:subfield code="a">299.3113</mx:subfield>
             <mx:subfield code="e">299.31</mx:subfield>
@@ -255,6 +285,11 @@ class TestClassificationRecord(unittest.TestCase):
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
           <mx:controlfield tag="001">ocd00146759</mx:controlfield>
           <mx:controlfield tag="008">100204aaaaaaaa</mx:controlfield>
+          <mx:datafield tag="084" ind2=" " ind1="0">
+            <mx:subfield code="a">ddc</mx:subfield>
+            <mx:subfield code="c">23no</mx:subfield>
+            <mx:subfield code="e">nob</mx:subfield>
+          </mx:datafield>
           <mx:datafield tag="153" ind2=" " ind1=" ">
             <mx:subfield code="a">543.17</mx:subfield>
             <mx:subfield code="e">543.1</mx:subfield>
@@ -298,7 +333,7 @@ class TestProcessRecord(unittest.TestCase):
         self.graph = Graph()
         self.nsmap = {'mx': 'http://www.loc.gov/MARC21/slim'}
 
-    def testRecordWithoutLeader(self):
+    def testEmptyRecord(self):
         g = Graph()
 
         rec = '''
@@ -315,6 +350,11 @@ class TestProcessRecord(unittest.TestCase):
         rec = '''
           <marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
             <marc:leader>00000aa  a2200000n  4500</marc:leader>
+            <marc:datafield tag="084" ind2=" " ind1="0">
+              <marc:subfield code="a">ddc</marc:subfield>
+              <marc:subfield code="c">23no</marc:subfield>
+              <marc:subfield code="e">nob</marc:subfield>
+            </marc:datafield>
           </marc:record>
         '''
 
@@ -327,6 +367,11 @@ class TestProcessRecord(unittest.TestCase):
         rec = '''
           <marc:record xmlns:marc="http://www.loc.gov/MARC21/slim">
             <marc:leader>00000nw  a2200000n  4500</marc:leader>
+            <marc:datafield tag="084" ind2=" " ind1="0">
+              <marc:subfield code="a">ddc</marc:subfield>
+              <marc:subfield code="c">23no</marc:subfield>
+              <marc:subfield code="e">nob</marc:subfield>
+            </marc:datafield>
           </marc:record>
         '''
 
@@ -354,6 +399,7 @@ class TestProcessRecord(unittest.TestCase):
             (uri, RDF.type, SKOS.Concept),
             (uri, SKOS.broader, URIRef(u'http://test/003')),
             (uri, SKOS.prefLabel, Literal('Theory of communication and control', lang='en')),
+            (uri, SKOS.inScheme, URIRef(u'http://test/')),
             (uri, SKOS.notation, Literal('003.5')),
         ])
 
@@ -365,6 +411,11 @@ class TestProcessRecord(unittest.TestCase):
               <marc:subfield code="a">OCLCD</marc:subfield>
               <marc:subfield code="b">nob</marc:subfield>
               <marc:subfield code="c">OCLCD</marc:subfield>
+            </marc:datafield>
+            <marc:datafield tag="084" ind2=" " ind1="0">
+              <marc:subfield code="a">ddc</marc:subfield>
+              <marc:subfield code="c">23no</marc:subfield>
+              <marc:subfield code="e">nob</marc:subfield>
             </marc:datafield>
             <marc:datafield tag="153" ind2=" " ind1=" ">
               <marc:subfield code="a">564.58</marc:subfield>

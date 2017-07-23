@@ -38,39 +38,56 @@ class InvalidRecordError(RuntimeError):
         self.control_number = control_number
 
 
+class UnknownSchemeError(InvalidRecordError):
+
+    def __init__(self, scheme_code=None, **kwargs):
+        if scheme_code is None:
+            msg = 'Could not find classification scheme or subject vocabulary.'
+        else:
+            msg = 'Cannot generate URIs for unknown classification scheme or subject vocabulary "%s".' % scheme_code
+        super(UnknownSchemeError, self).__init__(msg)
+        self.scheme_code = scheme_code
+        self.control_number = kwargs.get('control_number')
+
+
 @python_2_unicode_compatible
 class ConceptScheme(object):
 
-    def __init__(self, code=None, concept_type=None, edition=None, options=None):
-        self.code = code
+    def __init__(self, concept_type, code=None, edition=None, options=None):
+        self.type = concept_type
+        self.code = code  # Can be None if URI template is specified in options
         self.edition = edition
         self.edition_numeric = re.sub('[^0-9]', '', edition or '')
-        self.config = {}
+        self.config = self.get_config(concept_type, code, options)
 
-        cfg = CONFIG[{
-            AuthorityRecord: 'subject_schemes',
-            ClassificationRecord: 'classification_schemes',
-        }.get(concept_type)]
-
-        if cfg is not None and code in cfg:
-            # The subject scheme / authority vocabulary is known
-            if is_str(cfg[code]):
-                self.config = {
-                    'concept': cfg[code],
-                    'scheme': cfg[code],
-                }
-            else:
-                self.config = cfg[code]
-
+    def get_config(self, concept_type, code, options):
         options = options or {}
+
         if options.get('base_uri'):
-            self.config = {
+            return {
                 'concept': options.get('base_uri'),
-                'scheme': options.get('scheme_uri'),
+                'scheme': options.get('scheme_uri') or options.get('base_uri'),
             }
 
-        if self.config.get('concept') is None:
-            logger.warning('Cannot generate URIs for this concept scheme. An URI template must be defined either in config or as command line argument.')
+        try:
+            cfg = CONFIG[{
+                AuthorityRecord: 'subject_schemes',
+                ClassificationRecord: 'classification_schemes',
+            }.get(concept_type)]
+        except:
+            raise ValueError('Unknown concept type "%s"' % concept_type)
+
+        if cfg is None or code not in cfg:
+            raise UnknownSchemeError(scheme_code=code)
+
+        # The subject scheme / authority vocabulary is known
+        if is_str(cfg[code]):
+            return {
+                'concept': cfg[code],
+                'scheme': cfg[code],
+            }
+        else:
+            return cfg[code]
 
     def __repr__(self):
         return u'%s: %s' % (self.code, repr(self.config))
@@ -86,15 +103,15 @@ class ConceptScheme(object):
                     scheme_code = record.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="f"]')
 
                 if scheme_code:
-                    return ConceptScheme(scheme_code, AuthorityRecord, options=options)
+                    return ConceptScheme(AuthorityRecord, scheme_code, options=options)
+            return ConceptScheme(AuthorityRecord, options=options)
 
         if isinstance(record, ClassificationRecord):
             scheme_code = record.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="a"]')
             scheme_edition = record.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="c"]')
             if scheme_code:
-                return ConceptScheme(scheme_code, ClassificationRecord, edition=scheme_edition, options=options)
-
-        return UnknownConceptScheme(options=options)
+                return ConceptScheme(ClassificationRecord, scheme_code, edition=scheme_edition, options=options)
+            return ConceptScheme(ClassificationRecord, options=options)
 
     def get_uri(self, uri_type='concept', **kwargs):
         kwargs['edition'] = self.edition_numeric
@@ -106,11 +123,9 @@ class ConceptScheme(object):
             kwargs['control_number'] = re.sub('^\(.+\)(.+)$', '\\1', kwargs['control_number'])
 
         if uri_type not in self.config:
-            return None
-        uri_template = self.config[uri_type]
+            raise UnknownSchemeError(scheme_code=self.code, **kwargs)
 
-        if not uri_template:
-            return None
+        uri_template = self.config[uri_type]
 
         # Process field[start:end]
 
@@ -131,11 +146,8 @@ class ConceptScheme(object):
             process_formatter,
             uri_template
         )
+
         return uri_template.format(**kwargs)
-
-
-class UnknownConceptScheme(ConceptScheme):
-    pass
 
 
 class Record(object):
@@ -167,7 +179,11 @@ class Record(object):
         self.deprecated = False
         self.is_top_concept = False
         self.notation = None
-        self.scheme = ConceptScheme.from_record(self, options)
+        try:
+            self.scheme = ConceptScheme.from_record(self, options)
+        except UnknownSchemeError as e:
+            e.control_number = self.record.text('mx:controlfield[@tag="001"]')
+            raise
 
         self.uri = None  # Concept URI
         self.scheme_uris = []  # Concept scheme URI
@@ -599,22 +615,15 @@ class AuthorityRecord(Record):
         else:
             return number_start
 
-    @staticmethod
-    def append_class_uri(class_obj):
-        scheme = ConceptScheme(class_obj.get('scheme'))
-        class_obj['uri'] = scheme.get_uri(**class_obj)
+    def append_relation(self, scheme_code, scheme_type, relation, **kwargs):
 
-        # if class_obj.get('scheme') in CONFIG['classification_schemes']:
-        #     uri_tpl = CONFIG['classification_schemes'][class_obj['scheme']]['concept']
-        #     if callable(uri_tpl):
-        #         class_obj['uri'] = uri_tpl(class_obj)
-        #     else:
-        #         class_obj['uri'] = uri_tpl.format(**class_obj)
+        try:
+            scheme = ConceptScheme(scheme_type, scheme_code, edition=kwargs.get('edition'))
+            uri = scheme.get_uri(**kwargs)
+        except UnknownSchemeError as e:
+            logger.warning('Cannot generate URIs for unknown vocabulary "%s"', scheme_code)
+            return
 
-        return class_obj
-
-    def append_relation(self, scheme, relation, **kwargs):
-        uri = scheme.get_uri(**kwargs)
         if uri:
             self.relations.append({
                 'uri': uri,
@@ -641,7 +650,8 @@ class AuthorityRecord(Record):
         el = self.record.first('mx:datafield[@tag="065"]')
         if el is not None:
             self.append_relation(
-                ConceptScheme(el.text('mx:subfield[@code="2"]'), ClassificationRecord),
+                el.text('mx:subfield[@code="2"]'),
+                ClassificationRecord,
                 SKOS.exactMatch,
                 object=self.get_class_number(el)
             )
@@ -650,7 +660,8 @@ class AuthorityRecord(Record):
         el = self.record.first('mx:datafield[@tag="080"]')
         if el is not None:
             self.append_relation(
-                ConceptScheme('udc', ClassificationRecord),
+                'udc',
+                ClassificationRecord,
                 SKOS.exactMatch,
                 object=self.get_class_number(el)
             )
@@ -659,10 +670,12 @@ class AuthorityRecord(Record):
         el = self.record.first('mx:datafield[@tag="083"]')
         if el is not None:
             self.append_relation(
-                ConceptScheme('ddc', ClassificationRecord, edition=el.text('mx:subfield[@code="2"]')),
+                'ddc',
+                ClassificationRecord,
                 SKOS.exactMatch,
                 collection='class',
-                object=self.get_class_number(el)
+                object=self.get_class_number(el),
+                edition=el.text('mx:subfield[@code="2"]')
             )
 
         # 1XX Heading
@@ -699,7 +712,8 @@ class AuthorityRecord(Record):
                         })
                     else:
                         self.append_relation(
-                            self.scheme,
+                            self.scheme.code,
+                            self.scheme.type,
                             relation,
                             control_number=local_id
                         )
@@ -785,7 +799,8 @@ class AuthorityRecord(Record):
                         }.get(heading['node'].get('ind2'))
 
                         self.append_relation(
-                            ConceptScheme(scheme_code, AuthorityRecord),
+                            scheme_code,
+                            AuthorityRecord,
                             relation,
                             control_number=sf.text()
                         )
