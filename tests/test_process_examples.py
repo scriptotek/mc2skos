@@ -69,7 +69,7 @@ def test_ddc_example(marc_file):
         notation = "T" + notation
     expect.add((uri, SKOS.notation, Literal(notation)))
 
-    graph = marc.processed_records()
+    graph = marc.processed_records(include_webdewey=True)
     check_rdf(graph, expect, rdf_file)
 
 
