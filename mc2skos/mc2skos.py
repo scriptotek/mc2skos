@@ -134,9 +134,10 @@ def add_record_to_graph(graph, record, options):
         graph.add((b1, RDF.rest, RDF.nil))
 
     # Add webDewey extras
-    for key, values in record.webDeweyExtras.items():
-        for value in values:
-            graph.add((record_uri, WD[key], Literal(value, lang=record.lang)))
+    if options.get('include_webdewey'):
+        for key, values in record.webDeweyExtras.items():
+            for value in values:
+                graph.add((record_uri, WD[key], Literal(value, lang=record.lang)))
 
 
 def process_record(graph, rec, **kwargs):
@@ -216,6 +217,8 @@ def main():
                         help='Include note fields.')
     parser.add_argument('--components', dest='components', action='store_true',
                         help='Include component information from 765.')
+    parser.add_argument('--webdewey', dest='webdewey', action='store_true',
+                        help='Include non-standard WebDewey notes from 680.')
     parser.add_argument('--skip-classification', dest='skip_classification', action='store_true',
                         help='Skip classification records')
     parser.add_argument('--skip-authority', dest='skip_authority', action='store_true',
@@ -277,6 +280,7 @@ def main():
         'include_altlabels': args.altlabels,
         'include_notes': args.notes,
         'include_components': args.components,
+        'include_webdewey': args.webdewey,
         'skip_classification': args.skip_classification,
         'skip_authority': args.skip_authority,
     }
