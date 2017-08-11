@@ -201,8 +201,7 @@ def main():
 
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='More verbose output')
     parser.add_argument('-o', '--outformat', dest='outformat', metavar='FORMAT', nargs='?',
-                        help='Output format: turtle (default), jskos, or ndjson',
-                        default='turtle')
+                        help='Output format: turtle (default), jskos, or ndjson')
 
     parser.add_argument('--include', dest='include', help='RDF file to loaded into the graph' +
                         '(e.g. to define a concept scheme). Must be the same format as {outformat}.')
@@ -239,7 +238,13 @@ def main():
         return
 
     supported_formats = ['turtle', 'jskos', 'ndjson']
-    if args.outformat not in supported_formats:
+    if not args.outformat and args.outfile:
+        ext = args.outfile.rpartition('.')[-1]
+        if ext in supported_formats:
+            args.outformat = ext
+    if not args.outformat:
+        args.outformat = 'turtle'
+    elif args.outformat not in supported_formats:
         raise ValueError("Format not supported, must be one of '%s'." % "', '".join(supported_formats))
 
     graph = Graph()
