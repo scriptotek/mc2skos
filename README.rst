@@ -202,20 +202,22 @@ c1_notation  c1_label                                           c2_notation  c2_
 ===========  =================================================  ===========  ===================================================
 
 
-Additional processing for data from WebDewey
---------------------------------------------
+Additional conversion rules for WebDewey data
+---------------------------------------------
 
-The script is supposed to work with any MARC21 classification data, but also supports the non-standard ``ess`` codes supplied in WebDewey data to differentiate between different types of notes.
+The script comes with a few extra rules for distinguishing between different types of notes in
+WebDewey records and extract entities from these. The entity extraction rules (marked with * below)
+utilizes a non-standard namespace and are not enabled by default. Specify the `--webdewey` flag to
+use them.
 
 ===================================================  ================================================
 MARC21XML                                            RDF
 ===================================================  ================================================
 ``680`` having ``$9 ess=ndf`` Definition note        ``skos:definition``
-``680`` having ``$9 ess=nvn`` Variant name note      ``wd:variantName`` for each subfield ``$t``
-``680`` having ``$9 ess=nch`` Class here note        ``wd:classHere`` for each subfield ``$t``
-``680`` having ``$9 ess=nin`` Including note         ``wd:including`` for each subfield ``$t``
-``680`` having ``$9 ess=nph`` Former heading         ``wd:formerHeading`` for each subfield ``$t``
-``685`` having ``$9 ess=ndn`` Deprecation note       ``owl:deprecated true``
+``680`` having ``$9 ess=nvn`` Variant name note      ``wd:variantName``* for each subfield ``$t``
+``680`` having ``$9 ess=nch`` Class here note        ``wd:classHere``* for each subfield ``$t``
+``680`` having ``$9 ess=nin`` Including note         ``wd:including``* for each subfield ``$t``
+``680`` having ``$9 ess=nph`` Former heading         ``wd:formerHeading``* for each subfield ``$t``
 ``694`` having ``$9 ess=nml`` ???                    ``SKOS.editorialNote``
 ===================================================  ================================================
 
