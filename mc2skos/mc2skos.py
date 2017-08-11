@@ -8,6 +8,7 @@
 import sys
 import re
 import time
+import warnings
 from datetime import datetime
 from lxml import etree
 from iso639 import languages
@@ -27,13 +28,18 @@ from .constants import Constants
 from .element import Element
 from .record import InvalidRecordError, UnknownSchemeError, ClassificationRecord, AuthorityRecord, CONFIG, ConceptScheme
 
+logging.captureWarnings(True)
+warnings.simplefilter('always', DeprecationWarning)
+
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(message)s')
 
 console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
+
 
 WD = Namespace('http://data.ub.uio.no/webdewey-terms#')
 MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
@@ -90,7 +96,7 @@ def add_record_to_graph(graph, record, options):
             graph.add((record_uri, relation.get('relation'), URIRef(relation['uri'])))
 
     # Add notes
-    if options.get('include_notes'):
+    if not options.get('exclude_notes'):
         for note in record.definition:
             graph.add((record_uri, SKOS.definition, Literal(note, lang=record.lang)))
 
@@ -214,7 +220,9 @@ def main():
     parser.add_argument('--altlabels', '--indexterms', dest='altlabels', action='store_true',
                         help='Include altlabels (from 7XX or 4XX).')
     parser.add_argument('--notes', dest='notes', action='store_true',
-                        help='Include note fields.')
+                        help='Include note fields (DEPRECATED as including notes is now the default).')
+    parser.add_argument('--exclude_notes', dest='exclude_notes', action='store_true',
+                        help='Exclude note fields.')
     parser.add_argument('--components', dest='components', action='store_true',
                         help='Include component information from 765.')
     parser.add_argument('--webdewey', dest='webdewey', action='store_true',
@@ -228,6 +236,11 @@ def main():
                         help='List default concept schemes.')
 
     args = parser.parse_args()
+
+    if args.notes:
+        warnings.warn('--notes is deprecated as including notes is now the default. '
+                      'The inverse option --exclude_notes has been added to exclude notes.',
+                      DeprecationWarning)
 
     if args.list_schemes:
         print('Classification schemes:')
@@ -278,7 +291,7 @@ def main():
         'base_uri': args.base_uri,
         'scheme_uri': args.scheme_uri,
         'include_altlabels': args.altlabels,
-        'include_notes': args.notes,
+        'exclude_notes': args.exclude_notes,
         'include_components': args.components,
         'include_webdewey': args.webdewey,
         'skip_classification': args.skip_classification,

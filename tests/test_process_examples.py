@@ -84,7 +84,7 @@ def test_bk_example(marc_file):
     uri = URIRef(u'http://uri.gbv.de/terminology/bk/' + notation)
     expect.add((uri, RDF.type, SKOS.Concept))
 
-    graph = marc.processed_records(include_altlabels=True, include_notes=True)
+    graph = marc.processed_records(include_altlabels=True)
     check_rdf(graph, expect, rdf_file)
 
 vocabularies = {
@@ -110,7 +110,7 @@ def test_authority_example(marc_file):
     uri = URIRef(uri_base + control_number)
     expect.add((uri, RDF.type, SKOS.Concept))
 
-    graph = marc.processed_records(include_altlabels=True, include_notes=True)
+    graph = marc.processed_records(include_altlabels=True)
     check_rdf(graph, expect, rdf_file)
 
 if __name__ == '__main__':
