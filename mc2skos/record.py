@@ -122,6 +122,10 @@ class ConceptScheme(object):
             # Remove organization prefix in parenthesis:
             kwargs['control_number'] = re.sub('^\(.+\)(.+)$', '\\1', kwargs['control_number'])
 
+        if 'object' in kwargs:
+            # replace spaces by hyphens
+            kwargs['object'] = kwargs['object'].replace(' ', '-')
+
         if uri_type not in self.config:
             raise UnknownSchemeError(scheme_code=self.code, **kwargs)
 

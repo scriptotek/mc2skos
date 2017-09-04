@@ -73,15 +73,16 @@ def test_ddc_example(marc_file):
     check_rdf(graph, expect, rdf_file)
 
 
-@pytest.mark.parametrize('marc_file', examples('bk-(?P<notation>[0-9.]+)'))
-def test_bk_example(marc_file):
+@pytest.mark.parametrize('marc_file', examples('(?P<scheme>bk|asb)-(?P<notation>[0-9.]+)'))
+def test_bk_asb_example(marc_file):
     marc, match = tuple(marc_file)
 
+    scheme = match.group('scheme')
     notation = match.group('notation')
     rdf_file = match.group(1) + '.ttl'
 
     expect = Graph()
-    uri = URIRef(u'http://uri.gbv.de/terminology/bk/' + notation)
+    uri = URIRef(u'http://uri.gbv.de/terminology/{}/{}'.format(scheme, notation))
     expect.add((uri, RDF.type, SKOS.Concept))
 
     graph = marc.processed_records(include_altlabels=True)

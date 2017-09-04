@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim">
+  <marc:record>
+    <marc:leader>*****nw###22*****n##4500</marc:leader>
+    <marc:datafield tag="040" ind1=" " ind2=" ">
+      <marc:subfield code="a">DE-Rt5</marc:subfield>
+      <marc:subfield code="b">ger</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="084" ind1="0" ind2=" ">
+      <marc:subfield code="a">asb</marc:subfield>
+      <marc:subfield code="e">ger</marc:subfield>
+      <marc:subfield code="q">DE-Rt5</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="153" ind1=" " ind2=" ">
+      <marc:subfield code="a">Ubk 2</marc:subfield>
+      <marc:subfield code="e">Ubk</marc:subfield>
+      <marc:subfield code="j">Nachschlagewerke. Bibliographien</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="680" ind1="0" ind2=" ">
+      <marc:subfield code="i">Formel- und Tabellensammlungen</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="683" ind1="0" ind2=" ">
+      <marc:subfield code="i">Spezielle Nachschlagewerke und Bibliographien s. Ubk 5 bis Ubm 3</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="750" ind1=" " ind2="4">
+      <marc:subfield code="a">Astronomie / Atlas</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="750" ind1=" " ind2="4">
+      <marc:subfield code="a">Astronomie / Aufgabensammlung / Allgemeines</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="750" ind1=" " ind2="4">
+      <marc:subfield code="a">Astronomie / Bibliographie / Allgemeines</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="750" ind1=" " ind2="4">
+      <marc:subfield code="a">Astronomie / Formelsammlung / Allgemeines</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="750" ind1=" " ind2="4">
+      <marc:subfield code="a">Astronomie / Nachschlagewerk / Allgemeines</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="750" ind1=" " ind2="4">
+      <marc:subfield code="a">Astronomie / Tabellensammlung / Allgemeines</marc:subfield>
+    </marc:datafield>
+    <marc:datafield tag="750" ind1=" " ind2="4">
+      <marc:subfield code="a">Weltraum / Atlas</marc:subfield>
+    </marc:datafield>
+  </marc:record>
+</marc:collection>
