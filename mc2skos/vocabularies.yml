@@ -5,6 +5,7 @@ classification_schemes:
     utklklass:
         concept: http://data.ub.uio.no/lklass/L{object[2:]}
         scheme: http://data.ub.uio.no/lklass/
+    asb: http://uri.gbv.de/terminology/asb/{object}
 subject_schemes:
     a:
         concept: http://id.loc.gov/authorities/subjects/{control_number}

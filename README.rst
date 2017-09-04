@@ -89,8 +89,8 @@ URIs can be also be generated on the fly from an URI template specified with opt
 
 * ``{control_number}`` is the 001 value
 * ``{collection}`` is "class", "table" or "scheme"
-* ``{object}`` is a member of the classification scheme and part of
-  a ``{collection}``, such as a specific class or table.
+* ``{object}`` is a member of the classification scheme (with spaces replaced by
+  hyphens) and part of a ``{collection}``, such as a specific class or table.
 * ``{edition}`` is taken from ``084 $c`` (with language code stripped)
 
 
