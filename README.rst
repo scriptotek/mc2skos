@@ -44,7 +44,7 @@ Releases can be installed from the command line with `pip <https://pip.pypa.io/>
     $ pip install --upgrade mc2skos             # with virtualenv or as root
     $ pip install --upgrade --user mc2skos      # install to ~/.local
 
-* Works with both Python 2.x and 3.x. See `Travis <https://travis-ci.org/scriptotek/mc2skos>`_
+* Works with both Python 2.7 and 3.3+. See `Travis <https://travis-ci.org/scriptotek/mc2skos>`_
   for details on tested Python versions.
 * If lxml fails to install on Windows, try the windows installer
   from `from PyPI <https://pypi.python.org/pypi/lxml/3.4.0>`_.
