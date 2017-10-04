@@ -273,7 +273,7 @@ class ClassificationRecord(Record):
             self.scheme_uris.append(uri)
 
         # Record URI
-        self.uri = self.scheme.get_uri(collection='class', object=self.notation)
+        self.uri = self.scheme.get_uri(collection='class', object=self.notation, control_number=self.control_number)
 
     def parse(self, options):
 
