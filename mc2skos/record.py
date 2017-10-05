@@ -387,6 +387,7 @@ class ClassificationRecord(Record):
         for entry in self.record.all('mx:datafield[@tag="685"]'):
             self.historyNote.append(entry.stringify())  # Constants.HISTORY_NOTE
 
+        # 684 : Auxiliary Instruction Note
         # 694 : ??? Note : Non-standard code for 684 'Auxiliary Instruction Note' ??
         # Example:
         #   <mx:datafield tag="694" ind2=" " ind1=" ">
@@ -395,7 +396,7 @@ class ClassificationRecord(Record):
         #     <mx:subfield code="9">ess=nml</mx:subfield>
         #   </mx:datafield>
         #
-        for entry in self.record.all('mx:datafield[@tag="694"]'):
+        for entry in self.record.all('mx:datafield[@tag="684" or @tag="694"]'):
             self.editorialNote.append(entry.stringify())
 
         # 7XX Index terms
