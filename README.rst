@@ -134,6 +134,7 @@ MARC21XML                                                    RDF
 ``353`` Complex See Also Reference                          ``skos:editorialNote``
 ``680`` Scope Note                                          ``skos:scopeNote``
 ``683`` Application Instruction Note                        ``skos:editorialNote``
+``684`` Auxiliary Instruction Note                          ``skos:editorialNote``
 ``685`` History Note                                        ``skos:historyNote``
 ``700`` Index Term-Personal Name                            ``skos:altLabel``
 ``710`` Index Term-Corporate Name                           ``skos:altLabel``
