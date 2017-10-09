@@ -118,7 +118,7 @@ class ConceptScheme(object):
         if uri_type == 'scheme':
             kwargs['control_number'] = ''
 
-        if 'control_number' in kwargs:
+        if kwargs.get('control_number') is not None:
             # Remove organization prefix in parenthesis:
             kwargs['control_number'] = re.sub('^\(.+\)(.+)$', '\\1', kwargs['control_number'])
 
