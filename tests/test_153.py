@@ -125,36 +125,6 @@ class TestParse153(unittest.TestCase):
         assert parent_notation == '1--0923-0928'
         assert caption == u'Samlingsbiografier om personer inndelt etter diverse sosiale kjennetegn'
 
-    def testComplexEntryWithUndocumentStuff(self):
-        # Test that none of the extra stuff (after $e) leaks into the notation
-        # This illustrates the importance of the order of the elements.
-        # If $c followed $a, it would be part of the notation for this class, but since
-        # it follows $x, it's not.
-        element = Element('''
-            <mx:datafield tag="153" ind2=" " ind1=" " xmlns:mx="http://www.loc.gov/MARC21/slim">
-                <mx:subfield code="a">469.9</mx:subfield>
-                <mx:subfield code="e">469</mx:subfield>
-                <mx:subfield code="g">*</mx:subfield>
-                <mx:subfield code="j">Galisisk</mx:subfield>
-                <mx:subfield code="i">[tidligere</mx:subfield>
-                <mx:subfield code="x">469.71</mx:subfield>
-                <mx:subfield code="c">469.72</mx:subfield>
-                <mx:subfield code="i">,</mx:subfield>
-                <mx:subfield code="x">469.794</mx:subfield>
-                <mx:subfield code="i">]</mx:subfield>
-                <mx:subfield code="9">ess=en</mx:subfield>
-                <mx:subfield code="9">ess=eh</mx:subfield>
-                <mx:subfield code="9">ess=nrl</mx:subfield>
-              </mx:datafield>
-        ''')
-
-        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
-
-        assert table is None
-        assert notation == '469.9'
-        assert parent_notation == '469'
-        assert caption == 'Galisisk'
-
     def testStandardSubdivisionInfo(self):
         element = Element('''
             <mx:datafield tag="153" ind2=" " ind1=" " xmlns:mx="http://www.loc.gov/MARC21/slim">
