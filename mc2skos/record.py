@@ -503,20 +503,26 @@ class ClassificationRecord(Record):
         notation = None
         parent_notation = None
         buf = ''
+        zbuf = ''
         is_top_concept = True
 
         parts = []
 
-        for sf in element.all('mx:subfield'):
+        subfields = [sf for sf in element.all('mx:subfield')]
+        # logger.warning( [sf for sf in subfields if sf.get('code') == 'e'].count() )
+
+        for sf in subfields:
             code = sf.get('code')
             val = sf.text()
 
             if code == 'z':
                 if buf != '':
-                    parts.append(buf)
+                    parts.append(zbuf + buf)
                 if len(parts) == 0:
                     table = val
-                buf = val + '--'
+                zbuf = val + '--'
+                buf = ''
+                # buf = val + '--'
 
             elif code == 'a':
                 buf += val
@@ -527,9 +533,9 @@ class ClassificationRecord(Record):
             elif code == 'e':
                 if len(parts) == 0:
                     # not a table number
-                    parts.append(buf)
+                    parts.append(zbuf + buf)
                     buf = ''
-                buf += val
+                buf = val
             elif code == 'f':
                 buf += '-' + val
 
@@ -541,7 +547,7 @@ class ClassificationRecord(Record):
                     buf += ':{0};'.format(val)
 
         if buf != '':
-            parts.append(buf)
+            parts.append(zbuf + buf)
 
         notation = parts[0]
         if len(parts) != 1:

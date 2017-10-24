@@ -84,6 +84,18 @@ def test_bk_asb_example(marc, match):
 
     check_processing(marc, expect, include_altlabels=True)
 
+
+@pytest.mark.parametrize('marc,match', examples('rvk'))
+def test_rvk_example(marc, match):
+
+    options = {
+        'include_altlabels': True,
+        'scheme_uri': 'http://example.org/rvk',
+        'base_uri': 'http://example.org/rvk/{object}'
+    }
+
+    check_processing(marc, Graph(), **options)
+
 vocabularies = {
     'lcsh': 'http://id.loc.gov/authorities/subjects/',
     'noubomn': 'http://data.ub.uio.no/realfagstermer/',
