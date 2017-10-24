@@ -35,15 +35,18 @@ def examples(pattern):
     return [(MarcFile(f), re.match(pattern, f)) for f in files]
 
 
-def check_rdf(graph, expect, rdf_file):
+def check_processing(marc, expect, **kwargs):
+    graph = marc.processed_records(**kwargs)
+    filename = re.sub('xml$', 'ttl', marc.name)
+
     graph.namespace_manager.bind('skos', SKOS)
     graph.namespace_manager.bind('owl', OWL)
     graph.namespace_manager.bind('dcterms', DCTERMS)
 
-    if os.path.isfile(rdf_file):
-        expect.parse(rdf_file, format='turtle')
+    if os.path.isfile(filename):
+        expect.parse(filename, format='turtle')
     elif len(graph) > 0:
-        graph.serialize(destination=rdf_file, format='turtle')
+        graph.serialize(destination=filename, format='turtle')
 
     # graph.serialize(destination=sys.stdout, format='turtle')
 
@@ -51,16 +54,13 @@ def check_rdf(graph, expect, rdf_file):
         assert triple in graph
 
 
-@pytest.mark.parametrize('marc_file',
+@pytest.mark.parametrize('marc,match',
                          examples('ddc(?P<edition>\d{2})(?P<lang>[a-z]+)-'
                                   '(?P<notation>((?P<table>\d+)--)?[\d.]+-?[\d.]*)'))
-def test_ddc_example(marc_file):
-    marc, match = tuple(marc_file)
-
+def test_ddc_example(marc, match):
     edition = match.group('edition')
     notation = match.group('notation')
     table = match.group('table')
-    rdf_file = match.group(1) + '.ttl'
 
     expect = Graph()
     uri = URIRef(u'http://dewey.info/class/' + notation + '/e' + edition + '/')
@@ -69,24 +69,32 @@ def test_ddc_example(marc_file):
         notation = "T" + notation
     expect.add((uri, SKOS.notation, Literal(notation)))
 
-    graph = marc.processed_records(include_webdewey=True)
-    check_rdf(graph, expect, rdf_file)
+    check_processing(marc, expect, include_webdewey=True)
 
 
-@pytest.mark.parametrize('marc_file', examples('(?P<scheme>bk|asb)-(?P<notation>[0-9.]+)'))
-def test_bk_asb_example(marc_file):
-    marc, match = tuple(marc_file)
-
+@pytest.mark.parametrize('marc,match',
+                         examples('(?P<scheme>bk|asb)-(?P<notation>[0-9.]+)'))
+def test_bk_asb_example(marc, match):
     scheme = match.group('scheme')
     notation = match.group('notation')
-    rdf_file = match.group(1) + '.ttl'
 
     expect = Graph()
     uri = URIRef(u'http://uri.gbv.de/terminology/{}/{}'.format(scheme, notation))
     expect.add((uri, RDF.type, SKOS.Concept))
 
-    graph = marc.processed_records(include_altlabels=True)
-    check_rdf(graph, expect, rdf_file)
+    check_processing(marc, expect, include_altlabels=True)
+
+
+@pytest.mark.parametrize('marc,match', examples('rvk'))
+def test_rvk_example(marc, match):
+
+    options = {
+        'include_altlabels': True,
+        'scheme_uri': 'http://example.org/rvk',
+        'base_uri': 'http://example.org/rvk/{object}'
+    }
+
+    check_processing(marc, Graph(), **options)
 
 vocabularies = {
     'lcsh': 'http://id.loc.gov/authorities/subjects/',
@@ -97,13 +105,11 @@ vocabularies = {
 }
 
 
-@pytest.mark.parametrize('marc_file', examples('(?P<vocabulary>' + '|'.join(vocabularies.keys()) + ')-(?P<control_number>.+)'))
-def test_authority_example(marc_file):
-    marc, match = tuple(marc_file)
-
+@pytest.mark.parametrize('marc,match',
+                         examples('(?P<vocabulary>' + '|'.join(vocabularies.keys()) + ')-(?P<control_number>.+)'))
+def test_authority_example(marc, match):
     vocabulary = match.group('vocabulary')
     control_number = match.group('control_number')
-    rdf_file = match.group(1) + '.ttl'
 
     uri_base = vocabularies[vocabulary]
 
@@ -111,8 +117,7 @@ def test_authority_example(marc_file):
     uri = URIRef(uri_base + control_number)
     expect.add((uri, RDF.type, SKOS.Concept))
 
-    graph = marc.processed_records(include_altlabels=True)
-    check_rdf(graph, expect, rdf_file)
+    check_processing(marc, expect, include_altlabels=True)
 
 if __name__ == '__main__':
     unittest.main()
