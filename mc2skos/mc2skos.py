@@ -307,7 +307,10 @@ def main():
     if args.outfile and args.outfile != '-':
         out_file = open(args.outfile, 'wb')
     else:
-        out_file = sys.stdout
+        if (sys.version_info > (3, 0)):
+            out_file = sys.stdout.buffer
+        else:
+            out_file = sys.stdout
 
     if args.outformat == 'turtle':
         # @TODO: Perhaps use OrderedTurtleSerializer if available, but fallback to default Turtle serializer if not?
@@ -321,17 +324,16 @@ def main():
         s.serialize(out_file)
 
     elif args.outformat in ['jskos', 'ndjson']:
-        s = pkg_resources.resource_stream(__name__, 'jskos-context.json')
-        context = json.load(s)
+        s = pkg_resources.resource_string(__name__, 'jskos-context.json').decode('utf-8')
+        context = json.loads(s)
         jskos = json_ld.from_rdf(graph, context)
         if args.outformat == 'jskos':
             jskos['@context'] = u'https://gbv.github.io/jskos/context.json'
-            out_file.write(json.dumps(jskos, sort_keys=True, indent=2))
+            out_file.write(json.dumps(jskos, sort_keys=True, indent=2).encode('utf-8'))
         else:
             for record in jskos['@graph'] if '@graph' in jskos else [jskos]:
                 record['@context'] = u'https://gbv.github.io/jskos/context.json'
-                out_file.write(json.dumps(record, sort_keys=True))
-                out_file.write('\n')
+                out_file.write(json.dumps(record, sort_keys=True).encode('utf-8') + b'\n')
 
     if out_file != sys.stdout:
         logger.info('Wrote %s: %s' % (args.outformat, args.outfile))
