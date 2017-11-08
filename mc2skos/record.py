@@ -137,11 +137,16 @@ class ConceptScheme(object):
             start = int(matches.group('start')) if matches.group('start') else None
             end = int(matches.group('end')) if matches.group('end') else None
             value = kwargs[matches.group('param')][start:end]
-            formatter_str = '{0' + matches.group('formatter') + '}' if matches.group('formatter') else '{0}'
-            if 'd' in formatter_str:
-                value = int(value)
-            elif 'f' in formatter_str:
-                value = float(value)
+            if len(value) == 0:
+                # Empty string can be used for the scheme URI.
+                # Trying to convert this to decimal or float will fail!
+                formatter_str = '{0}'
+            else:
+                formatter_str = '{0' + matches.group('formatter') + '}' if matches.group('formatter') else '{0}'
+                if 'd' in formatter_str:
+                    value = int(value)
+                elif 'f' in formatter_str:
+                    value = float(value)
 
             return formatter_str.format(value)
 
@@ -230,6 +235,18 @@ class Record(object):
 
         # 001
         self.control_number = self.record.text('mx:controlfield[@tag="001"]')
+
+        # 010 : If present, it takes precedence over 001.
+        # <https://github.com/scriptotek/mc2skos/issues/42>
+        value = self.record.text('mx:datafield[@tag="010"]/mx:subfield[@code="a"]')
+        if value is not None:
+            self.control_number = value
+
+        # 016 : If present, it takes precedence over 001
+        # <https://github.com/scriptotek/mc2skos/issues/42>
+        value = self.record.text('mx:datafield[@tag="016"]/mx:subfield[@code="a"]')
+        if value is not None:
+            self.control_number = value
 
         # 003
         self.control_number_identifier = self.record.text('mx:controlfield[@tag="003"]')

@@ -6,9 +6,9 @@
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://lod.nal.usda.gov/nalt/142> a skos:Concept ;
+<http://lod.nal.usda.gov/nalt/1396> a skos:Concept ;
     dcterms:created "2016-12-08"^^xsd:date ;
-    dcterms:identifier "142" ;
+    dcterms:identifier "nalt00001396" ;
     dcterms:modified "2016-12-08"^^xsd:date ;
     skos:altLabel "2-oxoisocaproate dehydrogenase"@en,
         "2-oxoisovalerate (lipoate) dehydrogenase"@en,

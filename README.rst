@@ -87,7 +87,9 @@ Pull requests for adding more vocabularies are very welcome!
 URIs can be also be generated on the fly from an URI template specified with option
 ``--uri``.  The following template parameters are recognized:
 
-* ``{control_number}`` is the 001 value
+* ``{control_number}`` is the control number from 001, 010 or 016. The current approach
+  is to use 010 or 016 if defined, otherwise 001. If you find examples where this approach
+  fails, please add them to [#42](https://github.com/scriptotek/mc2skos/issues/42).
 * ``{collection}`` is "class", "table" or "scheme"
 * ``{object}`` is a member of the classification scheme (with spaces replaced by
   hyphens) and part of a ``{collection}``, such as a specific class or table.
@@ -123,10 +125,12 @@ the 7XX fields to skos:altLabel.
 ==========================================================  =====================================
 MARC21XML                                                    RDF
 ==========================================================  =====================================
-``001`` Control Number                                      ``dcterms:identifier``
+``001`` Control Number  (see note above on 001, 010 & 016)  ``dcterms:identifier``
 ``005`` Date and time of latest transaction                 ``dcterms:modified``
 ``008[0:6]`` Date entered on file                           ``dcterms:created``
 ``008[8]="d" or "e"`` Classification validity               ``owl:deprecated``
+``010`` Control Number (see note above on 001, 010 & 016)   ``dcterms:identifier``
+``016`` Control Number (see note above on 001, 010 & 016)   ``dcterms:identifier``
 ``153 $a``, ``$c``, ``$z`` Classification number            ``skos:notation``
 ``153 $j`` Caption                                          ``skos:prefLabel``
 ``153 $e``, ``$f``, ``$z`` Classification number hierarchy  ``skos:broader``

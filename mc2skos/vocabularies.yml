@@ -10,7 +10,7 @@ subject_schemes:
     a:
         concept: http://id.loc.gov/authorities/subjects/{control_number}
         scheme: http://id.loc.gov/authorities/subjects
-    d: http://lod.nal.usda.gov/nalt/{control_number}
+    d: http://lod.nal.usda.gov/nalt/{control_number[4:]:d}
     usvd:
         concept: http://data.ub.uio.no/usvd/c{control_number[4:]}
         scheme: http://data.ub.uio.no/usvd/
