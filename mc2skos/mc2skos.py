@@ -3,7 +3,7 @@
 #
 # Script to convert MARC 21 Classification records
 # (serialized as MARCXML) to SKOS concepts. See
-# README.md for for more information.
+# README.md rst for more information.
 
 import sys
 import re
@@ -19,6 +19,7 @@ from otsrdflib import OrderedTurtleSerializer
 import json
 import rdflib_jsonld.serializer as json_ld
 import pkg_resources
+import skosify
 
 import logging
 import logging.handlers
@@ -179,6 +180,12 @@ def process_records(records, graph, options):
             record_id = e.control_number or '#%d' % n
             logger.warning('Ignoring record %s: %s', record_id, e)
 
+    if 'expand' in options and options['expand']:
+        logger.info('Expanding RDF via basic SKOS inference')
+        skosify.infer.skos_related(graph)
+        skosify.infer.skos_topConcept(graph)
+        skosify.infer.skos_hierarchical(graph, narrower=True)
+
     return graph
 
 
@@ -231,6 +238,8 @@ def main():
                         help='Skip classification records')
     parser.add_argument('--skip-authority', dest='skip_authority', action='store_true',
                         help='Skip authority records')
+    parser.add_argument('--expand', dest='expand', action='store_true',
+                        help='SKOS inference with hasTopConcept, narrower, related')
 
     parser.add_argument('-l', '--list-schemes', dest='list_schemes', action='store_true',
                         help='List default concept schemes.')
@@ -296,6 +305,7 @@ def main():
         'include_webdewey': args.webdewey,
         'skip_classification': args.skip_classification,
         'skip_authority': args.skip_authority,
+        'expand': args.expand,
     }
 
     process_records(get_records(in_file), graph, options)
@@ -337,3 +347,20 @@ def main():
 
     if out_file != sys.stdout:
         logger.info('Wrote %s: %s' % (args.outformat, args.outfile))
+
+
+class MarcFileProcessor:
+    """Process a MARC XML file with mc2skos."""
+
+    def __init__(self, name):
+        self.name = name
+
+    def records(self):
+        record_tag = '{http://www.loc.gov/MARC21/slim}record'
+        for _, record in etree.iterparse(self.name, tag=record_tag):
+            yield record
+            record.clear()
+
+    def processed_records(self, **options):
+        graph = Graph()
+        return process_records(self.records(), graph, options)

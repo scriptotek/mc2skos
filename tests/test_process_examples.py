@@ -6,25 +6,9 @@ import sys
 import glob
 import re
 from lxml import etree
-from mc2skos.mc2skos import process_record, process_records
+from mc2skos.mc2skos import MarcFileProcessor
 from rdflib.namespace import RDF, SKOS, OWL, DCTERMS, Namespace
 from rdflib import URIRef, Literal, Graph
-
-
-class MarcFile:
-    record_tag = '{http://www.loc.gov/MARC21/slim}record'
-
-    def __init__(self, name):
-        self.name = name
-
-    def records(self):
-        for _, record in etree.iterparse(self.name, tag=MarcFile.record_tag):
-            yield record
-            record.clear()
-
-    def processed_records(self, **options):
-        graph = Graph()
-        return process_records(self.records(), graph, options)
 
 
 def examples(pattern):
@@ -32,7 +16,7 @@ def examples(pattern):
     files = glob.glob('examples/*.xml')
     files = filter(lambda x: re.match(pattern, x), files)
 
-    return [(MarcFile(f), re.match(pattern, f)) for f in files]
+    return [(MarcFileProcessor(f), re.match(pattern, f)) for f in files]
 
 
 def check_processing(marc, expect, **kwargs):
