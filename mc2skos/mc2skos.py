@@ -3,14 +3,13 @@
 #
 # Script to convert MARC 21 Classification records
 # (serialized as MARCXML) to SKOS concepts. See
-# README.md rst for more information.
+# README.md for more information.
 
 import sys
 import re
 import time
 import warnings
 from datetime import datetime
-from lxml import etree
 from iso639 import languages
 import argparse
 from rdflib.namespace import OWL, RDF, SKOS, DCTERMS, XSD, Namespace
@@ -28,6 +27,7 @@ from . import __version__
 from .constants import Constants
 from .element import Element
 from .record import InvalidRecordError, UnknownSchemeError, ClassificationRecord, AuthorityRecord, CONFIG, ConceptScheme
+from .reader import MarcFileReader
 
 logging.captureWarnings(True)
 warnings.simplefilter('always', DeprecationWarning)
@@ -170,7 +170,7 @@ def process_record(graph, rec, **kwargs):
         add_record_to_graph(graph, rec, kwargs)
 
 
-def process_records(records, graph, options):
+def process_records(records, graph=Graph(), **options):
     n = 0
     for record in records:
         n += 1
@@ -186,24 +186,12 @@ def process_records(records, graph, options):
         skosify.infer.skos_topConcept(graph)
         skosify.infer.skos_hierarchical(graph, narrower=True)
 
+    if 'skosify' in options and options['skosify']:
+        logger.info('Running Skosify with config file %s', options['skosify'])
+        config = skosify.config(options['skosify'])
+        graph = skosify.skosify(graph, **config)
+
     return graph
-
-
-def get_records(in_file):
-    logger.info('Parsing: %s', in_file)
-    n = 0
-    t0 = time.time()
-    # recs = []
-    for _, record in etree.iterparse(in_file, tag='{http://www.loc.gov/MARC21/slim}record'):
-        yield record
-        # recs.append(etree.tostring(record))
-        record.clear()
-        n += 1
-        if n % 500 == 0:
-            logger.info('Read %d records (%.f recs/sec)', n, (float(n) / (time.time() - t0)))
-        # if len(recs) == 100:
-        #     yield recs
-        #     recs = []
 
 
 def main():
@@ -240,6 +228,8 @@ def main():
                         help='Skip authority records')
     parser.add_argument('--expand', dest='expand', action='store_true',
                         help='SKOS inference with hasTopConcept, narrower, related')
+    parser.add_argument('--skosify', dest='skosify',
+                        help='Run skosify with given configuration file')
 
     parser.add_argument('-l', '--list-schemes', dest='list_schemes', action='store_true',
                         help='List default concept schemes.')
@@ -294,8 +284,6 @@ def main():
     if args.infile is None:
         raise ValueError('Filename not specified')
 
-    in_file = args.infile
-
     options = {
         'base_uri': args.base_uri,
         'scheme_uri': args.scheme_uri,
@@ -306,9 +294,11 @@ def main():
         'skip_classification': args.skip_classification,
         'skip_authority': args.skip_authority,
         'expand': args.expand,
+        'skosify': args.skosify,
     }
 
-    process_records(get_records(in_file), graph, options)
+    marc = MarcFileReader(args.infile)
+    graph = process_records(marc.records(), graph, **options)
 
     if not graph:
         logger.warn('RDF result is empty!')
@@ -347,20 +337,3 @@ def main():
 
     if out_file != sys.stdout:
         logger.info('Wrote %s: %s' % (args.outformat, args.outfile))
-
-
-class MarcFileProcessor:
-    """Process a MARC XML file with mc2skos."""
-
-    def __init__(self, name):
-        self.name = name
-
-    def records(self):
-        record_tag = '{http://www.loc.gov/MARC21/slim}record'
-        for _, record in etree.iterparse(self.name, tag=record_tag):
-            yield record
-            record.clear()
-
-    def processed_records(self, **options):
-        graph = Graph()
-        return process_records(self.records(), graph, options)

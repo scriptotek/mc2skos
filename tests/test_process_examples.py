@@ -6,7 +6,8 @@ import sys
 import glob
 import re
 from lxml import etree
-from mc2skos.mc2skos import MarcFileProcessor
+from mc2skos.reader import MarcFileReader
+from mc2skos.mc2skos import process_records
 from rdflib.namespace import RDF, SKOS, OWL, DCTERMS, Namespace
 from rdflib import URIRef, Literal, Graph
 
@@ -16,11 +17,11 @@ def examples(pattern):
     files = glob.glob('examples/*.xml')
     files = filter(lambda x: re.match(pattern, x), files)
 
-    return [(MarcFileProcessor(f), re.match(pattern, f)) for f in files]
+    return [(MarcFileReader(f), re.match(pattern, f)) for f in files]
 
 
 def check_processing(marc, expect, **kwargs):
-    graph = marc.processed_records(**kwargs)
+    graph = process_records(marc.records(), **kwargs)
     filename = re.sub('xml$', 'ttl', marc.name)
 
     graph.namespace_manager.bind('skos', SKOS)
