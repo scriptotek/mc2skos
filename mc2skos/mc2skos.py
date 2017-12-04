@@ -3,14 +3,13 @@
 #
 # Script to convert MARC 21 Classification records
 # (serialized as MARCXML) to SKOS concepts. See
-# README.md for for more information.
+# README.md for more information.
 
 import sys
 import re
 import time
 import warnings
 from datetime import datetime
-from lxml import etree
 from iso639 import languages
 import argparse
 from rdflib.namespace import OWL, RDF, SKOS, DCTERMS, XSD, Namespace
@@ -19,6 +18,7 @@ from otsrdflib import OrderedTurtleSerializer
 import json
 import rdflib_jsonld.serializer as json_ld
 import pkg_resources
+import skosify
 
 import logging
 import logging.handlers
@@ -27,6 +27,7 @@ from . import __version__
 from .constants import Constants
 from .element import Element
 from .record import InvalidRecordError, UnknownSchemeError, ClassificationRecord, AuthorityRecord, CONFIG, ConceptScheme
+from .reader import MarcFileReader
 
 logging.captureWarnings(True)
 warnings.simplefilter('always', DeprecationWarning)
@@ -169,8 +170,10 @@ def process_record(graph, rec, **kwargs):
         add_record_to_graph(graph, rec, kwargs)
 
 
-def process_records(records, graph, options):
+def process_records(records, graph=None, **options):
     n = 0
+    if graph is None:
+        graph = Graph()
     for record in records:
         n += 1
         try:
@@ -179,24 +182,18 @@ def process_records(records, graph, options):
             record_id = e.control_number or '#%d' % n
             logger.warning('Ignoring record %s: %s', record_id, e)
 
+    if options.get('expand'):
+        logger.info('Expanding RDF via basic SKOS inference')
+        skosify.infer.skos_related(graph)
+        skosify.infer.skos_topConcept(graph)
+        skosify.infer.skos_hierarchical(graph, narrower=True)
+
+    if options.get('skosify'):
+        logger.info('Running Skosify with config file %s', options['skosify'])
+        config = skosify.config(options['skosify'])
+        graph = skosify.skosify(graph, **config)
+
     return graph
-
-
-def get_records(in_file):
-    logger.info('Parsing: %s', in_file)
-    n = 0
-    t0 = time.time()
-    # recs = []
-    for _, record in etree.iterparse(in_file, tag='{http://www.loc.gov/MARC21/slim}record'):
-        yield record
-        # recs.append(etree.tostring(record))
-        record.clear()
-        n += 1
-        if n % 500 == 0:
-            logger.info('Read %d records (%.f recs/sec)', n, (float(n) / (time.time() - t0)))
-        # if len(recs) == 100:
-        #     yield recs
-        #     recs = []
 
 
 def main():
@@ -231,6 +228,10 @@ def main():
                         help='Skip classification records')
     parser.add_argument('--skip-authority', dest='skip_authority', action='store_true',
                         help='Skip authority records')
+    parser.add_argument('--expand', dest='expand', action='store_true',
+                        help='Use Skosify to infer skos:hasTopConcept, skos:narrower and skos:related')
+    parser.add_argument('--skosify', dest='skosify',
+                        help='Run Skosify with given configuration file')
 
     parser.add_argument('-l', '--list-schemes', dest='list_schemes', action='store_true',
                         help='List default concept schemes.')
@@ -285,8 +286,6 @@ def main():
     if args.infile is None:
         raise ValueError('Filename not specified')
 
-    in_file = args.infile
-
     options = {
         'base_uri': args.base_uri,
         'scheme_uri': args.scheme_uri,
@@ -296,9 +295,12 @@ def main():
         'include_webdewey': args.webdewey,
         'skip_classification': args.skip_classification,
         'skip_authority': args.skip_authority,
+        'expand': args.expand,
+        'skosify': args.skosify,
     }
 
-    process_records(get_records(in_file), graph, options)
+    marc = MarcFileReader(args.infile)
+    graph = process_records(marc.records(), graph, **options)
 
     if not graph:
         logger.warn('RDF result is empty!')

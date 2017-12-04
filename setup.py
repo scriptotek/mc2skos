@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # encoding=utf-8
 from __future__ import print_function
-import re
 import os
 import sys
 
@@ -38,6 +37,7 @@ setup(name='mc2skos',
                         'iso-639',
                         'pyyaml',
                         'future',
+                        'skosify>=2.0.1'
                         ],
       setup_requires=['rdflib', 'pytest-runner>=2.9'],
       tests_require=['pytest', 'pytest-pep8', 'pytest-cov'],
