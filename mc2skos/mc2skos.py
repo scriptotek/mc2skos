@@ -170,8 +170,10 @@ def process_record(graph, rec, **kwargs):
         add_record_to_graph(graph, rec, kwargs)
 
 
-def process_records(records, graph=Graph(), **options):
+def process_records(records, graph=None, **options):
     n = 0
+    if graph is None:
+        graph = Graph()
     for record in records:
         n += 1
         try:
@@ -180,13 +182,13 @@ def process_records(records, graph=Graph(), **options):
             record_id = e.control_number or '#%d' % n
             logger.warning('Ignoring record %s: %s', record_id, e)
 
-    if 'expand' in options and options['expand']:
+    if options.get('expand'):
         logger.info('Expanding RDF via basic SKOS inference')
         skosify.infer.skos_related(graph)
         skosify.infer.skos_topConcept(graph)
         skosify.infer.skos_hierarchical(graph, narrower=True)
 
-    if 'skosify' in options and options['skosify']:
+    if options.get('skosify'):
         logger.info('Running Skosify with config file %s', options['skosify'])
         config = skosify.config(options['skosify'])
         graph = skosify.skosify(graph, **config)
@@ -227,9 +229,9 @@ def main():
     parser.add_argument('--skip-authority', dest='skip_authority', action='store_true',
                         help='Skip authority records')
     parser.add_argument('--expand', dest='expand', action='store_true',
-                        help='SKOS inference with hasTopConcept, narrower, related')
+                        help='Use Skosify to infer skos:hasTopConcept, skos:narrower and skos:related')
     parser.add_argument('--skosify', dest='skosify',
-                        help='Run skosify with given configuration file')
+                        help='Run Skosify with given configuration file')
 
     parser.add_argument('-l', '--list-schemes', dest='list_schemes', action='store_true',
                         help='List default concept schemes.')
