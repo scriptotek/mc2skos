@@ -16,4 +16,4 @@ Additional sample records have been added to test features not included in the o
 * ...
 
 For each MARCXML file there is a corresponding RDF/Turtle file with triples expected to be included
-when converting to SKOS. See `tests/test_process_examples.py` for implementation.
+when converting to SKOS. See `test/test_process_examples.py` for implementation.
