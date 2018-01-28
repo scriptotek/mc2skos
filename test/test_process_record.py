@@ -121,7 +121,7 @@ class TestClassificationRecord(unittest.TestCase):
         assert rec.display is True
         assert rec.synthesized is True
 
-    def testHiddenSynthesizedScheduleRecord(self):
+    def testSynthesizedScheduleRecord(self):
         rec = ClassificationRecord('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
           <mx:leader>00000nw  a2200000n  4500</mx:leader>
@@ -141,7 +141,7 @@ class TestClassificationRecord(unittest.TestCase):
 
         assert rec.record_type == Constants.SCHEDULE_RECORD
         assert rec.number_type == Constants.SINGLE_NUMBER
-        assert rec.display is False
+        assert rec.display is True
         assert rec.synthesized is True
 
     def testSynthesizedNumberComponents1(self):

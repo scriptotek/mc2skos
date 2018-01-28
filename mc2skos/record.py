@@ -477,7 +477,7 @@ class ClassificationRecord(Record):
         elif value[6] == '1':  # @TODO: Find out what this means! It's not documented
             record_type = Constants.SCHEDULE_RECORD
         else:
-            logger.warning('Unknown value: %s', value[6])
+            logger.warning('Unknown value in 008/6: %s', value[6])
             record_type = Constants.UNKNOWN
 
         if value[7] == 'a':
@@ -499,15 +499,22 @@ class ClassificationRecord(Record):
             synthesized = False
 
         if value[13] == 'a':
+            # Displayed in standard schedules or tables
             display = True
         elif value[13] == 'b':
+            # Extended display
+            # These records show up in search in the WebDewey interface
+            display = True
+        elif value[13] == 'h':
+            # Historical information, not intended for display.
+            # These records do not show up in search in the WebDewey interface
             display = False
-        elif value[13] == 'h':    # Historical information, not intended for display
-            display = False
-        elif value[7] == 'n':     # Other information, not intended for display
+        elif value[7] == 'n':
+            # Other information, not intended for display
+            # These records do not show up in search in the WebDewey interface
             display = False
         else:
-            logger.debug(value[13])
+            logger.warning('Unknown value in 008/13: %s', value[13])
             display = False
 
         return created, record_type, number_type, display, synthesized, deprecated
@@ -584,20 +591,20 @@ class ClassificationRecord(Record):
         return table, notation, is_top_concept, parent_notation, caption
 
     def is_public(self):
-        if not self.display and not self.synthesized:
-            # This is a record not displayed in standard schedules or tables,
-            # and it is not a synthesized number (we want those).
-            # It could be e.g. an "add table" number.
-            logger.debug('Ignoring %s because: not intended for display', self.notation)
+        if not self.display:
+            # This is a record not displayed in standard schedules or tables
+            # or in extended display. It could be a deleted (not deprecated)
+            # class.
+            logger.debug('%s is not intended for display', self.notation)
             return False
 
         if self.record_type not in [Constants.SCHEDULE_RECORD, Constants.TABLE_RECORD]:
-            logger.debug('Ignoring %s because: type %s', self.notation, self.record_type)
+            logger.debug('%s is a type %s', self.notation, self.record_type)
             return False
 
         include_add_table_numbers = False  # @TODO: Make argparse option
         if self.notation.find(':') != -1 and not include_add_table_numbers:
-            logger.debug('Ignoring %s because: add table number', self.notation)
+            logger.debug('%s is an add table number', self.notation)
             return False
 
         return True
