@@ -120,7 +120,7 @@ class ConceptScheme(object):
 
         if kwargs.get('control_number') is not None:
             # Remove organization prefix in parenthesis:
-            kwargs['control_number'] = re.sub('^\(.+\)(.+)$', '\\1', kwargs['control_number'])
+            kwargs['control_number'] = re.sub(r'^\(.+\)(.+)$', '\\1', kwargs['control_number'])
 
         if 'object' in kwargs:
             # replace spaces by hyphens
@@ -151,7 +151,7 @@ class ConceptScheme(object):
             return formatter_str.format(value)
 
         uri_template = re.sub(
-            '\{(?P<param>[a-z_]+)(?:\[(?P<start>\d+)?:(?P<end>\d+)?\])?(?P<formatter>[:!][^\}]+)?\}',
+            r'\{(?P<param>[a-z_]+)(?:\[(?P<start>\d+)?:(?P<end>\d+)?\])?(?P<formatter>[:!][^\}]+)?\}',
             process_formatter,
             uri_template
         )
