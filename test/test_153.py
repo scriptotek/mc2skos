@@ -151,9 +151,37 @@ class TestParse153(unittest.TestCase):
         table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
 
         assert table is None
+        assert is_top_concept is False
         assert notation == '001.4092'
         assert parent_notation == '001.4'
         assert caption is None
+
+    def testExtraSubfields(self):
+        element = Element('''
+              <mx:datafield tag="153" ind2=" " ind1=" " xmlns:mx="http://www.loc.gov/MARC21/slim">
+                <mx:subfield code="a">332.0240081</mx:subfield>
+                <mx:subfield code="c">332.0240088</mx:subfield>
+                <mx:subfield code="e">332.024001</mx:subfield>
+                <mx:subfield code="f">332.024009</mx:subfield>
+                <mx:subfield code="j">Miscellaneous specific kinds of persons</mx:subfield>
+                <mx:subfield code="i">[formerly</mx:subfield>
+                <mx:subfield code="x">332.02404</mx:subfield>
+                <mx:subfield code="c">332.0249</mx:subfield>
+                <mx:subfield code="i">]</mx:subfield>
+                <mx:subfield code="9">ess=en</mx:subfield>
+                <mx:subfield code="9">ess=eh</mx:subfield>
+                <mx:subfield code="9">ess=nrl</mx:subfield>
+              </mx:datafield>
+        ''')
+
+        table, notation, is_top_concept, parent_notation, caption = ClassificationRecord.parse_153(element)
+
+        assert table is None
+        assert is_top_concept is False
+        assert notation == '332.0240081-332.0240088'
+        assert parent_notation == '332.024001-332.024009'
+        assert caption == 'Miscellaneous specific kinds of persons'
+
 
 if __name__ == '__main__':
     unittest.main()

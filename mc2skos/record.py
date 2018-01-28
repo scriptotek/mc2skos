@@ -517,74 +517,69 @@ class ClassificationRecord(Record):
         # Parse the 153 field
 
         table = None
+        add_table = None
         notation = None
         parent_notation = None
         buf = ''
+        caption = None  # Note: Synthesized classes do not have captions, that's ok
         zbuf = ''
         is_top_concept = True
         parts = []
 
-        for sf in element.all('mx:subfield'):
-            code = sf.get('code')
-            val = sf.text()
+        buf = [{'code': sf.get('code'), 'value': sf.text()} for sf in element.all('mx:subfield')]
 
-            if code == 'z':
-                if buf != '':
-                    parts.append(zbuf + buf)
-                if len(parts) == 0:
-                    table = val
-                zbuf = val + '--'
-                buf = ''
+        mode = 'notation'
+        for idx, subfield in enumerate(buf):
+            if subfield['code'] == 'z':
+                table = subfield['value']
 
-            elif code == 'a':
-                buf += val
+            elif subfield['code'] == 'y':
+                add_table = subfield['value']
 
-            elif code == 'c':
-                buf += '-' + val
-
-            elif code == 'e':
-                if len(parts) == 0:
-                    # not a table number
-                    parts.append(zbuf + buf)
-                    buf = ''
-                buf = val
-            elif code == 'f':
-                buf += '-' + val
-
-            elif code == 'y':
-                # Add table number
-                if val == '1':
-                    buf += ':'
+            elif subfield['code'] == 'a' and mode == 'notation':
+                if add_table == '1':
+                    notation += ':'
+                elif add_table is not None:
+                    notation += ':%s;' % add_table
+                elif table is not None:
+                    notation = '%s--' % table
                 else:
-                    buf += ':{0};'.format(val)
+                    notation = ''
+                notation += subfield['value']
+                add_table = None
 
-        if buf != '':
-            parts.append(zbuf + buf)
+            elif subfield['code'] == 'c' and mode == 'notation':
+                notation += '-' + subfield['value']
 
-        notation = parts[0]
-        if len(parts) != 1:
-            parent_notation = parts[1]
+            elif subfield['code'] == 'e' and mode in ['notation', 'parent']:
+                parent_notation = ''
+                if add_table == '1':
+                    parent_notation += ':'
+                elif add_table is not None:
+                    parent_notation += ';%s:' % add_table
+                elif table is not None:
+                    parent_notation = '%s--' % table
+                parent_notation += subfield['value']
+                add_table = None
+                mode = 'parent'
+
+            elif subfield['code'] == 'f' and mode == 'parent':
+                parent_notation += '-' + subfield['value']
+
+            elif subfield['code'] == 'j':
+                caption = subfield['value']
+
+            elif subfield['code'] == 'h':
+                # In the ddc21 examples, the parent class numbers (153 $e, $f) are not included,
+                # but the parent class headings are (153 $h). We do not make any attempt of mapping
+                # the headings to the classes, but just take note that this is not a top concept.
+                is_top_concept = False
+
+            else:
+                mode = 'other'
+
+        if parent_notation is not None:
             is_top_concept = False
-
-        if element.first('mx:subfield[@code="h"]') is not None:
-            # In the ddc21 examples, the parent class numbers (153 $e, $f) are not included,
-            # but the parent class headings are (153 $h). We do not make any attempt of mapping
-            # the headings to the classes, but just take note that this is not a top concept.
-            is_top_concept = False
-
-        caption = element.text('mx:subfield[@code="j"]')
-        # Note: Build number do not have caption, that's ok
-
-        # if ess_code in ['si1', 'si2', 'ti1', 'ti2', 'i2', 'se1', 'se2', 'se3']:
-        #     # Standard subdivision info? These records are not
-        #     # part of the classification scheme tree.
-        #     record_type = RecordTypes.UNKNOWN
-        # elif notation.find(':') != -1:
-        #     record_type = RecordTypes.ADD_TABLE_ENTRY
-        # elif table is not None:
-        #     record_type = RecordTypes.TABLE_ENTRY
-        # else:
-        #     record_type = RecordTypes.CLASS
 
         return table, notation, is_top_concept, parent_notation, caption
 
