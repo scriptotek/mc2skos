@@ -303,7 +303,7 @@ def main():
     graph = process_records(marc.records(), graph, **options)
 
     if not graph:
-        logger.warn('RDF result is empty!')
+        logger.warning('RDF result is empty!')
         return
 
     if args.outfile and args.outfile != '-':
@@ -316,14 +316,19 @@ def main():
 
     if args.outformat == 'turtle':
         # @TODO: Perhaps use OrderedTurtleSerializer if available, but fallback to default Turtle serializer if not?
-        s = OrderedTurtleSerializer(graph)
+        serializer = OrderedTurtleSerializer(graph)
 
-        s.sorters = [
-            ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
-            ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
+        serializer.class_order = [
+            SKOS.ConceptScheme,
+            SKOS.Concept,
+        ]
+        serializer.sorters = [
+            (r'/([0-9A-Z\-]+)--([0-9.\-;:]+)/e', lambda x: 'C{}--{}'.format(x[0], x[1])),  # table numbers
+            (r'/([0-9.\-;:]+)/e', lambda x: 'B' + x[0]),  # standard schedule numbers
+            (r'^(.+)$', lambda x: 'A' + x[0]),  # fallback
         ]
 
-        s.serialize(out_file)
+        serializer.serialize(out_file)
 
     elif args.outformat in ['jskos', 'ndjson']:
         s = pkg_resources.resource_string(__name__, 'jskos-context.json').decode('utf-8')
