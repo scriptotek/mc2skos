@@ -85,6 +85,10 @@ def add_record_to_graph(graph, record, options):
     # Add caption as skos:prefLabel
     if record.prefLabel:
         graph.add((record_uri, SKOS.prefLabel, Literal(record.prefLabel, lang=record.lang)))
+    elif options.get('include_webdewey') and len(record.altLabel) != 0:
+        # If the --webdewey flag is set, we will use the first index term as prefLabel
+        label = record.altLabel.pop(0)
+        graph.add((record_uri, SKOS.prefLabel, Literal(label['term'], lang=record.lang)))
 
     # Add index terms as skos:altLabel
     if options.get('include_altlabels'):

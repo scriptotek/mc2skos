@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
+  <mx:leader>00000nw  a2200000n  4500</mx:leader>
+  <mx:controlfield tag="001">2cf125c9-d3e9-42d9-802d-542116221196</mx:controlfield>
+  <mx:controlfield tag="003">OCoLC-D</mx:controlfield>
+  <mx:controlfield tag="005">20180208154625.0</mx:controlfield>
+  <mx:controlfield tag="008">180208aaaaacbb</mx:controlfield>
+  <mx:datafield tag="040" ind2=" " ind1=" ">
+    <mx:subfield code="a">OCLCD</mx:subfield>
+    <mx:subfield code="b">nob</mx:subfield>
+    <mx:subfield code="c">OCLCD</mx:subfield>
+  </mx:datafield>
+  <mx:datafield tag="084" ind2=" " ind1="0">
+    <mx:subfield code="a">ddc</mx:subfield>
+    <mx:subfield code="c">23no</mx:subfield>
+    <mx:subfield code="e">nob</mx:subfield>
+  </mx:datafield>
+  <mx:datafield tag="153" ind2=" " ind1=" ">
+    <mx:subfield code="a">539.60113</mx:subfield>
+    <mx:subfield code="e">539.6</mx:subfield>
+  </mx:datafield>
+  <mx:datafield tag="765" ind2=" " ind1="0">
+    <mx:subfield code="b">539.6011</mx:subfield>
+    <mx:subfield code="z">1</mx:subfield>
+    <mx:subfield code="a">011</mx:subfield>
+    <mx:subfield code="r">003</mx:subfield>
+    <mx:subfield code="s">3</mx:subfield>
+    <mx:subfield code="u">539.60113</mx:subfield>
+    <mx:subfield code="9">ess=</mx:subfield>
+  </mx:datafield>
+  <mx:datafield tag="765" ind2=" " ind1="0">
+    <mx:subfield code="b">539.6</mx:subfield>
+    <mx:subfield code="z">1</mx:subfield>
+    <mx:subfield code="s">011</mx:subfield>
+    <mx:subfield code="u">539.6011</mx:subfield>
+    <mx:subfield code="9">ess=</mx:subfield>
+  </mx:datafield>
+  <mx:datafield tag="883" ind2=" " ind1="1">
+    <mx:subfield code="i">WebDewey Number Building Engine-1</mx:subfield>
+    <mx:subfield code="d">20180206</mx:subfield>
+    <mx:subfield code="9">ess=</mx:subfield>
+  </mx:datafield>
+  <mx:datafield tag="673" ind2=" " ind1=" ">
+    <mx:subfield code="a">539/.60113</mx:subfield>
+    <mx:subfield code="9">ess=</mx:subfield>
+  </mx:datafield>
+  <mx:datafield tag="990" ind2=" " ind1=" ">
+    <mx:subfield code="9">update=silent</mx:subfield>
+  </mx:datafield>
+  <mx:datafield tag="750" ind2="7" ind1=" ">
+    <mx:subfield code="a">Molekylærfysikk</mx:subfield>
+    <mx:subfield code="x">datamaskinsimulering</mx:subfield>
+    <mx:subfield code="0">(OCoLC-D)c6ef2e7b-140e-4c22-ab24-c8724e334102</mx:subfield>
+    <mx:subfield code="2">ddcri</mx:subfield>
+    <mx:subfield code="9">ps=EO</mx:subfield>
+    <mx:subfield code="9">ess=isCaption</mx:subfield>
+  </mx:datafield>
+</mx:record>
