@@ -28,3 +28,4 @@ deploy:
     tags: true
     distributions: sdist bdist_wheel
     repo: scriptotek/mc2skos
+    python: '3.6'
