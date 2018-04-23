@@ -217,6 +217,8 @@ def main():
     parser.add_argument('--uri', dest='base_uri', help='URI template')
     parser.add_argument('--scheme', dest='scheme_uri', help='SKOS scheme for all records, use {edition} to specify edition.')
 #    parser.add_argument('--table_scheme', dest='table_scheme_uri', help='SKOS scheme for table records, use {edition} to specify edition.')
+    parser.add_argument('--whitespace', dest='whitespace', metavar='STRING',
+                        help='Replace whitespaces in URI templates with this.')
 
     parser.add_argument('--altlabels', '--indexterms', dest='altlabels', action='store_true',
                         help='Include altlabels (from 7XX or 4XX).')
@@ -293,6 +295,7 @@ def main():
     options = {
         'base_uri': args.base_uri,
         'scheme_uri': args.scheme_uri,
+        'whitespace': args.whitespace,
         'include_altlabels': args.altlabels,
         'exclude_notes': args.exclude_notes,
         'include_components': args.components,

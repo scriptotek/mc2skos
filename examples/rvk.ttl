@@ -8,31 +8,29 @@
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-# RVK has no official URIs yet. Use example.org for testing
-
-<http://example.org/rvk/A> a skos:Concept ;
+<http://rvk.uni-regensburg.de/nt/A> a skos:Concept ;
     dcterms:created "2012-07-05"^^xsd:date ;
     dcterms:identifier "1:" ;
     dcterms:modified "2017-09-12"^^xsd:date ;
     skos:notation "A" ;
     skos:prefLabel "Allgemeines"@de ;
-    skos:topConceptOf <http://example.org/rvk> .
+    skos:topConceptOf <http://rvk.uni-regensburg.de/nt/> .
 
-<http://example.org/rvk/AA> a skos:Concept ;
+<http://rvk.uni-regensburg.de/nt/AA> a skos:Concept ;
     dcterms:created "2012-07-05"^^xsd:date ;
     dcterms:identifier "2:" ;
     dcterms:modified "2017-09-12"^^xsd:date ;
-    skos:broader <http://example.org/rvk/A> ;
-    skos:inScheme <http://example.org/rvk> ;
+    skos:broader <http://rvk.uni-regensburg.de/nt/A> ;
+    skos:inScheme <http://rvk.uni-regensburg.de/nt/> ;
     skos:notation "AA" ;
     skos:prefLabel "Bibliographien der Bibliographien, Universalbibliographien, Bibliothekskataloge, Nationalbibliographien"@de .
 
-<http://example.org/rvk/AA-09900> a skos:Concept ;
+<http://rvk.uni-regensburg.de/nt/AA_09900> a skos:Concept ;
     dcterms:created "2012-07-05"^^xsd:date ;
     dcterms:identifier "3:" ;
     dcterms:modified "2017-09-12"^^xsd:date ;
-    skos:broader <http://example.org/rvk/AA> ;
+    skos:broader <http://rvk.uni-regensburg.de/nt/AA> ;
     skos:editorialNote "Erläuterungen zur Notationsvergabe s. RVK-Online - Nutzunghinweise"@de ;
-    skos:inScheme <http://example.org/rvk> ;
+    skos:inScheme <http://rvk.uni-regensburg.de/nt/> ;
     skos:notation "AA 09900" ;
     skos:prefLabel "Bibliographische Zeitschriften"@de .

@@ -75,8 +75,6 @@ def test_rvk_example(marc, match):
 
     options = {
         'include_altlabels': True,
-        'scheme_uri': 'http://example.org/rvk',
-        'base_uri': 'http://example.org/rvk/{object}'
     }
 
     check_processing(marc, Graph(), **options)

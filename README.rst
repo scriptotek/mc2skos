@@ -91,8 +91,9 @@ URIs can be also be generated on the fly from an URI template specified with opt
   is to use 010 or 016 if defined, otherwise 001. If you find examples where this approach
   fails, please add them to [#42](https://github.com/scriptotek/mc2skos/issues/42).
 * ``{collection}`` is "class", "table" or "scheme"
-* ``{object}`` is a member of the classification scheme (with spaces replaced by
-  hyphens) and part of a ``{collection}``, such as a specific class or table.
+* ``{object}`` is a member of the classification scheme and part of a ``{collection}``, such
+  as a specific class or table. Spaces in the URI are replaced by hyphens or another character
+  configured with option `--whitespace`.
 * ``{edition}`` is taken from ``084 $c`` (with language code stripped)
 
 
