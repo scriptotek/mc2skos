@@ -67,6 +67,7 @@ class ConceptScheme(object):
             return {
                 'concept': options.get('base_uri'),
                 'scheme': options.get('scheme_uri') or options.get('base_uri'),
+                'whitespace': options.get('whitespace', '-'),
             }
 
         try:
@@ -122,10 +123,6 @@ class ConceptScheme(object):
             # Remove organization prefix in parenthesis:
             kwargs['control_number'] = re.sub(r'^\(.+\)(.+)$', '\\1', kwargs['control_number'])
 
-        if 'object' in kwargs:
-            # replace spaces by hyphens
-            kwargs['object'] = kwargs['object'].replace(' ', '-')
-
         if uri_type not in self.config:
             raise UnknownSchemeError(scheme_code=self.code, **kwargs)
 
@@ -156,7 +153,10 @@ class ConceptScheme(object):
             uri_template
         )
 
-        return uri_template.format(**kwargs)
+        uri = uri_template.format(**kwargs)
+
+        # replace whitespaces in URI
+        return uri.replace(' ', self.config.get('whitespace', '-'))
 
 
 class Record(object):
