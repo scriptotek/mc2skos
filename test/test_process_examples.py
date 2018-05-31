@@ -70,7 +70,7 @@ def test_bk_asb_example(marc, match):
     check_processing(marc, expect, include_altlabels=True)
 
 
-@pytest.mark.parametrize('marc,match', examples('rvk'))
+@pytest.mark.parametrize('marc,match', examples('rvk(-.*)?'))
 def test_rvk_example(marc, match):
 
     options = {

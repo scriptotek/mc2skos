@@ -30,3 +30,10 @@ subject_schemes:
     noubomr:
         concept: http://data.ub.uio.no/mrtermer/c{control_number[3:]}
         scheme: http://data.ub.uio.no/mrtermer/
+    gnd:
+        concept: http://d-nb.info/gnd/{control_number}
+        scheme: http://d-nb.info/gnd/
+    ddcri:
+        scheme: http://id.loc.gov/vocabulary/subjectSchemes/ddcri
+    TESA:
+        cheme: http://lod.nal.usda.gov/nalt/
