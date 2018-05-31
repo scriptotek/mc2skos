@@ -53,7 +53,7 @@ class UnknownSchemeError(InvalidRecordError):
 @python_2_unicode_compatible
 class ConceptScheme(object):
 
-    def __init__(self, concept_type, code=None, edition=None, options=None):
+    def __init__(self, concept_type=None, code=None, edition=None, options=None):
         self.type = concept_type
         self.code = code  # Can be None if URI template is specified in options
         self.edition = edition
@@ -69,6 +69,14 @@ class ConceptScheme(object):
                 'scheme': options.get('scheme_uri') or options.get('base_uri'),
                 'whitespace': options.get('whitespace', '-'),
             }
+
+        if concept_type is None:
+            if code in CONFIG['subject_schemes']:
+                concept_type = AuthorityRecord
+            elif code in CONFIG['classification_schemes']:
+                concept_type = ClassificationRecord
+            else:
+                raise ValueError('Unknown concept scheme code "%s"' % code)
 
         try:
             cfg = CONFIG[{
@@ -266,6 +274,63 @@ class Record(object):
     def is_public(self):
         return True
 
+    def append_relation(self, scheme_code, scheme_type, relation, **kwargs):
+        try:
+            scheme = ConceptScheme(scheme_type, scheme_code, edition=kwargs.get('edition'))
+            uri = scheme.get_uri(**kwargs)
+        except UnknownSchemeError as e:
+            logger.warning('Cannot generate URIs for unknown vocabulary "%s"', scheme_code)
+            return
+
+        if uri:
+            self.relations.append({
+                'uri': uri,
+                'relation': relation,
+            })
+
+    def get_mappings(self):
+        for heading in self.get_terms('7'):
+            relation = None
+            for sf in heading['node'].all('mx:subfield'):
+                if sf.get('code') == '4':
+                    if is_uri(sf.text()):
+                        relation = URIRef(sf.text())
+                    else:
+                        relation = {
+                            '=EQ': SKOS.exactMatch,
+                            '~EQ': SKOS.closeMatch,
+                            'BM': SKOS.broadMatch,
+                            'NM': SKOS.narrowMatch,
+                            'RM': SKOS.relatedMatch,
+                        }.get(sf.text())  # None if no match
+
+                elif sf.get('code') == '0':
+                    # Note: Default value might change in the future
+                    relation = relation if relation else SKOS.closeMatch
+
+                    if is_uri(sf.text()):
+                        self.relations.append({
+                            'uri': sf.text(),
+                            'relation': relation,
+                        })
+                    else:
+                        scheme_code = {
+                            '0': 'a',  # Library of Congress Subject Headings
+                            '1': 'b',  # LC subject headings for children's literature
+                            '2': 'c',  # Medical Subject Headings
+                            '3': 'd',  # National Agricultural Library subject authority file
+                            '4': 'n',  # Source not specified
+                            '5': 'k',  # Canadian Subject Headings
+                            '6': 'v',  # Répertoire de vedettes-matière
+                            '7': heading['node'].text('mx:subfield[@code="2"]'),  # Source specified in subfield $2
+                        }.get(heading['node'].get('ind2'))
+
+                        yield {
+                            'scheme_code': scheme_code,
+                            'relation': relation,
+                            'control_number': sf.text()
+                        }
+
 
 class ClassificationRecord(Record):
 
@@ -421,6 +486,15 @@ class ClassificationRecord(Record):
             self.altLabel.append({
                 'term': heading['value']
             })
+
+        # 7XX: Heading Linking Entries
+        for mapping in self.get_mappings():
+            self.append_relation(
+                mapping['scheme_code'],
+                None,
+                mapping['relation'],
+                control_number=mapping['control_number']
+            )
 
         # 765 : Synthesized Number Components
         for entry in reversed(list(self.record.all('mx:datafield[@tag="765"]'))):
@@ -635,23 +709,7 @@ class AuthorityRecord(Record):
         else:
             return number_start
 
-    def append_relation(self, scheme_code, scheme_type, relation, **kwargs):
-
-        try:
-            scheme = ConceptScheme(scheme_type, scheme_code, edition=kwargs.get('edition'))
-            uri = scheme.get_uri(**kwargs)
-        except UnknownSchemeError as e:
-            logger.warning('Cannot generate URIs for unknown vocabulary "%s"', scheme_code)
-            return
-
-        if uri:
-            self.relations.append({
-                'uri': uri,
-                'relation': relation,
-            })
-
     def parse(self, options):
-
         super(AuthorityRecord, self).parse(options)
 
         # Now we have enough information to generate URIs
@@ -782,45 +840,10 @@ class AuthorityRecord(Record):
             self.historyNote.append(entry.stringify())
 
         # 7XX: Heading Linking Entries
-        for heading in self.get_terms('7'):
-            relation = None
-            for sf in heading['node'].all('mx:subfield'):
-                if sf.get('code') == '4':
-                    if is_uri(sf.text()):
-                        relation = URIRef(sf.text())
-                    else:
-                        relation = {
-                            '=EQ': SKOS.exactMatch,
-                            '~EQ': SKOS.closeMatch,
-                            'BM': SKOS.broadMatch,
-                            'NM': SKOS.narrowMatch,
-                            'RM': SKOS.relatedMatch,
-                        }.get(sf.text())  # None if no match
-
-                elif sf.get('code') == '0':
-                    # Note: Default value might change in the future
-                    relation = relation if relation else SKOS.closeMatch
-
-                    if is_uri(sf.text()):
-                        self.relations.append({
-                            'uri': sf.text(),
-                            'relation': relation,
-                        })
-                    else:
-                        scheme_code = {
-                            '0': 'a',  # Library of Congress Subject Headings
-                            '1': 'b',  # LC subject headings for children's literature
-                            '2': 'c',  # Medical Subject Headings
-                            '3': 'd',  # National Agricultural Library subject authority file
-                            '4': 'n',  # Source not specified
-                            '5': 'k',  # Canadian Subject Headings
-                            '6': 'v',  # Répertoire de vedettes-matière
-                            '7': heading['node'].text('mx:subfield[@code="2"]'),  # Source specified in subfield $2
-                        }.get(heading['node'].get('ind2'))
-
-                        self.append_relation(
-                            scheme_code,
-                            AuthorityRecord,
-                            relation,
-                            control_number=sf.text()
-                        )
+        for mapping in self.get_mappings():
+            self.append_relation(
+                mapping['scheme_code'],
+                None,
+                mapping['relation'],
+                control_number=mapping['control_number']
+            )

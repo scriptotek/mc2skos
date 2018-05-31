@@ -1,0 +1,22 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://rvk.uni-regensburg.de/nt/AA_09900> a skos:Concept ;
+    dcterms:created "2012-07-05"^^xsd:date ;
+    dcterms:identifier "3:" ;
+    dcterms:modified "2018-03-16"^^xsd:date ;
+    skos:altLabel "Bibliografie"@de,
+        "Zeitschrift"@de ;
+    skos:broader <http://rvk.uni-regensburg.de/nt/AA> ;
+    skos:closeMatch <http://d-nb.info/gnd/4006432-3>,
+        <http://d-nb.info/gnd/4067488-5> ;
+    skos:editorialNote "Erläuterungen zur Notationsvergabe s. RVK-Online - Nutzunghinweise"@de ;
+    skos:inScheme <http://rvk.uni-regensburg.de/nt/> ;
+    skos:notation "AA 09900" ;
+    skos:prefLabel "Bibliographische Zeitschriften"@de .
+

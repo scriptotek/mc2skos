@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd" 
+xmlns="http://www.loc.gov/MARC21/slim">
+<record>
+<leader>     nw  a22     o  4500</leader>
+<controlfield tag="001">3:</controlfield>
+<controlfield tag="003">DE-625</controlfield>
+<controlfield tag="005">201803160839.2</controlfield>
+<controlfield tag="008">120705an|aznnaabbn           | anc    |c</controlfield>
+<datafield tag="040" ind1=" " ind2=" ">
+<subfield code="a">DE-625</subfield>
+<subfield code="b">ger</subfield>
+<subfield code="c">DE-625</subfield>
+<subfield code="d">DE-625</subfield>
+</datafield>
+<datafield tag="084" ind1="0" ind2=" ">
+<subfield code="a">rvk</subfield>
+</datafield>
+<datafield tag="153" ind1=" " ind2=" ">
+<subfield code="a">AA 09900</subfield>
+<subfield code="j">Bibliographische Zeitschriften</subfield>
+<subfield code="e">A</subfield>
+<subfield code="h">Allgemeines</subfield>
+<subfield code="e">AA</subfield>
+<subfield code="h">Bibliographien der Bibliographien, Universalbibliographien, Bibliothekskataloge, Nationalbibliographien</subfield>
+</datafield>
+<datafield tag="684" ind1="1" ind2=" ">
+<subfield code="i">Erläuterungen zur Notationsvergabe s. RVK-Online - Nutzunghinweise</subfield>
+</datafield>
+<datafield tag="750" ind1="1" ind2="7">
+<subfield code="0">(DE-588)4006432-3</subfield>
+<subfield code="a">Bibliografie</subfield>
+<subfield code="2">gnd</subfield>
+</datafield>
+<datafield tag="750" ind1="1" ind2="7">
+<subfield code="0">(DE-588)4067488-5</subfield>
+<subfield code="a">Zeitschrift</subfield>
+<subfield code="2">gnd</subfield>
+</datafield>
+</record>
+</collection>
