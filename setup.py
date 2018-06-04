@@ -14,7 +14,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 
 setup(name='mc2skos',
-      version='0.10.1',  # Use bumpversion to update
+      version='0.10.2',  # Use bumpversion to update
       description='Convert Marc21 Classification records in MARC/XML to SKOS/RDF ',
       long_description=README,
       classifiers=[
