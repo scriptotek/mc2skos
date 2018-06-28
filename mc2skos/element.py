@@ -45,11 +45,11 @@ class Element(object):
     def get_ess_codes(self):
         return [x[4:] for x in self.node.xpath('mx:subfield[@code="9"]/text()', namespaces=self.nsmap) if x.find('ess=') == 0]
 
-    def stringify(self):
+    def stringify(self, subfields=['a', 'c', 'i', 't', 'x']):
         note = ''
         for subfield in self.node.xpath('mx:subfield', namespaces=self.nsmap):
-            c = subfield.get('code')
-            if c in ['a', 'c', 'i', 't', 'x']:
+            code = subfield.get('code')
+            if code in subfields:
 
                 # Captions can include Processing Instruction tags, like in this example
                 # (linebreaks added):
@@ -76,10 +76,19 @@ class Element(object):
                 if txt is None:
                     continue
 
-                if c == 'c':
+                # Check if we need to add a delimiter
+                if code == 'c':
+                    # Treat $c as the end of a number span, which is correct for the 6XX fields
+                    # in MARC21 Classification. In Marc21 Authority, $c generally seems to be
+                    # undefined, but we might add some checks here if there are some $c subfields
+                    # that need to be treated differently.
                     note += '-'
+
                 elif len(note) != 0 and not re.match(r'[.\?#@+,<>%~`!$^&\(\):;\]]', txt[0]):
+                    # Unless the subfield starts with a punctuation character, we will add a space.
                     note += ' '
+
+                # Append the subfield text to the note
                 note += txt
 
         return note

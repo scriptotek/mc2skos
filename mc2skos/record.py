@@ -799,45 +799,45 @@ class AuthorityRecord(Record):
         # 667 : Nonpublic General Note
         # madsrdf:editorialNote
         for entry in self.record.all('mx:datafield[@tag="667"]'):
-            self.editorialNote.append(entry.stringify())
+            self.editorialNote.append(entry.stringify(subfields=['a']))
 
         # 670 : Source Data Found
         # Citation for a consulted source in which information is found related in some
         # manner to the entity represented by the authority record or related entities.
         for entry in self.record.all('mx:datafield[@tag="670"]'):
-            self.note.append('Source: ' + entry.stringify())
+            self.note.append('Source: ' + entry.stringify(subfields=['a']))
 
         # 677 : Definition
         for entry in self.record.all('mx:datafield[@tag="677"]'):
-            self.definition.append(entry.stringify())
+            self.definition.append(entry.stringify(subfields=['a']))
 
         # 678 : Biographical or Historical Data
         # Summary of the essential biographical, historical, or other information about the 1XX heading
         # madsrdf:note
         for entry in self.record.all('mx:datafield[@tag="678"]'):
-            self.note.append(entry.stringify())
+            self.note.append(entry.stringify(subfields=['a', 'b']))
 
         # 680 : Public General Note
         # madsrdf:note
         for entry in self.record.all('mx:datafield[@tag="680"]'):
-            self.note.append(entry.stringify())
+            self.note.append(entry.stringify(subfields=['a', 'i']))
 
         # 681 : Subject Example Tracing Note
         # madsrdf:exampleNote
         for entry in self.record.all('mx:datafield[@tag="681"]'):
-            self.example.append(entry.stringify())
+            self.example.append(entry.stringify(subfields=['a', 'i']))
 
         # 682 : Deleted Heading Information
         # Explanation for the deletion of an established heading or subdivision record from an authority file.
         # madsrdf:changeNote
         for entry in self.record.all('mx:datafield[@tag="682"]'):
-            self.changeNote.append(entry.stringify())
+            self.changeNote.append(entry.stringify(subfields=['a', 'i']))
 
         # 688 : Application History Note
         # Information that documents changes in the application of a 1XX heading.
         # madsrdf:historyNote
         for entry in self.record.all('mx:datafield[@tag="688"]'):
-            self.historyNote.append(entry.stringify())
+            self.historyNote.append(entry.stringify(subfields=['a']))
 
         # 7XX: Heading Linking Entries
         for mapping in self.get_mappings():
