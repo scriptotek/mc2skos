@@ -1,0 +1,27 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://d-nb.info/gnd/1020118989> a skos:Concept ;
+    dcterms:created "2012-02-24"^^xsd:date ;
+    dcterms:identifier "1020118989" ;
+    dcterms:modified "2017-08-14"^^xsd:date ;
+    skos:altLabel "Schneider, B. (1971-)"@de ;
+    skos:exactMatch <http://id.loc.gov/authorities/names/nb2003041477>,
+        <http://isni.org/0000-0001-1441-8676>,
+        <http://viaf.org/viaf/267074138>,
+        <http://www.wikidata.org/entity/Q865334>,
+        <https://orcid.org/0000-0001-9142-1457> ;
+    skos:inScheme <http://d-nb.info/gnd/> ;
+    skos:note "Diss. Bremen 2002"@de ;
+    skos:prefLabel "Schneider, Birgit (1971-)"@de ;
+    skos:related <http://d-nb.info/gnd/040056570>,
+        <http://d-nb.info/gnd/040304817>,
+        <http://d-nb.info/gnd/041602196>,
+        <http://d-nb.info/gnd/956081045>,
+        <http://d-nb.info/gnd/977054926> .
+

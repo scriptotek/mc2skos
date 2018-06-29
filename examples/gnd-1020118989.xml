@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <record xmlns="http://www.loc.gov/MARC21/slim" type="Authority">
+    <leader>00000nz  a2200000oc 4500</leader>
+    <controlfield tag="001">1020118989</controlfield>
+    <controlfield tag="003">DE-101</controlfield>
+    <controlfield tag="005">20170814095021.0</controlfield>
+    <controlfield tag="008">120224n||azznnaabn           | aaa    |c</controlfield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">http://d-nb.info/gnd/1020118989</subfield>
+      <subfield code="2">uri</subfield>
+    </datafield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">0000-0001-9142-1457</subfield>
+      <subfield code="2">orcid</subfield>
+    </datafield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">C-2215-2017</subfield>
+      <subfield code="2">rid</subfield>
+    </datafield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">24167396300</subfield>
+      <subfield code="2">scopus</subfield>
+    </datafield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">267074138</subfield>
+      <subfield code="2">viaf</subfield>
+    </datafield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">nb2003041477</subfield>
+      <subfield code="2">lccn</subfield>
+    </datafield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">0000 0001 1441 8676</subfield>
+      <subfield code="2">isni</subfield>
+    </datafield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">Q865334</subfield>
+      <subfield code="2">wikidata</subfield>
+    </datafield>
+    <datafield tag="035" ind1=" " ind2=" ">
+      <subfield code="a">(DE-101)1020118989</subfield>
+    </datafield>
+    <datafield tag="035" ind1=" " ind2=" ">
+      <subfield code="a">(DE-588)1020118989</subfield>
+    </datafield>
+    <datafield tag="035" ind1=" " ind2=" ">
+      <subfield code="z">(DE-588a)1020118989</subfield>
+      <subfield code="9">v:zg</subfield>
+    </datafield>
+    <datafield tag="040" ind1=" " ind2=" ">
+      <subfield code="a">DE-8</subfield>
+      <subfield code="9">r:DE-601</subfield>
+      <subfield code="b">ger</subfield>
+      <subfield code="d">0008</subfield>
+      <subfield code="f">gnd</subfield>
+    </datafield>
+    <datafield tag="042" ind1=" " ind2=" ">
+      <subfield code="a">gnd3</subfield>
+    </datafield>
+    <datafield tag="043" ind1=" " ind2=" ">
+      <subfield code="c">XA-DE</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">p</subfield>
+      <subfield code="2">gndgen</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">piz</subfield>
+      <subfield code="2">gndspec</subfield>
+    </datafield>
+    <datafield tag="079" ind1=" " ind2=" ">
+      <subfield code="a">g</subfield>
+      <subfield code="q">f</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Schneider, Birgit</subfield>
+      <subfield code="d">1971-</subfield>
+    </datafield>
+    <datafield tag="375" ind1=" " ind2=" ">
+      <subfield code="a">2</subfield>
+      <subfield code="2">iso5218</subfield>
+    </datafield>
+    <datafield tag="400" ind1="1" ind2=" ">
+      <subfield code="a">Schneider, B.</subfield>
+      <subfield code="d">1971-</subfield>
+    </datafield>
+    <datafield tag="510" ind1="2" ind2=" ">
+      <subfield code="0">(DE-101)956081045</subfield>
+      <subfield code="0">(DE-588)2176115-2</subfield>
+      <subfield code="0">http://d-nb.info/gnd/2176115-2</subfield>
+      <subfield code="a">Christian-Albrechts-Universität zu Kiel</subfield>
+      <subfield code="b">Institut für Geowissenschaften</subfield>
+      <subfield code="4">affi</subfield>
+      <subfield code="4">http://d-nb.info/standards/elementset/gnd#affiliation</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Affiliation</subfield>
+      <subfield code="e">Affiliation</subfield>
+    </datafield>
+    <datafield tag="548" ind1=" " ind2=" ">
+      <subfield code="a">1971-</subfield>
+      <subfield code="4">datl</subfield>
+      <subfield code="4">http://d-nb.info/standards/elementset/gnd#dateOfBirth</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Lebensdaten</subfield>
+    </datafield>
+    <datafield tag="550" ind1=" " ind2=" ">
+      <subfield code="0">(DE-101)977054926</subfield>
+      <subfield code="0">(DE-588)4874356-2</subfield>
+      <subfield code="0">http://d-nb.info/gnd/4874356-2</subfield>
+      <subfield code="a">Geologin</subfield>
+      <subfield code="4">berc</subfield>
+      <subfield code="4">http://d-nb.info/standards/elementset/gnd#professionOrOccupation</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Charakteristischer Beruf</subfield>
+    </datafield>
+    <datafield tag="550" ind1=" " ind2=" ">
+      <subfield code="0">(DE-101)041602196</subfield>
+      <subfield code="0">(DE-588)4160219-5</subfield>
+      <subfield code="0">http://d-nb.info/gnd/4160219-5</subfield>
+      <subfield code="a">Hochschullehrerin</subfield>
+      <subfield code="4">beru</subfield>
+      <subfield code="4">http://d-nb.info/standards/elementset/gnd#professionOrOccupation</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Beruf</subfield>
+    </datafield>
+    <datafield tag="550" ind1=" " ind2=" ">
+      <subfield code="a">Prof. Dr.</subfield>
+      <subfield code="4">akad</subfield>
+      <subfield code="4">http://d-nb.info/standards/elementset/gnd#academicDegree</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Akademischer Grad</subfield>
+    </datafield>
+    <datafield tag="551" ind1=" " ind2=" ">
+      <subfield code="0">(DE-101)040056570</subfield>
+      <subfield code="0">(DE-588)4005657-0</subfield>
+      <subfield code="0">http://d-nb.info/gnd/4005657-0</subfield>
+      <subfield code="a">Bergisch Gladbach</subfield>
+      <subfield code="4">ortg</subfield>
+      <subfield code="4">http://d-nb.info/standards/elementset/gnd#placeOfBirth</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Geburtsort</subfield>
+    </datafield>
+    <datafield tag="551" ind1=" " ind2=" ">
+      <subfield code="0">(DE-101)040304817</subfield>
+      <subfield code="0">(DE-588)4030481-4</subfield>
+      <subfield code="0">http://d-nb.info/gnd/4030481-4</subfield>
+      <subfield code="a">Kiel</subfield>
+      <subfield code="4">ortw</subfield>
+      <subfield code="4">http://d-nb.info/standards/elementset/gnd#placeOfActivity</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Wirkungsort</subfield>
+    </datafield>
+    <datafield tag="678" ind1=" " ind2=" ">
+      <subfield code="b">Diss. Bremen 2002</subfield>
+    </datafield>
+    <datafield tag="913" ind1=" " ind2=" ">
+      <subfield code="S">pnd</subfield>
+      <subfield code="i">a</subfield>
+      <subfield code="a">Schneider, Birgit</subfield>
+      <subfield code="0">(DE-588a)1020118989</subfield>
+    </datafield>
+  </record>

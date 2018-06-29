@@ -93,6 +93,7 @@ authority_vocabularies = {
     'noubojur': 'http://data.ub.uio.no/lskjema/',
     'humord': 'http://data.ub.uio.no/humord/',
     'nalt': 'http://lod.nal.usda.gov/nalt/',
+    'gnd': 'http://d-nb.info/gnd/',
 }
 
 
