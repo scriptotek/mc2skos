@@ -87,6 +87,7 @@ def test_rvk_example(marc, match):
     check_processing(marc, Graph(), **options)
 
 authority_vocabularies = {
+    'lcgft': 'http://id.loc.gov/authorities/genreForms/',
     'lcsh': 'http://id.loc.gov/authorities/subjects/',
     'noubomn': 'http://data.ub.uio.no/realfagstermer/',
     'noubojur': 'http://data.ub.uio.no/lskjema/',

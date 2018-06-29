@@ -1,0 +1,28 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://id.loc.gov/authorities/genreForms/gf2011026530> a skos:Concept ;
+    dcterms:created "2011-05-07"^^xsd:date ;
+    dcterms:identifier "gf2011026530" ;
+    dcterms:modified "2018-02-20"^^xsd:date ;
+    skos:altLabel "Images, Remote-sensing"@en,
+        "Multispectral scanning images"@en,
+        "SLAR images"@en,
+        "Satellite images"@en,
+        "Side-looking airborne radar images"@en ;
+    skos:inScheme <http://id.loc.gov/authorities/genreForms> ;
+    skos:note "Images of planetary surfaces created by means of reflected or emitted electromagnetic energy."@en,
+        "Source: AACR2, 1988 rev.:"@en,
+        "Source: Cartographic materials: A Manual of interpretation for AACR2, 1982:"@en,
+        "Source: Conversation with M.L. Larsgaard, Map & Imagery Lab, Library, Univ. of Calif., Santa Barbara, May 20, 1994"@en,
+        "Source: Environmental Research Institute of Michigan. Remote sensing image of Michigan, 1985."@en,
+        "Source: Introduction to remote sensing, c2007:"@en,
+        "Source: Map Online Users Group Newsletter:"@en,
+        "Source: Satellite images of Australia, c1982."@en ;
+    skos:prefLabel "Remote-sensing images"@en .
+

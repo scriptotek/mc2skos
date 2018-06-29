@@ -1,0 +1,80 @@
+<marcxml:record xmlns:marcxml="http://www.loc.gov/MARC21/slim" xmlns:idx="info:lc/xq-modules/lcindex" xmlns:madsrdf="http://www.loc.gov/mads/rdf/v1#" xmlns:ri="http://id.loc.gov/ontologies/RecordInfo#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:mets="http://www.loc.gov/METS/" xmlns:semtriples="http://marklogic.com/semantic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:streams="info:lc/streams#">
+            <marcxml:leader>01597cz  a2200313n  4500</marcxml:leader>
+            <marcxml:controlfield tag="001">gf2011026530</marcxml:controlfield>
+            <marcxml:controlfield tag="003">DLC</marcxml:controlfield>
+            <marcxml:controlfield tag="005">20180220154626.4</marcxml:controlfield>
+            <marcxml:controlfield tag="008">110507|| anznnbabn          |a ana      </marcxml:controlfield>
+            <marcxml:datafield tag="010" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">gf2011026530</marcxml:subfield>
+              <marcxml:subfield code="z">sh2009025023</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="040" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">DLC</marcxml:subfield>
+              <marcxml:subfield code="b">eng</marcxml:subfield>
+              <marcxml:subfield code="c">DLC</marcxml:subfield>
+              <marcxml:subfield code="f">lcgft</marcxml:subfield>
+              <marcxml:subfield code="d">DLC</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="155" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Remote-sensing images</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="455" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Images, Remote-sensing</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="455" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Multispectral scanning images</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="455" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Satellite images</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="455" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Side-looking airborne radar images</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="455" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">SLAR images</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="555" ind1=" " ind2=" ">
+              <marcxml:subfield code="w">g</marcxml:subfield>
+              <marcxml:subfield code="a">Cartographic materials</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="555" ind1=" " ind2=" ">
+              <marcxml:subfield code="w">g</marcxml:subfield>
+              <marcxml:subfield code="a">Informational works</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="555" ind1=" " ind2=" ">
+              <marcxml:subfield code="w">g</marcxml:subfield>
+              <marcxml:subfield code="a">Visual works</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="670" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">AACR2, 1988 rev.:</marcxml:subfield>
+              <marcxml:subfield code="b">pp. 108-116.</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="670" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Cartographic materials: A Manual of interpretation for AACR2, 1982:</marcxml:subfield>
+              <marcxml:subfield code="b">p. 90 (aerial remote-sensing image; multispectral scanning image; Sidelooking airborne radar (SLAR))</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="670" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Conversation with M.L. Larsgaard, Map &amp; Imagery Lab, Library, Univ. of Calif., Santa Barbara, May 20, 1994</marcxml:subfield>
+              <marcxml:subfield code="b">(Remote-sensing images)</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="670" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Satellite images of Australia, c1982.</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="670" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Map Online Users Group Newsletter:</marcxml:subfield>
+              <marcxml:subfield code="b">no. 17, p. 6 (type of material subdivision ... Remote-sensing imagery)</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="670" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Environmental Research Institute of Michigan. Remote sensing image of Michigan, 1985.</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="670" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Introduction to remote sensing, c2007:</marcxml:subfield>
+              <marcxml:subfield code="b">introd. (remote sensing: observation of the Earth's land and water surfaces by means of reflected or emitted electromagnetic energy)</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="675" ind1=" " ind2=" ">
+              <marcxml:subfield code="a">Glossary of the mapping sciences, 1994</marcxml:subfield>
+            </marcxml:datafield>
+            <marcxml:datafield tag="680" ind1=" " ind2=" ">
+              <marcxml:subfield code="i">Images of planetary surfaces created by means of reflected or emitted electromagnetic energy.</marcxml:subfield>
+            </marcxml:datafield>
+          </marcxml:record>

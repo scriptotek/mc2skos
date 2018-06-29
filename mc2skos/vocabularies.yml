@@ -36,6 +36,9 @@ subject_schemes:
     lccn:
         concept: http://id.loc.gov/authorities/names/{control_number}
         scheme: http://id.loc.gov/authorities/names/
+    lcgft:
+        concept: http://id.loc.gov/authorities/genreForms/{control_number}
+        scheme: http://id.loc.gov/authorities/genreForms
     ddcri:
         scheme: http://id.loc.gov/vocabulary/subjectSchemes/ddcri
     TESA:
