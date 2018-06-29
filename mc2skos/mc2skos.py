@@ -26,8 +26,9 @@ import logging.handlers
 from . import __version__
 from .constants import Constants
 from .element import Element
-from .record import InvalidRecordError, UnknownSchemeError, ClassificationRecord, AuthorityRecord, CONFIG, ConceptScheme
+from .record import InvalidRecordError, ClassificationRecord, AuthorityRecord
 from .reader import MarcFileReader
+from .vocabularies import Vocabularies
 
 logging.captureWarnings(True)
 warnings.simplefilter('always', DeprecationWarning)
@@ -130,13 +131,13 @@ def add_record_to_graph(graph, record, options):
     # Add synthesized number components
     if options.get('include_components') and len(record.components) != 0:
         component = record.components.pop(0)
-        component_uri = URIRef(record.scheme.get_uri(collection='class', object=component))
+        component_uri = URIRef(record.scheme.uri('concept', collection='class', object=component))
         b1 = BNode()
         graph.add((record_uri, MADS.componentList, b1))
         graph.add((b1, RDF.first, component_uri))
 
         for component in record.components:
-            component_uri = URIRef(record.scheme.get_uri(collection='class', object=component))
+            component_uri = URIRef(record.scheme.uri('concept', collection='class', object=component))
             b2 = BNode()
             graph.add((b1, RDF.rest, b2))
             graph.add((b2, RDF.first, component_uri))
@@ -249,15 +250,20 @@ def main():
                       'The inverse option --exclude_notes has been added to exclude notes.',
                       DeprecationWarning)
 
+    with pkg_resources.resource_stream(__name__, 'vocabularies.yml') as fp:
+        vocabularies = Vocabularies()
+        vocabularies.load_yaml(fp)
+
+    vocabularies.set_default_scheme(
+        generic=args.base_uri,
+        scheme=args.scheme_uri,
+        whitespace=args.whitespace
+    )
+
     if args.list_schemes:
-        print('Classification schemes:')
-        for k in CONFIG['classification_schemes'].keys():
-            scheme = ConceptScheme(k, ClassificationRecord)
-            print('- %s' % scheme)
-        print('Authority vocabularies:')
-        for k in CONFIG['subject_schemes'].keys():
-            scheme = ConceptScheme(k, AuthorityRecord)
-            print('- %s' % scheme)
+        print('Schemes:')
+        for voc in vocabularies:
+            print('- %s' % voc)
         return
 
     supported_formats = ['turtle', 'jskos', 'ndjson']
@@ -293,9 +299,6 @@ def main():
         raise ValueError('Filename not specified')
 
     options = {
-        'base_uri': args.base_uri,
-        'scheme_uri': args.scheme_uri,
-        'whitespace': args.whitespace,
         'include_altlabels': args.altlabels,
         'exclude_notes': args.exclude_notes,
         'include_components': args.components,
@@ -304,6 +307,7 @@ def main():
         'skip_authority': args.skip_authority,
         'expand': args.expand,
         'skosify': args.skosify,
+        'vocabularies': vocabularies
     }
 
     marc = MarcFileReader(args.infile)

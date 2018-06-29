@@ -1,13 +1,23 @@
 # encoding=utf-8
+import copy
 import unittest
 import pytest
 from lxml import etree
 from mc2skos.mc2skos import process_record, ClassificationRecord, Constants, InvalidRecordError
+from mc2skos.vocabularies import Vocabularies
 from rdflib.namespace import RDF, SKOS, Namespace
 from rdflib import URIRef, Literal, Graph, BNode
 
 
+with open('mc2skos/vocabularies.yml') as fp:
+    vocabularies = Vocabularies()
+    vocabularies.load_yaml(fp)
+
+
 class TestClassificationRecord(unittest.TestCase):
+
+    def setUp(self):
+        self.options = {'vocabularies': vocabularies}
 
     def testSimpleNumber(self):
         rec = ClassificationRecord('''
@@ -28,7 +38,7 @@ class TestClassificationRecord(unittest.TestCase):
                 <mx:subfield code="9">ess=eh</mx:subfield>
               </mx:datafield>
             </mx:record>
-        ''')
+        ''', options=self.options)
 
         assert rec.record_type == Constants.SCHEDULE_RECORD
         assert rec.number_type == Constants.SINGLE_NUMBER
@@ -56,7 +66,7 @@ class TestClassificationRecord(unittest.TestCase):
                     <mx:subfield code="9">ess=rhb</mx:subfield>
                 </mx:datafield>
             </mx:record>
-        ''')
+        ''', options=self.options)
 
         assert rec.record_type == Constants.TABLE_RECORD
         assert rec.number_type == Constants.SINGLE_NUMBER
@@ -88,7 +98,7 @@ class TestClassificationRecord(unittest.TestCase):
                 <mx:subfield code="9">ess=rhb</mx:subfield>
             </mx:datafield>
         </mx:record>
-        ''')
+        ''', options=self.options)
 
         assert rec.record_type == Constants.TABLE_RECORD
         assert rec.number_type == Constants.SINGLE_NUMBER
@@ -114,7 +124,7 @@ class TestClassificationRecord(unittest.TestCase):
             <mx:subfield code="9">ess=eh</mx:subfield>
           </mx:datafield>
         </mx:record>
-        ''')
+        ''', options=self.options)
 
         assert rec.record_type == Constants.SCHEDULE_RECORD
         assert rec.number_type == Constants.NUMBER_SPAN
@@ -137,7 +147,7 @@ class TestClassificationRecord(unittest.TestCase):
             <mx:subfield code="9">ess=ien</mx:subfield>
           </mx:datafield>
         </mx:record>
-        ''')
+        ''', options=self.options)
 
         assert rec.record_type == Constants.SCHEDULE_RECORD
         assert rec.number_type == Constants.SINGLE_NUMBER
@@ -171,7 +181,7 @@ class TestClassificationRecord(unittest.TestCase):
               <mx:subfield code="9">ess=hn</mx:subfield>
             </mx:datafield>
         </mx:record>
-        ''')
+        ''', options=self.options)
 
         assert rec.components == ['306.6', '280.4']
 
@@ -213,7 +223,7 @@ class TestClassificationRecord(unittest.TestCase):
               <mx:subfield code="u">299.31</mx:subfield>
             </mx:datafield>
         </mx:record>
-        ''')
+        ''', options=self.options)
 
         assert rec.components == ['299', '5--931', '201.3']
 
@@ -275,7 +285,7 @@ class TestClassificationRecord(unittest.TestCase):
             <mx:subfield code="9">ps=EO</mx:subfield>
           </mx:datafield>
         </mx:record>
-        ''')
+        ''', options=self.options)
 
         assert rec.components == ['032', '031-039:02', '1--09', '2--93']
 
@@ -319,7 +329,7 @@ class TestClassificationRecord(unittest.TestCase):
             <mx:subfield code="9">ps=PE</mx:subfield>
           </mx:datafield>
         </mx:record>
-        ''')
+        ''', options=self.options)
 
         assert rec.altLabel == [
             {'term': 'Analytisk kjemi--organisk kjemi'},
@@ -332,6 +342,7 @@ class TestProcessRecord(unittest.TestCase):
     def setUp(self):
         self.graph = Graph()
         self.nsmap = {'mx': 'http://www.loc.gov/MARC21/slim'}
+        self.vocabularies = copy.deepcopy(vocabularies)
 
     def testEmptyRecord(self):
         g = Graph()
@@ -342,7 +353,7 @@ class TestProcessRecord(unittest.TestCase):
         '''
 
         with pytest.raises(InvalidRecordError):
-            process_record(g, rec)
+            process_record(g, rec, vocabularies=self.vocabularies)
 
     def testRecordWithInvalidLeader(self):
 
@@ -359,7 +370,7 @@ class TestProcessRecord(unittest.TestCase):
         '''
 
         with pytest.raises(InvalidRecordError):
-            process_record(Graph(), rec)
+            process_record(Graph(), rec, vocabularies=self.vocabularies)
 
     def testRecordWithout153(self):
         # Not sure if this test should fail or not.
@@ -376,7 +387,7 @@ class TestProcessRecord(unittest.TestCase):
         '''
 
         with pytest.raises(InvalidRecordError):
-            process_record(Graph(), rec)
+            process_record(Graph(), rec, vocabularies=self.vocabularies)
 
     def test153(self):
         rec = '''
@@ -392,7 +403,8 @@ class TestProcessRecord(unittest.TestCase):
           </marc:record>
         '''
         graph = Graph()
-        process_record(graph, rec, base_uri='http://test/{object}')
+        self.vocabularies.set_default_scheme('http://test/{object}')
+        process_record(graph, rec, vocabularies=self.vocabularies)
         uri = URIRef(u'http://test/003.5')
 
         assert set(graph) == set([
@@ -425,7 +437,8 @@ class TestProcessRecord(unittest.TestCase):
           </marc:record>
         '''
         graph = Graph()
-        process_record(graph, rec, base_uri='http://test/{object}')
+        self.vocabularies.set_default_scheme('http://test/{object}')
+        process_record(graph, rec, vocabularies=self.vocabularies)
         uri = URIRef(u'http://test/564.58')
 
         assert graph.preferredLabel(uri)[0][0] == SKOS.prefLabel
@@ -460,7 +473,7 @@ class TestProcessRecord(unittest.TestCase):
         '''
 
         graph = Graph()
-        process_record(graph, rec, include_components=True)
+        process_record(graph, rec, include_components=True, vocabularies=self.vocabularies)
 
         components = [n[0] for n in graph.query('''
             PREFIX mads: <http://www.loc.gov/mads/rdf/v1#>

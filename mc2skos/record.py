@@ -1,170 +1,17 @@
 # encoding=utf8
 
-import re
 from datetime import datetime
 import logging
 from iso639 import languages
 from rdflib import URIRef
 from rdflib.namespace import SKOS
-from future.utils import python_2_unicode_compatible
-import yaml
-import pkg_resources
 
 from .constants import Constants
 from .element import Element
+from .error import InvalidRecordError, UnknownSchemeError
+from .util import is_uri
 
 logger = logging.getLogger(__name__)
-
-
-with pkg_resources.resource_stream(__name__, 'vocabularies.yml') as f:
-    CONFIG = yaml.load(f)
-
-
-def is_uri(value):
-    return value.startswith('http://') or value.startswith('https://')
-
-
-def is_str(obj):
-    try:
-        return isinstance(obj, basestring)  # Python 2.x
-    except NameError:
-        return isinstance(obj, str)  # Python 3.x
-
-
-class InvalidRecordError(RuntimeError):
-
-    def __init__(self, msg, control_number=None):
-        super(InvalidRecordError, self).__init__(msg)
-        self.control_number = control_number
-
-
-class UnknownSchemeError(InvalidRecordError):
-
-    def __init__(self, scheme_code=None, **kwargs):
-        if scheme_code is None:
-            msg = 'Could not find classification scheme or subject vocabulary.'
-        else:
-            msg = 'Cannot generate URIs for unknown classification scheme or subject vocabulary "%s".' % scheme_code
-        super(UnknownSchemeError, self).__init__(msg)
-        self.scheme_code = scheme_code
-        self.control_number = kwargs.get('control_number')
-
-
-@python_2_unicode_compatible
-class ConceptScheme(object):
-
-    def __init__(self, concept_type=None, code=None, edition=None, options=None):
-        self.type = concept_type
-        self.code = code  # Can be None if URI template is specified in options
-        self.edition = edition
-        self.edition_numeric = re.sub('[^0-9]', '', edition or '')
-        self.config = self.get_config(concept_type, code, options)
-
-    def get_config(self, concept_type, code, options):
-        options = options or {}
-
-        if options.get('base_uri'):
-            return {
-                'concept': options.get('base_uri'),
-                'scheme': options.get('scheme_uri') or options.get('base_uri'),
-                'whitespace': options.get('whitespace', '-'),
-            }
-
-        if concept_type is None:
-            if code in CONFIG['subject_schemes']:
-                concept_type = AuthorityRecord
-            elif code in CONFIG['classification_schemes']:
-                concept_type = ClassificationRecord
-            else:
-                raise ValueError('Unknown concept scheme code "%s"' % code)
-
-        try:
-            cfg = CONFIG[{
-                AuthorityRecord: 'subject_schemes',
-                ClassificationRecord: 'classification_schemes',
-            }.get(concept_type)]
-        except:
-            raise ValueError('Unknown concept type "%s"' % concept_type)
-
-        if cfg is None or code not in cfg:
-            raise UnknownSchemeError(scheme_code=code)
-
-        # The subject scheme / authority vocabulary is known
-        if is_str(cfg[code]):
-            return {
-                'concept': cfg[code],
-                'scheme': cfg[code],
-            }
-        else:
-            return cfg[code]
-
-    def __repr__(self):
-        return u'%s: %s' % (self.code, repr(self.config))
-
-    @staticmethod
-    def from_record(record, options):
-
-        if isinstance(record, AuthorityRecord):
-            field_008 = record.record.text('mx:controlfield[@tag="008"]')
-            if field_008:
-                scheme_code = field_008[11]
-                if scheme_code == 'z':
-                    scheme_code = record.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="f"]')
-
-                if scheme_code:
-                    return ConceptScheme(AuthorityRecord, scheme_code, options=options)
-            return ConceptScheme(AuthorityRecord, options=options)
-
-        if isinstance(record, ClassificationRecord):
-            scheme_code = record.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="a"]')
-            scheme_edition = record.record.text('mx:datafield[@tag="084"]/mx:subfield[@code="c"]')
-            if scheme_code:
-                return ConceptScheme(ClassificationRecord, scheme_code, edition=scheme_edition, options=options)
-            return ConceptScheme(ClassificationRecord, options=options)
-
-    def get_uri(self, uri_type='concept', **kwargs):
-        kwargs['edition'] = self.edition_numeric
-        if uri_type == 'scheme':
-            kwargs['control_number'] = ''
-
-        if kwargs.get('control_number') is not None:
-            # Remove organization prefix in parenthesis:
-            kwargs['control_number'] = re.sub(r'^\(.+\)(.+)$', '\\1', kwargs['control_number'])
-
-        if uri_type not in self.config:
-            raise UnknownSchemeError(scheme_code=self.code, **kwargs)
-
-        uri_template = self.config[uri_type]
-
-        # Process field[start:end]
-
-        def process_formatter(matches):
-            start = int(matches.group('start')) if matches.group('start') else None
-            end = int(matches.group('end')) if matches.group('end') else None
-            value = kwargs[matches.group('param')][start:end]
-            if len(value) == 0:
-                # Empty string can be used for the scheme URI.
-                # Trying to convert this to decimal or float will fail!
-                formatter_str = '{0}'
-            else:
-                formatter_str = '{0' + matches.group('formatter') + '}' if matches.group('formatter') else '{0}'
-                if 'd' in formatter_str:
-                    value = int(value)
-                elif 'f' in formatter_str:
-                    value = float(value)
-
-            return formatter_str.format(value)
-
-        uri_template = re.sub(
-            r'\{(?P<param>[a-z_]+)(?:\[(?P<start>\d+)?:(?P<end>\d+)?\])?(?P<formatter>[:!][^\}]+)?\}',
-            process_formatter,
-            uri_template
-        )
-
-        uri = uri_template.format(**kwargs)
-
-        # replace whitespaces in URI
-        return uri.replace(' ', self.config.get('whitespace', '-'))
 
 
 class Record(object):
@@ -196,8 +43,10 @@ class Record(object):
         self.deprecated = False
         self.is_top_concept = False
         self.notation = None
+
+        self.vocabularies = options['vocabularies']
         try:
-            self.scheme = ConceptScheme.from_record(self, options)
+            self.scheme = self.vocabularies.get_from_record(self)
         except UnknownSchemeError as e:
             e.control_number = self.record.text('mx:controlfield[@tag="001"]')
             raise
@@ -276,10 +125,15 @@ class Record(object):
 
     def append_relation(self, scheme_code, scheme_type, relation, **kwargs):
         try:
-            scheme = ConceptScheme(scheme_type, scheme_code, edition=kwargs.get('edition'))
-            uri = scheme.get_uri(**kwargs)
-        except UnknownSchemeError as e:
-            logger.warning('Cannot generate URIs for unknown vocabulary "%s"', scheme_code)
+            scheme = self.vocabularies.get(scheme_code, edition=kwargs.get('edition'))
+            uri = scheme.uri('concept', **kwargs)
+        except UnknownSchemeError:
+            tag = ' in field %s' % kwargs.get('tag') if kwargs.get('tag') else ''
+            logger.warning((
+                'Found links to "%s"%s, but mc2skos doesn\'t know the URI pattern of'
+                ' that vocabulary, so no SKOS mappings were generated. See'
+                ' <https://github.com/scriptotek/mc2skos#uris> for more info.'
+            ) % (scheme_code, tag))
             return
 
         if uri:
@@ -289,6 +143,8 @@ class Record(object):
             })
 
     def get_mappings(self):
+        # Get a list of possible mappings.
+
         for heading in self.get_terms('7'):
             relation = None
             for sf in heading['node'].all('mx:subfield'):
@@ -328,7 +184,8 @@ class Record(object):
                         yield {
                             'scheme_code': scheme_code,
                             'relation': relation,
-                            'control_number': sf.text()
+                            'control_number': sf.text(),
+                            'tag': heading['node'].get('tag'),
                         }
 
 
@@ -345,17 +202,17 @@ class ClassificationRecord(Record):
 
         if self.record_type == Constants.TABLE_RECORD:
             table = self.table if self.table is not None else ''
-            uri = self.scheme.get_uri(uri_type='scheme', collection='table', object=table)
+            uri = self.scheme.uri('scheme', collection='table', object=table)
             if uri:
                 self.scheme_uris.append(uri)
 
         obj = 'edition' if self.scheme.edition is not None else ''
-        uri = self.scheme.get_uri(uri_type='scheme', collection='scheme', object=obj)
+        uri = self.scheme.uri('scheme', collection='scheme', object=obj)
         if uri:
             self.scheme_uris.append(uri)
 
         # Record URI
-        self.uri = self.scheme.get_uri(collection='class', object=self.notation, control_number=self.control_number)
+        self.uri = self.scheme.uri('concept', collection='class', object=self.notation, control_number=self.control_number)
 
     def parse(self, options):
 
@@ -381,7 +238,7 @@ class ClassificationRecord(Record):
         # Now we have enough information to generate URIs
         self.generate_uris()
         if parent_notation is not None:
-            parent_uri = self.scheme.get_uri(collection='class', object=parent_notation)
+            parent_uri = self.scheme.uri('concept', collection='class', object=parent_notation)
             if parent_uri is not None:
                 self.relations.append({
                     'uri': parent_uri,
@@ -493,7 +350,8 @@ class ClassificationRecord(Record):
                 mapping['scheme_code'],
                 None,
                 mapping['relation'],
-                control_number=mapping['control_number']
+                control_number=mapping['control_number'],
+                tag=mapping['tag']
             )
 
         # 765 : Synthesized Number Components
@@ -693,12 +551,12 @@ class AuthorityRecord(Record):
         # Generate URIs from scheme
         self.scheme_uris = []
 
-        scheme_uri = self.scheme.get_uri(uri_type='scheme')
+        scheme_uri = self.scheme.uri('scheme')
         if scheme_uri:
             self.scheme_uris.append(scheme_uri)
 
         # Record URI
-        self.uri = self.scheme.get_uri(control_number=self.control_number)
+        self.uri = self.scheme.uri('concept', control_number=self.control_number)
 
     @staticmethod
     def get_class_number(el):
@@ -731,7 +589,8 @@ class AuthorityRecord(Record):
                 el.text('mx:subfield[@code="2"]'),
                 ClassificationRecord,
                 SKOS.exactMatch,
-                object=self.get_class_number(el)
+                object=self.get_class_number(el),
+                tag='065'
             )
 
         # 080: Universal Decimal Classification Number
@@ -741,7 +600,8 @@ class AuthorityRecord(Record):
                 'udc',
                 ClassificationRecord,
                 SKOS.exactMatch,
-                object=self.get_class_number(el)
+                object=self.get_class_number(el),
+                tag='080'
             )
 
         # 083: Dewey Decimal Classification Number
@@ -753,7 +613,8 @@ class AuthorityRecord(Record):
                 SKOS.exactMatch,
                 collection='class',
                 object=self.get_class_number(el),
-                edition=el.text('mx:subfield[@code="2"]')
+                edition=el.text('mx:subfield[@code="2"]'),
+                tag='083'
             )
 
         # 1XX Heading
@@ -793,7 +654,8 @@ class AuthorityRecord(Record):
                             self.scheme.code,
                             self.scheme.type,
                             relation,
-                            control_number=local_id
+                            control_number=local_id,
+                            tag=heading['node'].get('tag')
                         )
 
         # 667 : Nonpublic General Note
@@ -845,5 +707,6 @@ class AuthorityRecord(Record):
                 mapping['scheme_code'],
                 None,
                 mapping['relation'],
-                control_number=mapping['control_number']
+                control_number=mapping['control_number'],
+                tag=mapping['tag']
             )

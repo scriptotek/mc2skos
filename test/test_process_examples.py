@@ -8,8 +8,14 @@ import re
 from lxml import etree
 from mc2skos.reader import MarcFileReader
 from mc2skos.mc2skos import process_records
+from mc2skos.vocabularies import Vocabularies
 from rdflib.namespace import RDF, SKOS, OWL, DCTERMS, Namespace
 from rdflib import URIRef, Literal, Graph
+
+
+with open('mc2skos/vocabularies.yml') as fp:
+    vocabularies = Vocabularies()
+    vocabularies.load_yaml(fp)
 
 
 def examples(pattern):
@@ -21,6 +27,7 @@ def examples(pattern):
 
 
 def check_processing(marc, expect, **kwargs):
+    kwargs['vocabularies'] = vocabularies
     graph = process_records(marc.records(), **kwargs)
     filename = re.sub('xml$', 'ttl', marc.name)
 
@@ -79,7 +86,7 @@ def test_rvk_example(marc, match):
 
     check_processing(marc, Graph(), **options)
 
-vocabularies = {
+authority_vocabularies = {
     'lcsh': 'http://id.loc.gov/authorities/subjects/',
     'noubomn': 'http://data.ub.uio.no/realfagstermer/',
     'noubojur': 'http://data.ub.uio.no/lskjema/',
@@ -89,12 +96,12 @@ vocabularies = {
 
 
 @pytest.mark.parametrize('marc,match',
-                         examples('(?P<vocabulary>' + '|'.join(vocabularies.keys()) + ')-(?P<control_number>.+)'))
+                         examples('(?P<vocabulary>' + '|'.join(authority_vocabularies.keys()) + ')-(?P<control_number>.+)'))
 def test_authority_example(marc, match):
     vocabulary = match.group('vocabulary')
     control_number = match.group('control_number')
 
-    uri_base = vocabularies[vocabulary]
+    uri_base = authority_vocabularies[vocabulary]
 
     expect = Graph()
     uri = URIRef(uri_base + control_number)
