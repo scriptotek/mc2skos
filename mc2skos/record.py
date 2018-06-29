@@ -14,6 +14,19 @@ from .util import is_uri
 logger = logging.getLogger(__name__)
 
 
+class DuplicateFilter(object):
+    def __init__(self):
+        self.msgs = set()
+
+    def filter(self, record):
+        rv = record.msg not in self.msgs
+        self.msgs.add(record.msg)
+        return rv
+
+
+logger.addFilter(DuplicateFilter())
+
+
 class Record(object):
 
     def __init__(self, record, options=None):
