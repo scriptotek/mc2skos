@@ -83,8 +83,25 @@ class Record(object):
         # X62 - Medium of Performance Term
         tags = ['@tag="%s%s"' % (base, tag) for tag in ['00', '10', '11', '30', '47', '48', '50', '51', '53', '55', '62']]
         for entry in self.record.all('mx:datafield[%s]' % ' or '.join(tags)):
-            codes = ['@code="%s"' % code for code in ['a', 'x', 'y', 'z', 'v']]
-            term_parts = entry.text('mx:subfield[%s]' % ' or '.join(codes), True)
+
+            def reducer(value, element):
+                prefix = ' '
+                suffix = ''
+
+                if value == '':
+                    prefix = ''
+                elif element.get('code') == 'd' and value[-1] not in [',', ';']:
+                    prefix = ' ('
+                    suffix = ')'
+                elif element.get('code') in ['x', 'y', 'z', 'v']:
+                    prefix = '--'
+
+                return value + prefix + element.text() + suffix
+
+            label = entry.reduce(reducer, ['a', 'd', 'x', 'y', 'z', 'v'])
+
+            # codes = ['@code="%s"' % code for code in ['a', 'd', 'x', 'y', 'z', 'v']]
+            # term_parts = entry.text('mx:subfield[%s]' % ' or '.join(codes), True)
             cn = entry.text('mx:subfield[@code="0"]')
             cni = None
             if cn is not None:
@@ -95,7 +112,7 @@ class Record(object):
                 else:
                     cn = cn[0]
             yield {
-                'value': '--'.join(term_parts),
+                'value': label,
                 'node': entry,
                 'control_number': cn,
                 'control_number_identifier': cni,
