@@ -158,6 +158,17 @@ class Record(object):
     def get_mappings(self):
         # Get a list of possible mappings.
 
+        for field in self.record.all('mx:datafield[@tag="024"]'):
+            control_number = field.text('mx:subfield[@code="a"]')
+            scheme_code = field.text('mx:subfield[@code="2"]')
+            if scheme_code != 'uri':
+                yield {
+                    'scheme_code': scheme_code,
+                    'relation': SKOS.exactMatch,
+                    'control_number': control_number,
+                    'tag': '024',
+                }
+
         for heading in self.get_terms('7'):
             relation = None
             for sf in heading['node'].all('mx:subfield'):
