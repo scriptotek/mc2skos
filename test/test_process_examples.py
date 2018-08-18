@@ -109,7 +109,13 @@ def test_authority_example(marc, match):
     uri = URIRef(uri_base + control_number)
     expect.add((uri, RDF.type, SKOS.Concept))
 
+    if vocabulary == 'gnd':
+        # For GND, we need to specify --scheme gnd
+        # See: https://github.com/scriptotek/mc2skos/issues/56
+        vocabularies.set_default_scheme(scheme='gnd')
+
     check_processing(marc, expect, include_altlabels=True)
+    vocabularies.set_default_scheme()
 
 if __name__ == '__main__':
     unittest.main()

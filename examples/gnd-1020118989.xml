@@ -4,7 +4,7 @@
     <controlfield tag="001">1020118989</controlfield>
     <controlfield tag="003">DE-101</controlfield>
     <controlfield tag="005">20170814095021.0</controlfield>
-    <controlfield tag="008">120224n||azznnaabn           | aaa    |c</controlfield>
+    <controlfield tag="008">120224n||aznnnaabn           | aaa    |c</controlfield>
     <datafield tag="024" ind1="7" ind2=" ">
       <subfield code="a">http://d-nb.info/gnd/1020118989</subfield>
       <subfield code="2">uri</subfield>
@@ -52,7 +52,6 @@
       <subfield code="9">r:DE-601</subfield>
       <subfield code="b">ger</subfield>
       <subfield code="d">0008</subfield>
-      <subfield code="f">gnd</subfield>
     </datafield>
     <datafield tag="042" ind1=" " ind2=" ">
       <subfield code="a">gnd3</subfield>
