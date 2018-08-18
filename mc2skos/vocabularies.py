@@ -20,14 +20,19 @@ class Vocabularies(object):
     def set_default_scheme(self, generic=None, concept=None, scheme=None, whitespace=None):
         # Set URI templates manually. This will override values in vocabulary.yml.
         if generic is None and concept is None and scheme is None:
+            self.default_scheme = None
             return
+
         options = {
             'base_uri': generic,
             'concept': concept,
             'scheme': scheme,
             'whitespace': whitespace,
         }
-        self.default_scheme = ConceptScheme(options=options)
+        if scheme in self.entries:
+            self.default_scheme = self.entries[scheme]
+        else:
+            self.default_scheme = ConceptScheme(options=options)
 
     def load_yaml(self, file):
         data = yaml.load(file)
@@ -42,6 +47,8 @@ class Vocabularies(object):
                 self.entries[scheme_code] = ConceptScheme(concept_type, scheme_code, options=options)
 
     def get(self, scheme_code, edition=None):
+        if scheme_code == 'n':
+            raise UnknownSchemeError()
         if scheme_code not in self.entries:
             raise UnknownSchemeError(scheme_code)
         scheme = self.entries[scheme_code]
@@ -89,7 +96,7 @@ class ConceptScheme(object):
 
         self.uri_templates = {
             'concept': options.get('concept') or options.get('base_uri'),
-            'scheme': options.get('scheme_uri') or options.get('scheme') or options.get('base_uri'),
+            'scheme': options.get('scheme') or options.get('base_uri'),
         }
 
         self.whitespace = options.get('whitespace') or '-'

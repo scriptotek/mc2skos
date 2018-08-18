@@ -212,12 +212,13 @@ def main():
     parser.add_argument('-o', '--outformat', dest='outformat', metavar='FORMAT', nargs='?',
                         help='Output format: turtle (default), jskos, or ndjson')
 
-    parser.add_argument('--include', dest='include', help='RDF file to loaded into the graph' +
+    parser.add_argument('--include', dest='include', help='RDF file to include in the output ' +
                         '(e.g. to define a concept scheme). Must be the same format as {outformat}.')
 
-    parser.add_argument('--uri', dest='base_uri', help='URI template')
-    parser.add_argument('--scheme', dest='scheme_uri', help='SKOS scheme for all records, use {edition} to specify edition.')
-#    parser.add_argument('--table_scheme', dest='table_scheme_uri', help='SKOS scheme for table records, use {edition} to specify edition.')
+    parser.add_argument('--uri', dest='base_uri', help='Concept URI template. See vocabularies.yml for examples.')
+    parser.add_argument('--scheme', dest='scheme',
+                        help='Concept scheme, either an URI or a key from vocabularies.yml (For a list: mc2skos --list).')
+
     parser.add_argument('--whitespace', dest='whitespace', metavar='STRING',
                         help='Replace whitespaces in URI templates with this.')
 
@@ -256,7 +257,7 @@ def main():
 
     vocabularies.set_default_scheme(
         generic=args.base_uri,
-        scheme=args.scheme_uri,
+        scheme=args.scheme,
         whitespace=args.whitespace
     )
 
