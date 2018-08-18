@@ -1,11 +1,15 @@
 language: python
-
+dist: xenial
 python:
 - '2.7'
-- '3.3'
 - '3.4'
 - '3.5'
 - '3.6'
+- '3.7'
+
+matrix:
+  allow_failures:
+  - python: '3.4'  # Doesn't work with Travis on Xenial atm
 
 install:
 - pip install -U setuptools  # Fix for https://travis-ci.org/scriptotek/otsrdflib/jobs/152446727
