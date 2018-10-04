@@ -212,7 +212,7 @@ def main():
     parser.add_argument('-o', '--outformat', dest='outformat', metavar='FORMAT', nargs='?',
                         help='Output format: turtle (default), jskos, or ndjson')
 
-    parser.add_argument('--include', dest='include', help='RDF file to include in the output ' +
+    parser.add_argument('--include', action='append', dest='include', help='RDF file(s) to include in the output ' +
                         '(e.g. to define a concept scheme). Must be the same format as {outformat}.')
 
     parser.add_argument('--uri', dest='base_uri', help='Concept URI template. See vocabularies.yml for examples.')
@@ -278,11 +278,11 @@ def main():
         raise ValueError("Format not supported, must be one of '%s'." % "', '".join(supported_formats))
 
     graph = Graph()
-    if args.include:
+    for filename in args.include:
         if args.outformat == 'turtle':
-            graph.load(args.include, format='turtle')
+            graph.load(filename, format='turtle')
         else:
-            graph.load(args.include, format='json-ld')
+            graph.load(filename, format='json-ld')
 
     nm = graph.namespace_manager
     nm.bind('dcterms', DCTERMS)
