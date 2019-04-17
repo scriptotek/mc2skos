@@ -212,8 +212,9 @@ def main():
     parser.add_argument('-o', '--outformat', dest='outformat', metavar='FORMAT', nargs='?',
                         help='Output format: turtle (default), jskos, or ndjson')
 
-    parser.add_argument('--include', action='append', dest='include', help='RDF file(s) to include in the output ' +
-                        '(e.g. to define a concept scheme). Must be the same format as {outformat}.')
+    parser.add_argument('--include', action='append', dest='include', default=[],
+                        help='RDF file(s) to include in the output (e.g. to define a concept scheme). '
+                             'Must be the same format as {outformat}.')
 
     parser.add_argument('--uri', dest='base_uri', help='Concept URI template. See vocabularies.yml for examples.')
     parser.add_argument('--scheme', dest='scheme',
