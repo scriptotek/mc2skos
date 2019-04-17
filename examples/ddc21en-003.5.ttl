@@ -7,7 +7,15 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://dewey.info/class/003.5/e21/> a skos:Concept ;
+    skos:editorialNote "003.5 vs. 629.8"@en,
+        "Class interdisciplinary works on control of living and nonliving systems in 003.5 or with various specific kinds of systems in 003.7-003.8. Class automatic control of man-made physical systems in 629.8. If in doubt, prefer 003.5."@en,
+        "For control and stability of systems in a specific subject, see the subject plus notation 0115 from Table 1, e.g., control and stability of systems in general engineering 620.00115"@en ;
+    skos:historyNote "Cybernetics formerly located in"@en,
+        "Theory of communication and control"@en ;
     skos:inScheme <http://dewey.info/scheme/edition/e21/> ;
     skos:notation "003.5" ;
-    skos:prefLabel "Theory of communication and control"@en .
+    skos:prefLabel "Theory of communication and control"@en ;
+    skos:scopeNote "Class here cybernetics, interdisciplinary works on the control and stability of systems"@en,
+        "In living and nonliving systems"@en,
+        "Including bionics"@en .
 

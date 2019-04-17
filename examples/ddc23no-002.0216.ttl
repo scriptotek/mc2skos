@@ -12,6 +12,7 @@
     dcterms:modified "2017-01-25"^^xsd:date ;
     owl:deprecated true ;
     skos:broader <http://dewey.info/class/002/e23/> ;
+    skos:editorialNote "Brukes ikke; klassifiser i 010"@nb ;
     skos:inScheme <http://dewey.info/scheme/edition/e23/> ;
     skos:notation "002.0216" ;
     skos:prefLabel "Lister, fortegnelser, kataloger"@nb .

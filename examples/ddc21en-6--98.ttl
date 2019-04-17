@@ -10,5 +10,6 @@
     skos:inScheme <http://dewey.info/scheme/edition/e21/>,
         <http://dewey.info/table/6/e21/> ;
     skos:notation "T6--98" ;
-    skos:prefLabel "South American native languages"@en .
+    skos:prefLabel "South American native languages"@en ;
+    skos:scopeNote "Including Araucanian, Cahuapanan, Mataco-Guaicuru, Tacanan, Uru-Chipaya, Witotoan, Yanomam languages; Hixkaryana, Warao, Yaruro"@en .
 

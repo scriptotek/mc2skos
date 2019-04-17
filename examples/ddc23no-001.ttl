@@ -15,7 +15,14 @@
     dcterms:identifier "ocd00116591" ;
     dcterms:modified "2015-09-29"^^xsd:date ;
     skos:broader <http://dewey.info/class/00/e23/> ;
+    skos:editorialNote "Klassifiser en samling av kunnskap i en bestemt form med formen, f.eks. leksika"@nb,
+        "Klassifiser erkjennelsesteori (epistemologi) i 121"@nb,
+        "Se manualen: 500 vs. 001"@nb,
+        "Spesialister eller bruken av spesialister innen et bestemt emne, se emnet, f.eks. spesialister innen lungemedisin, bruken av spesialister innen ingeniørfag, bruken av konsulenter innen ledelse"@nb ;
     skos:inScheme <http://dewey.info/scheme/edition/e23/> ;
     skos:notation "001" ;
-    skos:prefLabel "Kunnskap"@nb .
+    skos:prefLabel "Kunnskap"@nb ;
+    skos:scopeNote "Beskrivelse og kritisk vurdering av intellektuell virksomhet i alminnelighet"@nb,
+        "Her: Idéer fra flere områder; tverrfaglig tilnærming til kunnskap"@nb,
+        "Inkluderer: Tverrfaglige verker om spesialister"@nb .
 

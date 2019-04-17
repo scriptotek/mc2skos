@@ -7,8 +7,10 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://dewey.info/class/6--983/e21/> a skos:Concept ;
+    skos:historyNote "Use of this number for Yaruro discontinued; class in 98"@en ;
     skos:inScheme <http://dewey.info/scheme/edition/e21/>,
         <http://dewey.info/table/6/e21/> ;
     skos:notation "T6--983" ;
-    skos:prefLabel "Quechuan (Kechuan), Aymaran, Tucanoan, Tupí, Arawakan languages"@en .
+    skos:prefLabel "Quechuan (Kechuan), Aymaran, Tucanoan, Tupí, Arawakan languages"@en ;
+    skos:scopeNote "Former heading: Andean-Equatorial languages"@en .
 

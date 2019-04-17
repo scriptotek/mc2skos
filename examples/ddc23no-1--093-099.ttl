@@ -11,8 +11,13 @@
     dcterms:identifier "ocd00119742" ;
     dcterms:modified "2015-08-24"^^xsd:date ;
     skos:broader <http://dewey.info/class/1--09/e23/> ;
+    skos:editorialNote "(Tillatt løsning: Historiske perioder fra 930-990 kan tilføyes et siffer for alle områder, unntatt Nord-Amerika og Sør-Amerika som får, f.eks. borgerkrigen i USA, Brasil under keiserdømmet, Nord-Amerika på 1900-tallet. Dersom denne tillatte løsningen brukes, skal ikke 090 fra den spesielle hjelpetabellen over brukes. Et ekstra siffer 0 tilføyes numrene fra den spesielle hjelpetabellen ovenfor, f.eks. statistikk som gjelder Brasil)"@nb,
+        "Se manualen: 0922 vs. 093-099"@nb,
+        "Se manualen: 0940902 vs. 0902"@nb ;
     skos:inScheme <http://dewey.info/scheme/edition/e23/>,
         <http://dewey.info/table/1/e23/> ;
     skos:notation "T1--093-099" ;
-    skos:prefLabel "Bestemte verdensdeler, stater, lokalområder; himmellegemer utenfor jorda"@nb .
+    skos:prefLabel "Bestemte verdensdeler, stater, lokalområder; himmellegemer utenfor jorda"@nb ;
+    skos:scopeNote "Historie og beskrivelse etter sted, etter bestemte hendelser innen emnet"@nb,
+        "Vær oppmerksom på at inndelingene i den spesielle hjelpetabellen under ikke er generell forminndeling"@nb .
 

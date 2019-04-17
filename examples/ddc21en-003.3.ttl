@@ -7,7 +7,11 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://dewey.info/class/003.3/e21/> a skos:Concept ;
+    skos:editorialNote "0285 vs. 0113"@en,
+        "For computer modeling and simulation applied to a specific subject, see the subject plus notation 0113 from Table 1, e.g., computer modeling in economics 330.0113"@en ;
+    skos:historyNote "Computer modeling and simulation"@en ;
     skos:inScheme <http://dewey.info/scheme/edition/e21/> ;
     skos:notation "003.3" ;
-    skos:prefLabel "Computer modeling and simulation"@en .
+    skos:prefLabel "Computer modeling and simulation"@en ;
+    skos:scopeNote "Class here data processing and computer science applied to systems, computer implementation of mathematical models of systems, interdisciplinary works on computer modeling and simulation"@en .
 

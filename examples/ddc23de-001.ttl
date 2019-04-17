@@ -14,7 +14,14 @@
     dcterms:identifier "e957a697-9369-3496-85af-bd067229b32d" ;
     dcterms:modified "2011-07-28"^^xsd:date ;
     skos:broader <http://dewey.info/class/00/e23/> ;
+    skos:editorialNote "Für Berater oder für den Einsatz von Beratern in einem bestimmten Thema siehe das Thema, z.B. Bibliotheksberater, technische Berater, Einsatz von Beratern im Management"@de,
+        "Klassifiziere Epistemologie in 121"@de,
+        "Klassifiziere eine Zusammenstellung von Wissen in einer bestimmten Form bei der Form, z.B. Enzyklopädien"@de,
+        "Siehe Praxishilfe bei 500 vs. 001"@de ;
     skos:inScheme <http://dewey.info/scheme/edition/e23/> ;
     skos:notation "001" ;
-    skos:prefLabel "Wissen"@de .
+    skos:prefLabel "Wissen"@de ;
+    skos:scopeNote "Darstellung und kritische Bewertung intellektueller, geistiger Aktivität im Allgemeinen"@de,
+        "Einschließlich: fächerübergreifende Werke über Berater"@de,
+        "Hier auch: Diskussion von Ideen aus vielen Gebieten, fächerübergreifender Ansatz zum Wissensbegriff"@de .
 

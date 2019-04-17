@@ -7,7 +7,13 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://dewey.info/class/003.54/e21/> a skos:Concept ;
+    skos:editorialNote "Class information theory in communications engineering in 621.3822, without using notation 01154 from Table 1"@en,
+        "Class information theory in communications engineering of a specific kind of communications with the kind, without using notation 01154 from Table 1, e.g., radio 621.384; class information theory in any other specific subject with the subject, plus notation 01154 from Table 1, e.g., information theory in economics 330.01154"@en ;
+    skos:historyNote "Coding theory formerly located in"@en,
+        "Information theory formerly located in"@en ;
     skos:inScheme <http://dewey.info/scheme/edition/e21/> ;
     skos:notation "003.54" ;
-    skos:prefLabel "Information theory"@en .
+    skos:prefLabel "Information theory"@en ;
+    skos:scopeNote "Class here coding theory"@en,
+        "Theory concerning measurement of quantities of information; accuracy in transmission of messages subject to noise (unwanted, usually random, signals), distortion, and transmission failure; and methods of coding for efficient, accurate transmission"@en .
 

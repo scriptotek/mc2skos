@@ -10,5 +10,6 @@
     skos:inScheme <http://dewey.info/scheme/edition/e21/>,
         <http://dewey.info/table/6/e21/> ;
     skos:notation "T6--9832" ;
-    skos:prefLabel "Quechuan (Kechuan) and Aymaran languages"@en .
+    skos:prefLabel "Quechuan (Kechuan) and Aymaran languages"@en ;
+    skos:scopeNote "Former heading: Andean languages"@en .
 

@@ -7,8 +7,10 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://dewey.info/class/6--9835/e21/> a skos:Concept ;
+    skos:historyNote "expanded from"@en ;
     skos:inScheme <http://dewey.info/scheme/edition/e21/>,
         <http://dewey.info/table/6/e21/> ;
     skos:notation "T6--9835" ;
-    skos:prefLabel "Tucanoan languages"@en .
+    skos:prefLabel "Tucanoan languages"@en ;
+    skos:scopeNote "Including Tucano"@en .
 

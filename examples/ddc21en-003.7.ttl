@@ -7,7 +7,12 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://dewey.info/class/003.7/e21/> a skos:Concept ;
+    skos:editorialNote "003.7"@en,
+        "Many kinds of systems are defined in terms of the equations used to model them, e.g., distributed-parameter systems are defined as systems governed by partial differential equations. Other equations may be used to model the behavior of the same real-world system. Class a work about a specific kind of system according to the way the work describes the system, e.g., a work that discusses applying the mathematics of stochastic (random) processes to systems 003.76."@en ;
+    skos:historyNote "Kinds of systems"@en,
+        "Self-organizing systems formerly located in"@en ;
     skos:inScheme <http://dewey.info/scheme/edition/e21/> ;
     skos:notation "003.7" ;
-    skos:prefLabel "Kinds of systems"@en .
+    skos:prefLabel "Kinds of systems"@en ;
+    skos:scopeNote "Including deterministic, hierarchical, lumped-parameter, self-organizing, small-scale systems"@en .
 

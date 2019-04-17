@@ -7,7 +7,9 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://dewey.info/class/003.71/e21/> a skos:Concept ;
+    skos:historyNote "Large-scale systems"@en ;
     skos:inScheme <http://dewey.info/scheme/edition/e21/> ;
     skos:notation "003.71" ;
-    skos:prefLabel "Large-scale systems"@en .
+    skos:prefLabel "Large-scale systems"@en ;
+    skos:scopeNote "Limited to works emphasizing that the systems are large"@en .
 
