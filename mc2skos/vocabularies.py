@@ -35,7 +35,7 @@ class Vocabularies(object):
             self.default_scheme = ConceptScheme(options=options)
 
     def load_yaml(self, file):
-        data = yaml.load(file)
+        data = yaml.safe_load(file)
         for concept_type_key, vocabs in data.items():
             concept_type = {
                 'classification_schemes': ClassificationRecord,
