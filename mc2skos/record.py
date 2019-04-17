@@ -82,6 +82,8 @@ class Record(object):
         # X55 - Genre/Form Term
         # X62 - Medium of Performance Term
         tags = ['@tag="%s%s"' % (base, tag) for tag in ['00', '10', '11', '30', '47', '48', '50', '51', '53', '55', '62']]
+
+        terms = []
         for entry in self.record.all('mx:datafield[%s]' % ' or '.join(tags)):
 
             def reducer(value, element):
@@ -111,12 +113,18 @@ class Record(object):
                     cni = cn[0].lstrip('(')
                 else:
                     cn = cn[0]
-            yield {
+            term = {
                 'value': label,
                 'node': entry,
                 'control_number': cn,
                 'control_number_identifier': cni,
             }
+            if 'isCaption' in entry.get_ess_codes():
+                terms.insert(0, term)
+            else:
+                terms.append(term)
+
+        return terms
 
     def parse(self, options):
 

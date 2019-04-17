@@ -154,6 +154,55 @@ class TestClassificationRecord(unittest.TestCase):
         assert rec.display is True
         assert rec.synthesized is True
 
+    def testSynthesizedRecordWithIndexTerms(self):
+        rec = ClassificationRecord('''
+          <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
+            <mx:leader>00000nw  a2200000n  4500</mx:leader>
+            <mx:controlfield tag="008">091203aaaaaabb</mx:controlfield>
+            <mx:datafield tag="084" ind2=" " ind1="0">
+              <mx:subfield code="a">ddc</mx:subfield>
+              <mx:subfield code="c">23no</mx:subfield>
+              <mx:subfield code="e">nob</mx:subfield>
+            </mx:datafield>
+            <mx:datafield tag="153" ind2=" " ind1=" ">
+              <mx:subfield code="a">006.686</mx:subfield>
+              <mx:subfield code="e">006.68</mx:subfield>
+              <mx:subfield code="9">ess=ien</mx:subfield>
+            </mx:datafield>
+            <mx:datafield tag="730" ind2="7" ind1=" ">
+              <mx:subfield code="a">CorelDRAW</mx:subfield>
+              <mx:subfield code="0">(OCoLC-D)99928acf-5fcb-4b49-b12c-9d4bdcb369b1</mx:subfield>
+              <mx:subfield code="2">ddcri</mx:subfield>
+              <mx:subfield code="9">ps=EO</mx:subfield>
+            </mx:datafield>
+            <mx:datafield tag="750" ind2="7" ind1=" ">
+              <mx:subfield code="a">CorelDRAW!</mx:subfield>
+              <mx:subfield code="0">(OCoLC-D)73e62e00-d820-48bb-b5a6-d5f4ceab2d12</mx:subfield>
+              <mx:subfield code="2">ddcri</mx:subfield>
+              <mx:subfield code="9">ps=EO</mx:subfield>
+            </mx:datafield>
+            <mx:datafield tag="750" ind2="7" ind1=" ">
+              <mx:subfield code="a">Personlige datamaskiner</mx:subfield>
+              <mx:subfield code="x">grafikkprogrammer</mx:subfield>
+              <mx:subfield code="0">(OCoLC-D)1226b03f-c205-420e-ae21-34d41be81715</mx:subfield>
+              <mx:subfield code="2">ddcri</mx:subfield>
+              <mx:subfield code="9">ps=PE</mx:subfield>
+              <mx:subfield code="9">ess=isCaption</mx:subfield>
+            </mx:datafield>
+          </mx:record>
+        ''', options=self.options)
+
+        assert rec.record_type == Constants.SCHEDULE_RECORD
+        assert rec.number_type == Constants.SINGLE_NUMBER
+        assert rec.display is True
+        assert rec.synthesized is True
+        assert rec.prefLabel is None
+        assert rec.altLabel == [
+            {'term': 'Personlige datamaskiner--grafikkprogrammer'},
+            {'term': 'CorelDRAW'},
+            {'term': 'CorelDRAW!'},
+        ]
+
     def testSynthesizedNumberComponents1(self):
         rec = ClassificationRecord('''
         <mx:record xmlns:mx="http://www.loc.gov/MARC21/slim">
