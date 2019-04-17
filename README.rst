@@ -216,16 +216,18 @@ WebDewey records and extract entities from these. The entity extraction rules (m
 utilizes a non-standard namespace and are not enabled by default. Specify the ``--webdewey`` flag to
 use them.
 
-===================================================  ================================================
-MARC21XML                                            RDF
-===================================================  ================================================
-``680`` having ``$9 ess=ndf`` Definition note        ``skos:definition``
-``680`` having ``$9 ess=nvn`` Variant name note      ``wd:variantName`` [*] for each subfield ``$t``
-``680`` having ``$9 ess=nch`` Class here note        ``wd:classHere`` [*] for each subfield ``$t``
-``680`` having ``$9 ess=nin`` Including note         ``wd:including`` [*] for each subfield ``$t``
-``680`` having ``$9 ess=nph`` Former heading         ``wd:formerHeading`` [*] for each subfield ``$t``
-``694`` having ``$9 ess=nml`` ???                    ``SKOS.editorialNote``
-===================================================  ================================================
+=========================================================================  ================================================
+MARC21XML                                                                  RDF
+=========================================================================  ================================================
+``680`` having ``$9 ess=ndf`` Definition note                              ``skos:definition``
+``680`` having ``$9 ess=nvn`` Variant name note                            ``wd:variantName`` [*] for each subfield ``$t``
+``680`` having ``$9 ess=nch`` Class here note                              ``wd:classHere`` [*] for each subfield ``$t``
+``680`` having ``$9 ess=nin`` Including note                               ``wd:including`` [*] for each subfield ``$t``
+``680`` having ``$9 ess=nph`` Former heading                               ``wd:formerHeading`` [*] for each subfield ``$t``
+``694`` having ``$9 ess=nml`` ???                                          ``SKOS.editorialNote``
+``7XX`` having ``$9 ess=isCaption`` Relative index term to use as caption  ``skos:prefLabel``
+
+=========================================================================  ================================================
 
 **Notes that are currently not treated in any special way:**
 
