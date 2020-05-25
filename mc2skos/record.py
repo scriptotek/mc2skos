@@ -688,14 +688,14 @@ class AuthorityRecord(Record):
                         relation = SKOS.broader
                     elif sf_w == 'h':
                         relation = SKOS.narrower
-                    elif sf_w == 'r' and is_uri(sf_4):
+                    elif sf_w == 'r' and sf_4 is not None and is_uri(sf_4):
                         relation = URIRef(sf_4)
                     else:
                         relation = SKOS.related
 
                     if is_uri(local_id):
                         self.relations.append({
-                            'uri': uri,
+                            'uri': local_id,
                             'relation': relation,
                         })
                     else:
