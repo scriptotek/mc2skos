@@ -30,6 +30,9 @@ subject_schemes:
     noubomr:
         concept: http://data.ub.uio.no/mrtermer/c{control_number[3:]}
         scheme: http://data.ub.uio.no/mrtermer/
+    nll:
+        concept: http://dati.lnb.lv/skos/{control_number}
+        scheme: http://dati.lnb.lv/skos/
     gnd:
         concept: http://d-nb.info/gnd/{control_number}
         scheme: http://d-nb.info/gnd/
