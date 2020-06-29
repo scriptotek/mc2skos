@@ -48,6 +48,17 @@ MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
 
 
 def add_record_to_graph(graph, record, options):
+
+    # custom language settings for the National Library of Latvia authority file
+
+    if options.get('nll_lang'):
+
+        #  - no default language (because of labels can be in multiple languages)
+        record.lang = None
+        #  - except for prefLabels (which are in Latvian)
+        record.prefLang = "lv"
+
+
     # Add record to graph
 
     # logger.debug('Adding: %s', record.uri)
@@ -85,13 +96,13 @@ def add_record_to_graph(graph, record, options):
 
     # Add caption as skos:prefLabel
     if record.prefLabel:
-        graph.add((record_uri, SKOS.prefLabel, Literal(record.prefLabel, lang=record.lang)))
+        graph.add((record_uri, SKOS.prefLabel, Literal(record.prefLabel, lang=record.prefLang)))
     elif options.get('include_webdewey') and len(record.altLabel) != 0:
         # If the --webdewey flag is set, we will use the first index term as prefLabel
         caption = record.altLabel.pop(0)['term']
         if len(record.altLabel) != 0:
             caption = caption + ', …'
-        graph.add((record_uri, SKOS.prefLabel, Literal(caption, lang=record.lang)))
+        graph.add((record_uri, SKOS.prefLabel, Literal(caption, lang=record.prefLang)))
 
     # Add index terms as skos:altLabel
     if options.get('include_altlabels'):
@@ -247,6 +258,9 @@ def main():
     parser.add_argument('-l', '--list-schemes', dest='list_schemes', action='store_true',
                         help='List default concept schemes.')
 
+    parser.add_argument('--nll-lang', dest='nll_lang', action='store_true',
+                        help='Set langugage tags specific to the NLL authority file.')
+
     args = parser.parse_args()
 
     if args.notes:
@@ -311,7 +325,8 @@ def main():
         'skip_authority': args.skip_authority,
         'expand': args.expand,
         'skosify': args.skosify,
-        'vocabularies': vocabularies
+        'vocabularies': vocabularies,
+        'nll_lang': args.nll_lang
     }
 
     marc = MarcFileReader(args.infile)

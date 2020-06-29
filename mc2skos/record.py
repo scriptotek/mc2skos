@@ -41,6 +41,7 @@ class Record(object):
         self.created = None
         self.modified = None
         self.lang = None
+        self.prefLang = None
         self.prefLabel = None
         self.altLabel = []
         self.definition = []
@@ -157,6 +158,7 @@ class Record(object):
         # 040: Record Source
         lang = self.record.text('mx:datafield[@tag="040"]/mx:subfield[@code="b"]') or 'eng'
         self.lang = languages.get(part2b=lang).part1
+        self.prefLang = self.lang
 
     def is_public(self):
         return True
