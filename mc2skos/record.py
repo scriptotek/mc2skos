@@ -209,7 +209,7 @@ class Record(object):
                             'RM': SKOS.relatedMatch,
                         }.get(sf.text())  # None if no match
 
-                elif sf.get('code') == '0':
+                elif sf.get('code') == '0' or sf.get('code') == '1':
                     # Note: Default value might change in the future
                     relation = relation if relation else SKOS.closeMatch
 
