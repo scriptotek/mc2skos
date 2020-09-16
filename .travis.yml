@@ -2,13 +2,12 @@ language: python
 dist: xenial
 python:
 - '2.7'
-- '3.4'
-- '3.5'
 - '3.6'
 - '3.7'
+- '3.8'
 
 install:
-- pip install -U setuptools  # Fix for https://travis-ci.org/scriptotek/otsrdflib/jobs/152446727
+- pip install -U pip setuptools  # Fix for https://travis-ci.org/scriptotek/otsrdflib/jobs/152446727
 - python setup.py install
 - pip install Pygments collective.checkdocs
 
