@@ -1,1 +1,1 @@
-__version__ = '0.11.1'  # Use bumpversion to update
+__version__ = '0.12.0'  # Use bumpversion to update
