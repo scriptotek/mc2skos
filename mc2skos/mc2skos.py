@@ -357,5 +357,5 @@ def main():
                 record['@context'] = u'https://gbv.github.io/jskos/context.json'
                 out_file.write(json.dumps(record, sort_keys=True).encode('utf-8') + b'\n')
 
-    if out_file != sys.stdout:
+    if args.outfile and args.outfile != '-':
         logger.info('Wrote %s: %s' % (args.outformat, args.outfile))
