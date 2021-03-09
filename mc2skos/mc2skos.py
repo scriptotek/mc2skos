@@ -173,7 +173,7 @@ def process_record(graph, rec, **kwargs):
         raise InvalidRecordError('Record is not a Marc21 Classification or Authority record',
                                  control_number=el.text('mx:controlfield[@tag="001"]'))
 
-    if rec.is_public():
+    if rec.is_public(add_table_numbers=kwargs.get('add_table_numbers')):
         add_record_to_graph(graph, rec, kwargs)
 
 
@@ -235,6 +235,8 @@ def main():
                         help='Include component information from 765.')
     parser.add_argument('--webdewey', dest='webdewey', action='store_true',
                         help='Include non-standard WebDewey notes from 680.')
+    parser.add_argument('--add-table-numbers', dest='add_table_numbers', action='store_true',
+                        help='Include add table numbers (notations with a colon)')
     parser.add_argument('--skip-classification', dest='skip_classification', action='store_true',
                         help='Skip classification records')
     parser.add_argument('--skip-authority', dest='skip_authority', action='store_true',
@@ -307,6 +309,7 @@ def main():
         'exclude_notes': args.exclude_notes,
         'include_components': args.components,
         'include_webdewey': args.webdewey,
+        'add_table_numbers': args.add_table_numbers,
         'skip_classification': args.skip_classification,
         'skip_authority': args.skip_authority,
         'expand': args.expand,

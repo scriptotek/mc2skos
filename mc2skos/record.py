@@ -571,7 +571,7 @@ class ClassificationRecord(Record):
 
         return table, notation, is_top_concept, parent_notation, caption
 
-    def is_public(self):
+    def is_public(self, add_table_numbers=False):
         if not self.display:
             # This is a record not displayed in standard schedules or tables
             # or in extended display. It could be a deleted (not deprecated)
@@ -583,8 +583,7 @@ class ClassificationRecord(Record):
             logger.debug('%s is a type %s', self.notation, self.record_type)
             return False
 
-        include_add_table_numbers = False  # @TODO: Make argparse option
-        if self.notation.find(':') != -1 and not include_add_table_numbers:
+        if self.notation.find(':') != -1 and not add_table_numbers:
             logger.debug('%s is an add table number', self.notation)
             return False
 
