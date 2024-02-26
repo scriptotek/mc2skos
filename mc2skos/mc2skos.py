@@ -16,7 +16,7 @@ from rdflib.namespace import OWL, RDF, SKOS, DCTERMS, XSD, Namespace
 from rdflib import URIRef, Literal, Graph, BNode
 from otsrdflib import OrderedTurtleSerializer
 import json
-import rdflib_jsonld.serializer as json_ld
+import jsonld from rdflib.plugins.serializers
 import pkg_resources
 import skosify
 
@@ -351,7 +351,7 @@ def main():
     elif args.outformat in ['jskos', 'ndjson']:
         s = pkg_resources.resource_string(__name__, 'jskos-context.json').decode('utf-8')
         context = json.loads(s)
-        jskos = json_ld.from_rdf(graph, context)
+        jskos = jsonld.from_rdf(graph, context)
         if args.outformat == 'jskos':
             jskos['@context'] = u'https://gbv.github.io/jskos/context.json'
             out_file.write(json.dumps(jskos, sort_keys=True, indent=2).encode('utf-8'))
