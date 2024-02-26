@@ -16,7 +16,7 @@ from rdflib.namespace import OWL, RDF, SKOS, DCTERMS, XSD, Namespace
 from rdflib import URIRef, Literal, Graph, BNode
 from otsrdflib import OrderedTurtleSerializer
 import json
-import rdflib_jsonld.serializer as json_ld
+from rdflib.plugins.serializers import jsonld
 import pkg_resources
 import skosify
 
@@ -173,7 +173,7 @@ def process_record(graph, rec, **kwargs):
         raise InvalidRecordError('Record is not a Marc21 Classification or Authority record',
                                  control_number=el.text('mx:controlfield[@tag="001"]'))
 
-    if rec.is_public():
+    if rec.is_public(add_table_numbers=kwargs.get('add_table_numbers')):
         add_record_to_graph(graph, rec, kwargs)
 
 
@@ -235,6 +235,8 @@ def main():
                         help='Include component information from 765.')
     parser.add_argument('--webdewey', dest='webdewey', action='store_true',
                         help='Include non-standard WebDewey notes from 680.')
+    parser.add_argument('--add-table-numbers', dest='add_table_numbers', action='store_true',
+                        help='Include add table numbers (notations with a colon)')
     parser.add_argument('--skip-classification', dest='skip_classification', action='store_true',
                         help='Skip classification records')
     parser.add_argument('--skip-authority', dest='skip_authority', action='store_true',
@@ -307,6 +309,7 @@ def main():
         'exclude_notes': args.exclude_notes,
         'include_components': args.components,
         'include_webdewey': args.webdewey,
+        'add_table_numbers': args.add_table_numbers,
         'skip_classification': args.skip_classification,
         'skip_authority': args.skip_authority,
         'expand': args.expand,
@@ -348,7 +351,7 @@ def main():
     elif args.outformat in ['jskos', 'ndjson']:
         s = pkg_resources.resource_string(__name__, 'jskos-context.json').decode('utf-8')
         context = json.loads(s)
-        jskos = json_ld.from_rdf(graph, context)
+        jskos = jsonld.from_rdf(graph, context)
         if args.outformat == 'jskos':
             jskos['@context'] = u'https://gbv.github.io/jskos/context.json'
             out_file.write(json.dumps(jskos, sort_keys=True, indent=2).encode('utf-8'))
