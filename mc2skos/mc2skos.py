@@ -16,7 +16,7 @@ from rdflib.namespace import OWL, RDF, SKOS, DCTERMS, XSD, Namespace
 from rdflib import URIRef, Literal, Graph, BNode
 from otsrdflib import OrderedTurtleSerializer
 import json
-import jsonld from rdflib.plugins.serializers
+from rdflib.plugins.serializers import jsonld
 import pkg_resources
 import skosify
 
